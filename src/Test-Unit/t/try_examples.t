@@ -111,6 +111,9 @@ foreach my $e (@examples) {
 	    $_ .= "\n" unless /\n$/;
 	    # bin the naughty carriage returns
 	    s/\r//g;
+	    # we can't assume the order of tests will be the same
+	    s/^[\.F]+$/TEST-RUN-SUMMARY/sm;
+	    s/::Load[0-9_]+Anonymous[0-9_]+/::LOAD_ANONYMOUS_CLASSNAME/;
 	    # indent lines with '# ' so they're comments if the test fails
 	    s/\n/\n# /g;
 	    # hide things that look like CPU usage
