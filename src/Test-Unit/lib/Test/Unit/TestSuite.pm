@@ -130,6 +130,7 @@ sub new {
     if ($classname) {
         Test::Unit::Loader::compile_class($classname);
         if (eval { $classname->isa('Test::Unit::TestCase') }) {
+            $self->{_Name} = "suite extracted from $classname";
             my @testcases = Test::Unit::Loader::extract_testcases($classname);
             foreach my $testcase (@testcases) {
                 $self->add_test($testcase);
@@ -186,6 +187,27 @@ sub names {
     my $self = shift;
     my @test_list = @{$self->tests};
     return [ map {$_->name} @test_list ] if @test_list;
+}
+
+=head2 list (SHOW_TESTCASES)
+
+Produces a human-readable indented lists of the suite and the subsuites
+it contains.  If the first parameter is true, also lists any testcases
+contained in the suite and its subsuites.
+
+=cut
+
+sub list {
+    my $self = shift;
+    my $show_testcases = shift;
+    my $first = ($self->name() || 'anonymous Test::Unit::TestSuite');
+    $first .= " - " . ref($self) unless ref($self) eq __PACKAGE__;
+    $first .= "\n";
+    my @lines = ( $first );
+    foreach my $test (@{ $self->tests() }) {
+        push @lines, map "   $_", @{ $test->list($show_testcases) };
+    }
+    return \@lines;
 }
 
 =head2 add_test (TEST_CLASSNAME | TEST_OBJECT)

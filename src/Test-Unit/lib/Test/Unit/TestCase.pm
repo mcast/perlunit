@@ -115,6 +115,14 @@ sub get_matching_methods {
     return map { /$re/ ? $1 : () } $st->functions();
 }
 
+sub list {
+    my $self = shift;
+    my $show_testcases = shift;
+    return $show_testcases ?
+             [ ($self->name() || 'anonymous testcase') . "\n" ]
+           : [];
+}
+
 1;
 __END__
 
