@@ -212,6 +212,32 @@ If you do not like the rather verbose backtrace that appears when a
 test fails, you can use the C<quell_backtrace()> method. You will get
 any message provided, but not the backtrace.
 
+=head2 Helper methods
+
+=over 4
+
+=item make_test_from_coderef (CODEREF, [NAME])
+
+Takes a coderef and an optional name and returns a Test case that
+inherits from the object on which it was called, which has the coderef
+installed as its C<run_test> method. L<Class::Inner> has more details
+on how this is generated.
+
+=item list_tests
+
+Returns the list of test methods in this class and its parents. You
+can override this in your own classes, but remember to call
+C<SUPER::list_tests> in there too.
+
+=item set_up
+
+=item tear_down
+
+If you don't have any setup or tear down code that needs to be run, we
+provide a couple of null methods. Override them if you need to.
+
+=back
+
 =head1 AUTHOR
 
 Framework JUnit authored by Kent Beck and Erich Gamma.
@@ -228,6 +254,8 @@ Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
 
 Thanks for patches go to:
 Matthew Astley.
+
+More changes made by Piers Cawley <pdcawley@iterative-software.com>
 
 =head1 SEE ALSO
 
