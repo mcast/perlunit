@@ -5,5 +5,5 @@ $VERSION=0.13;
 WriteMakefile(
     'NAME'	   => 'Test::Unit',
     'VERSION_FROM' => 'Makefile.PL', # finds $VERSION
-    'PREREQ_PM'    => 'B::Deparse',
+#    'PREREQ_PM'    => 'B::Deparse',
 );
