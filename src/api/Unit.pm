@@ -30,6 +30,7 @@ sub new {
     my $stacktrace = '';
     my ($pack, $file, $line, $subname, $hasargs, $wantarray);
     
+    $message = '' unless defined($message);
     $stacktrace = ref($class) . ": " . $message . "\n";
     while (($pack, $file, $line, $subname, 
 	    $hasargs, $wantarray) = caller($i++)) {
@@ -72,6 +73,10 @@ sub fail {
     die Test::Unit::ExceptionFailure->new($message);
 }
 
+# ------------------------------------------------ 
+package Test::Unit::TestListener;
+
+# keep -w happy - this is an abstract interface to be filled out
 
 # ------------------------------------------------ 
 package Test::Unit::TestFailure;
@@ -157,7 +162,7 @@ sub runBare {
     $self->tearDown();
     if ($exception) {
 	print ref($self) . "::_runBare() propagating exception\n" if DEBUG;
-	if (ref($exception) ne "Test::Unit::ExceptionFailure") {
+	if (not $exception->isa("Test::Unit::ExceptionFailure")) {
 	    $exception = Test::Unit::ExceptionError->new($exception);
 	}
 	die $exception; # propagate exception
