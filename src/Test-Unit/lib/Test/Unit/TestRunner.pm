@@ -67,9 +67,9 @@ sub do_run {
 	<STDIN>;
     }
     if (not $result->was_successful()) {
-	exit(-1);
+	die "\nTest was not successful.\n";
     }
-    exit(0);		
+    return 0;
 }
 
 sub end_test {
@@ -143,20 +143,14 @@ sub print_header {
 sub run {
     my $self = shift;
     my ($class) = @_;
+    my $a_test_runner = Test::Unit::TestRunner->new();
     if ($class->isa("Test::Unit::Test")) {
-	$self->_run($class);
+	$a_test_runner->do_run($class, 0);
     } else {
-	$self->_run(Test::Unit::TestSuite->new($class));
+	$a_test_runner->do_run(Test::Unit::TestSuite->new($class), 0);
     }
 }
 	
-sub _run {
-    my $self = shift;
-    my ($test) = @_;
-    my $a_test_runner = Test::Unit::TestRunner->new();
-    $a_test_runner->do_run($test, 0);
-}
-
 sub run_and_wait {
     my $self = shift;
     my ($test) = @_;
@@ -175,14 +169,13 @@ sub start {
 	if ($args[$i] eq "-wait") {
 	    $wait = 1;
 	} elsif ($args[$i] eq "-v") {
-	    print "Test::Unit Version 0.1, copyright Christian Lemburg 2000\n";
+	    print "Test::Unit Version 0.1 experimental, copyright Christian Lemburg, Brian Ewins, J.E. Fritz, Cayte Lindner, Zhon Johansen, 2000\n";
 	} else {
 	    $test_case = $args[$i];
 	}
     }
     if ($test_case eq "") {
-	print "Usage TestRunner.pl [-wait] name, where name is the name of the TestCase class", "\n";
-	exit(-1);
+	die "Usage TestRunner.pl [-wait] name, where name is the name of the TestCase class", "\n";
     }
 
     eval "require $test_case" 
