@@ -23,7 +23,7 @@ sub thrown_exception {
 
 sub to_string {
     my $self = shift;
-    return $self->failed_test()->to_string() . 
+    return $self->failed_test()->to_string() . "\n" .
 	$self->thrown_exception()->to_string();
 }
 

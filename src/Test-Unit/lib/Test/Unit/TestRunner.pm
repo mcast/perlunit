@@ -59,15 +59,15 @@ sub do_run {
     my $end_time = new Benchmark();
     my $run_time = timediff($end_time, $start_time);
     $self->_print("\n", "Time: ", timestr($run_time), "\n");
-
+    
     $self->print_result($result);
     
     if ($wait) {
-	print "<RETURN> to continue"; # go to STDIN any case
-	<STDIN>;
+        print "<RETURN> to continue"; # go to STDIN any case
+        <STDIN>;
     }
     if (not $result->was_successful()) {
-	die "\nTest was not successful.\n";
+        die "\nTest was not successful.\n";
     }
     return 0;
 }
@@ -94,17 +94,17 @@ sub print_result {
 sub print_errors {
     my $self = shift;
     my ($result) = @_;
-    if ($result->error_count() != 0) {
-	if ($result->error_count == 1) {
-	    $self->_print("There was ", $result->error_count(), " error:\n");
-	} else {
-	    $self->_print("There were ", $result->error_count(), " errors:\n");
-	}
-	my $i = 0; 
-	for my $e (@{$result->errors()}) {
-	    $i++;
-	    $self->_print($i, ") ", $e->to_string());
-	}
+    if ( $result->error_count() ) {
+        if ($result->error_count == 1) {
+            $self->_print("There was ",  $result->error_count(), " error:\n" );
+        } else {
+            $self->_print("There were ", $result->error_count(), " errors:\n");
+        }
+        my $i = 0; 
+        for my $e (@{$result->errors()}) {
+            $i++;
+            $self->_print($i, ") ", $e->to_string());
+        }
     }
 }
 

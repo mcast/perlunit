@@ -3,6 +3,7 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 $VERSION=0.13;
 WriteMakefile(
-    'NAME'	=> 'Test::Unit',
+    'NAME'	   => 'Test::Unit',
     'VERSION_FROM' => 'Makefile.PL', # finds $VERSION
+#    'PREREQ_PM'    => 'B::Deparse',
 );

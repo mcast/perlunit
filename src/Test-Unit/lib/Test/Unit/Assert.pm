@@ -2,17 +2,51 @@ package Test::Unit::Assert;
 use strict;
 use constant DEBUG => 0;
 
+require Test::Unit::ExceptionFailure;
+
 sub assert {
     my $self = shift;
-    print ref($self) . "::assert() called\n" if DEBUG;
-    my ($condition, $message) = @_;
-    $self->fail($message) unless $condition;
+    my $assertion = $self->normalize_assertion(shift);
+    print "Calling $assertion\n" if DEBUG;
+    $assertion->do_assertion(@_) ||
+        $self->fail("$assertion failed\n");
+}
+
+sub normalize_assertion {
+    my $self      = shift;
+    my $assertion = shift;
+    if (!ref($assertion)) {
+        require Test::Unit::Assertion::Boolean;
+        return Test::Unit::Assertion::Boolean->new($assertion);
+    }
+    elsif (eval {$assertion->isa('Regexp')}) {
+        require Test::Unit::Assertion::Regexp;
+        return Test::Unit::Assertion::Regexp->new($assertion);
+    }
+    elsif (eval {$assertion->isa('UNIVERSAL')}) {
+        # It's an object already.
+
+        return $assertion->can('do_assertion') ? $assertion :
+            Test::Unit::Assertion::Boolean->new($assertion);
+        
+    }
+    elsif (ref($assertion) eq 'CODE') {
+        require Test::Unit::Assertion::CodeRef;
+        return Test::Unit::Assertion::CodeRef->new($assertion);
+    }
+#     elsif (ref($assertion) eq 'SCALAR') {
+#         require Test::Unit::Assertion::Scalar;
+#         return Test::Unit::Assertion::Scalar->new($assertion);
+#     }
+    else {
+        die "Don't know how to normalize $assertion\n";
+    }
 }
 
 sub fail {
     my $self = shift;
     print ref($self) . "::fail() called\n" if DEBUG;
-    my ($message) = @_;
+    my $message = join '', @_;
     my $ex = Test::Unit::ExceptionFailure->new($message);
     $ex->hide_backtrace() unless $self->get_backtrace_on_fail();
     die $ex;
