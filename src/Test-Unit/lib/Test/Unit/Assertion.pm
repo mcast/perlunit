@@ -2,28 +2,26 @@ package Test::Unit::Assertion;
 
 use strict;
 
-require Test::Unit::Failure;
 use Carp;
+use Test::Unit::Failure;
 
 use overload '""' => 'to_string';
 
 sub fail {
     my $self = shift;
-    my($asserter,$file,$line) = caller(2); # We're always called from
-                                           # within an Assertion...
+    my($asserter, $file, $line) = caller(2); # We're always called from
+                                             # within an Assertion...
     Test::Unit::Failure->throw(-object => $self,
-                                        -file => $file,
-                                        -line => $line,
-                                        -text => join '', @_);
+                               -file   => $file,
+                               -line   => $line,
+                               -text   => join '', @_);
 }
 
 sub do_assertion {
-    require Carp;
     Carp::croak("$_[0] forgot to override do_assertion");
 }
 
 sub new {
-    require Carp;
     Carp::croak("$_[0] forgot to override new");
 }
 
