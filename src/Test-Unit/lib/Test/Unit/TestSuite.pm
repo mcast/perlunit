@@ -48,32 +48,30 @@ sub is_a_test_case_class {
 
 sub new {
     my $class = shift;
-    my ($name) = @_;
+    my ($classname) = @_;
     
     my @_Tests = ();
     my $self = {
 	_Tests => \@_Tests,
-	_Name => $name,
+	_Name => $classname,
 	_Names => [],
     };
     bless $self, $class;
-    print ref($self) . "::new($name) called\n" if DEBUG;
+    print ref($self) . "::new($classname) called\n" if DEBUG;
     
-    if (is_not_name_of_a_class($name)) {
-	# it is a test suite name, create an empty suite
-	print "Creating empty suite '$name' at ", ref($self) , "::new()\n" 
-	    if DEBUG;
-	return $self;
+    if (is_not_name_of_a_class($classname)) {
+	die "Could not find class $classname";
     } else {
 	# it is a class, create a suite with its tests
 	# ... and that of its ancestors, if they are Test::Unit::TestCase
 	no strict 'refs';
-	if (not is_a_test_case_class($name)) {
-	    my $message = "Class " . $name . " is not a Test::Unit::TestCase";
+	if (not is_a_test_case_class($classname)) {
+	    my $message = "Class " . $classname . 
+		" is not a Test::Unit::TestCase";
 	    $self->add_test($self->warning($message));
 	    return $self;
 	}
-	my @packages_to_search = ($name, @{$name . "::ISA"});
+	my @packages_to_search = ($classname, @{$classname . "::ISA"});
 	for my $pkg (@packages_to_search) {
 	    next unless is_a_test_case_class($pkg);
 	    my @candidates = grep /^test/, keys %{$pkg . "::"};
@@ -85,10 +83,26 @@ sub new {
 	    }
 	}
 	if (not @{$self->tests()}) {
-	    $self->add_test($self->warning("No tests found in $class"));
+	    $self->add_test($self->warning("No tests found in $classname"));
 	}
     }
 
+    return $self;
+}
+
+sub empty_new {
+    my $class = shift;
+    my ($name) = @_;
+    
+    my @_Tests = ();
+    my $self = {
+	_Tests => \@_Tests,
+	_Name => $name,
+	_Names => [],
+    };
+    bless $self, $class;
+
+    print ref($self), "::empty_new($name) called\n" if DEBUG;
     return $self;
 }
 
