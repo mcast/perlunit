@@ -19,7 +19,6 @@ examples/patch100132-1
 examples/patch100132-2
 examples/tester.pl
 examples/tester.png
-foo.t
 lib/Test/Unit.pm
 lib/Test/Unit/Assert.pm
 lib/Test/Unit/Assertion.pm
@@ -55,7 +54,6 @@ lib/Test/Unit/tests/OverrideTestCase.pm
 lib/Test/Unit/tests/Success.pm
 lib/Test/Unit/tests/SuiteTest.pm
 lib/Test/Unit/tests/TestAssertionCodeRef.pm
-lib/Test/Unit/tests/TestExceptions.pm
 lib/Test/Unit/tests/TestTest.pm
 lib/Test/Unit/tests/TornDown.pm
 lib/Test/Unit/tests/WasRun.pm
