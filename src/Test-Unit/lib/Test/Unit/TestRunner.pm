@@ -75,15 +75,6 @@ sub end_test {
     my ($test) = @_;
 }
 
-sub extract_class_name {
-    my $self = shift;
-    my ($classname) = @_;
-    if ($classname =~ /^Default package for/) {
-	# do something more sensible here
-    }
-    return $classname;
-}
-
 sub main {
     my $self = shift;
     my $a_test_runner = Test::Unit::TestRunner->new();
@@ -181,10 +172,8 @@ sub start {
     for (my $i = 0; $i < @args; $i++) {
 	if ($args[$i] eq "-wait") {
 	    $wait = 1;
-	} elsif ($args[$i] eq "-c") {
-	    $test_case = $self->extract_class_name($args[++$i]);
 	} elsif ($args[$i] eq "-v") {
-	    print "Test::Unit, draft version, copyright Christian Lemburg 2000\n";
+	    print "Test::Unit Version 0.1, copyright Christian Lemburg 2000\n";
 	} else {
 	    $test_case = $args[$i];
 	}
@@ -198,7 +187,7 @@ sub start {
 	or die "Suite class " . $test_case . " not found: $@";
     no strict 'refs';
     my $suite;
-    my $suite_method = defined(&{"$test_case" . "::" . "suite"}) ? 
+    my $suite_method = $test_case->can("suite") ? 
 	    \&{"$test_case" . "::" . "suite"} : undef; 
     if (not $suite_method) {
 	$suite = Test::Unit::TestSuite->new($test_case);
