@@ -20,9 +20,13 @@ for a lot.
 Not sure what to yet, but we want to get these big API changes out of
 the way before we bump the version number.
 
-** Get working build on 5.7.2
+** Get working build on 5.7.2 and 5.8.0
 
-Piers is doing this imminently.
+Piers was supposed to be doing this.
+
+** Rename do_run to run_suite
+
+in the runners.
 
 ** Tidy up copyrights, credits, and licensing
 
@@ -85,6 +89,10 @@ from t/assert.t.
 
 Test::Unit::Loader::load_test_dir() needs to be finished.
 
+* After 1.0
+
+No harm done if they end up being done before 1.0 though, of course.
+
 ** Test filtering
 
 Piers suggested the beautiful idea of using Attribute::Handlers so you
@@ -102,10 +110,6 @@ Update: Adam met up with Piers a few months ago and together they
 figured out that Attribute::Handlers may be unusable due to its
 magic happening in the BEGIN phase, whereas all user test code gets
 compiled at run-time via Test::Unit::Loader.  Hmm.
-
-* After 1.0
-
-No harm done if they end up being done before 1.0 though, of course.
 
 ** Tests to add
 
