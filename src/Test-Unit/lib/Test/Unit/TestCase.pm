@@ -372,10 +372,16 @@ to use persistent data you'll have to use package lexicals or globals.
 If you only need to restrict which tests are run, there is a filtering
 mechanism available.  Override the C<filter()> method in your testcase
 class to return a hashref whose keys are filter tokens and whose
-values are arrayrefs of test method names, e.g.
+values are either arrayrefs of test method names or coderefs which take
+the method name as the sole parameter and return true if and only if it
+should be filtered, e.g.
 
   sub filter {{
       slow => [ qw(my_slow_test my_really_slow_test) ],
+      matching_foo => sub {
+          my $method = shift;
+          return $method =~ /foo/;
+      }
   }}
 
 Then, set the filter state in your runner before the test run starts:
