@@ -12,4 +12,9 @@ sub test_with_a_regex {
     $self->assert(qr/foo/, 'foo');
     $self->assert(qr/bar/, 'foo');
 }
+
+sub test_empty_string {
+    my $self = shift;
+    $self->assert('', "Empty string is false");
+}
 1;

@@ -73,7 +73,7 @@ sub create_suite {
     for my $c (@candidates) {
 	if (defined(&{$test_package_name . "::" . $c})) {
 	    my $test_method_call = $test_package_name . "::" . $c . "()";
-	    my $test_case = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<"EOIC", $c);
+	    my $test_case = Test::Unit::InnerClass->make_inner_class("Test::Unit::TestCase", <<"EOIC", $c);
 # note: interpolation mode here
 sub set_up {
     $set_up_call ;

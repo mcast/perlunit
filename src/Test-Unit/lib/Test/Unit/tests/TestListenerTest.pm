@@ -2,7 +2,9 @@ package Test::Unit::tests::TestListenerTest;
     
 # Test class used in SuiteTest
 
-use base qw(Test::Unit::TestCase Test::Unit::TestListener Test::Unit::InnerClass);
+use base qw(Test::Unit::TestCase);
+use Test::Unit::TestListener ();
+use Test::Unit::InnerClass ();
 
 use Test::Unit::TestResult;
 
@@ -55,7 +57,7 @@ sub add_pass {
 
 sub test_error {
     my $self = shift;
-    my $test = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<'EOIC', "noop");
+    my $test = Test::Unit::InnerClass->make_inner_class("Test::Unit::TestCase", <<'EOIC', "noop");
 sub run_test {
     die;
 }
@@ -67,7 +69,7 @@ EOIC
 
 sub test_failure {
     my $self = shift;
-    my $test = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<'EOIC', "noop");
+    my $test = Test::Unit::InnerClass->make_inner_class("Test::Unit::TestCase", <<'EOIC', "noop");
 sub run_test {
     my $self = shift;
     $self->fail();
@@ -80,7 +82,7 @@ EOIC
 
 sub test_start_stop {
     my $self = shift;
-    my $test = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<'EOIC', "noop");
+    my $test = Test::Unit::InnerClass->make_inner_class("Test::Unit::TestCase", <<'EOIC', "noop");
 sub run_test {
 }
 EOIC

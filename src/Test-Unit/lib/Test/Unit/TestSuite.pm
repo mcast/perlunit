@@ -4,7 +4,6 @@ use constant DEBUG => 0;
 use base qw(Test::Unit::Test);
 
 use Test::Unit::TestCase;
-use Test::Unit::InnerClass;
 
 use Carp;
 # helper subroutines

@@ -149,7 +149,7 @@ sub to_string {
 sub warning {
     my $self = shift;
     my ($message) = @_;
-    return Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<"EOIC", "warning");
+    return Test::Unit::InnerClass->make_inner_class("Test::Unit::TestCase", <<"EOIC", "warning");
 sub run_test {
     my \$self = shift;
     \$self->fail('$message');
