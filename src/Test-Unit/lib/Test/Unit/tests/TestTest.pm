@@ -7,10 +7,6 @@ use Test::Unit::tests::TornDown;
 use Test::Unit::tests::WasRun;
 use Test::Unit::InnerClass;
 
-sub new {
-    shift()->SUPER::new(@_);
-}
-    
 sub verify_error {
     my $self = shift;
     my ($test) = @_;
@@ -18,6 +14,7 @@ sub verify_error {
     $self->assert($result->run_count() == 1);
     $self->assert($result->failure_count() == 0);
     $self->assert($result->error_count() == 1);
+    $self->assert(! $result->was_successful());
 }
 
 sub verify_failure {
@@ -27,6 +24,7 @@ sub verify_failure {
     $self->assert($result->run_count() == 1);
     $self->assert($result->failure_count() == 1);
     $self->assert($result->error_count() == 0);
+    $self->assert(! $result->was_successful());
 }
 
 sub verify_success {
@@ -36,6 +34,7 @@ sub verify_success {
     $self->assert($result->run_count() == 1);
     $self->assert($result->failure_count() == 0);
     $self->assert($result->error_count() == 0);
+    $self->assert($result->was_successful());
 }
 
 # test subs
@@ -179,11 +178,7 @@ sub run_test {
     $self->fail();
 }
 EOIC
-    my $result = $failure->run();
-    $self->assert($result->run_count() == 1);
-    $self->assert($result->failure_count() == 1);
-    $self->assert($result->error_count() == 0);
-    $self->assert(not $result->was_successful());
+    $self->verify_failure($failure);
 }
 
 sub test_was_run {
@@ -201,11 +196,7 @@ sub run_test {
     $self->assert(1);
 }
 EOIC
-    my $result = $success->run();
-    $self->assert($result->run_count() == 1);
-    $self->assert($result->failure_count() == 0);
-    $self->assert($result->error_count() == 0);
-    $self->assert($result->was_successful());
+    $self->verify_success($success);
 }
 
 sub test_assert_on_matching_regex {
@@ -216,11 +207,7 @@ sub run_test {
     $self->assert("foo" =~ /foo/, "Should have matched!");
 }
 EOIC
-    my $result = $matching_regex->run();
-    $self->assert($result->run_count() == 1);
-    $self->assert($result->failure_count() == 0);
-    $self->assert($result->error_count() == 0);
-    $self->assert($result->was_successful());
+    $self->verify_success($matching_regex);
 }
 
 sub test_assert_on_failing_regex {
@@ -231,11 +218,7 @@ sub run_test {
     $self->assert(scalar("foo" =~ /bar/), "Should not have matched!");
 }
 EOIC
-    my $result = $matching_regex->run();
-    $self->assert($result->run_count() == 1);
-    $self->assert($result->failure_count() == 1);
-    $self->assert($result->error_count() == 0);
-    $self->assert(not $result->was_successful());
+    $self->verify_failure($matching_regex);
 }
 
 1;
