@@ -10,7 +10,7 @@ require Exporter;
 
 @ISA = qw(Exporter);
 
-@EXPORT = qw(assert create_suite run_suite);
+@EXPORT = qw(assert create_suite run_suite add_suite);
 
 if (defined($SIGNPOST)) {
     # highlander principle
@@ -23,7 +23,9 @@ if (defined($SIGNPOST)) {
     
 $VERSION = '0.10';
 
-sub add_suite {
+# private
+
+sub add_to_suites {
     my $suite_holder = shift;
     if (not exists $suites{$suite_holder}) {
 	my $test_suite = Test::Unit::TestSuite->empty_new($suite_holder);
@@ -31,17 +33,19 @@ sub add_suite {
     }
 }
 
+# public
+
 sub assert {
     my ($condition, $message) = @_;
     my $asserter = caller();
-    add_suite($asserter);
+    add_to_suites($asserter);
     $suites{$asserter}->assert($condition, $message);
 }
 
 sub create_suite {
     my ($test_package_name) = @_;
     $test_package_name = caller() unless defined($test_package_name);
-    add_suite($test_package_name);
+    add_to_suites($test_package_name);
     
     no strict 'refs';
 
@@ -89,6 +93,15 @@ sub run_suite {
     my $test_runner = Test::Unit::TestRunner->new($filehandle);
     $test_runner->do_run($suites{$test_package_name});
 }
+
+sub add_suite {
+    my ($to_be_added, $to_add_to) = @_;
+    $to_add_to = caller() unless defined($to_add_to);
+    die "Error: no suite '$to_be_added'" unless exists $suites{$to_be_added};
+    die "Error: no suite '$to_add_to'" unless exists $suites{$to_add_to};
+    $suites{$to_add_to}->add_test($suites{$to_be_added});
+}
+
 
 END_OF_THIS_MODULE:
 
