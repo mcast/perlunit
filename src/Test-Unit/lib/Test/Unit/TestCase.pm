@@ -6,6 +6,7 @@ use base qw(Test::Unit::Test);
 
 use Test::Unit::ExceptionFailure; 
 use Test::Unit::ExceptionError; 
+use Test::Unit::TestResult;
 
 use vars '@ISA';
 
