@@ -45,40 +45,36 @@ sub name {
 
 sub run {
     my $self = shift;
-    debug(ref($self) . "::run() called\n");
+    debug(ref($self), "::run() called on ", $self->name, "\n");
     my ($result, $runner) = @_;
     $result ||= create_result();
-    $result->run($self, $runner);
+    $result->run($self);
     return $result;
 }
 
 sub run_bare {
     my $self = shift;
-    debug(ref($self) . "::run_bare() called\n");
+    debug("  ", ref($self), "::run_bare() called on ", $self->name, "\n");
     $self->set_up();
+    # Make sure tear_down happens if and only if set_up() succeeds.
     try {
         $self->run_test();
         1;
     }
-    catch Error::Simple with {
-        # Something died, which throws an Error::Simple
-        Test::Unit::Error->make_from_error_simple(shift, $self)->throw;
-    }
     finally {
-        # Only gets called if 'set_up' succeed
         $self->tear_down;
     };
 }
 
 sub run_test {
     my $self = shift; 
-    debug(ref($self) . "::run_test() called\n");
+    debug("    ", ref($self) . "::run_test() called on ", $self->name, "\n");
     my $method = $self->name();
     if ($self->can($method)) {
-        debug("  running `$method'\n");
+        debug("      running `$method'\n");
         $self->$method();
     } else {
-        $self->fail("Method `$method' not found");
+        $self->fail("      Method `$method' not found");
     }
 }
 

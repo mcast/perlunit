@@ -18,14 +18,6 @@ sub stacktrace {
     warn "Stacktrace is deprecated and no longer works"
 }
 
-# This hack is unfortunately necessary, since Error.pm doesn't let
-# us set the object in any way.
-sub set_object {
-    my $self = shift;
-    my ($object) = @_;
-    $self->{-object} = $object;
-}
-
 sub get_message {
     my $self = shift;
     $self->text;

@@ -2,8 +2,8 @@ package Test::Unit::Result;
 use strict;
 
 use Test::Unit::Debug qw(debug);
-use Test::Unit::Failure;
 use Test::Unit::Error;
+use Test::Unit::Failure;
 
 use Error qw/:try/;
 
@@ -25,34 +25,35 @@ sub tell_listeners {
         $_->$method(@_);
     }
 }
+
 sub add_error { 
     my $self = shift;
-    debug(ref($self) . "::add_error() called\n");
+    debug($self . "::add_error() called\n");
     my ($test, $exception) = @_;
-    $exception->set_object($test) unless $exception->object();
+    $exception->{-object} = $test;
     push @{$self->errors()}, $exception;
     $self->tell_listeners(add_error => @_);
 }
 
 sub add_failure {
     my $self = shift;
-    debug(ref($self) . "::add_failure() called\n");
+    debug($self . "::add_failure() called\n");
     my ($test, $exception) = @_;
-    $exception->set_object($test) unless $exception->object();
+    $exception->{-object} = $test;
     push @{$self->failures()}, $exception;
     $self->tell_listeners(add_failure => @_);
 }
 
 sub add_pass {
     my $self = shift;
-    debug(ref($self) . "::add_pass() called\n");
+    debug($self . "::add_pass() called\n");
     my ($test) = @_;
     $self->tell_listeners(add_pass => @_);
 }
 
 sub add_listener {
     my $self = shift;
-    debug(ref($self) . "::add_listener() called\n");
+    debug($self . "::add_listener() called\n");
     my ($listener) = @_;
     push @{$self->listeners()}, $listener;
 }
@@ -91,28 +92,44 @@ sub failures {
 sub run {
     my $self = shift;
     my ($test) = @_;
-    debug(sprintf "%s::run(%s) called\n", ref($self), $test->name());
+    debug(sprintf "%s::run(%s) called\n", $self, $test->name());
     $self->start_test($test);
-    $self->run_protected($test, sub {
-                             $test->run_bare() ? $self->add_pass($test) :
-                             $self->add_failure($test)
-                         });
+
+    # This closure may look convoluted, but it allows Test::Unit::Setup
+    # to work cleanly.
+    $self->run_protected(
+        $test,
+        sub {
+            $test->run_bare() ?
+              $self->add_pass($test)
+            : $self->add_failure($test);
+        }
+    );
+
     $self->end_test($test);
 } 
 
 sub run_protected {
     my $self = shift;
     my $test = shift;
-    my $closure = shift;
+    my $protectable = shift;
+    debug("$self\::run_protected($test, $protectable) called\n");
 
     try {
-        &$closure();
+        &$protectable();
     }
     catch Test::Unit::Failure with {
         $self->add_failure($test, shift);
     }
-    catch Test::Unit::Error with {
-        $self->add_error($test, shift);
+    catch Error with {
+        # *Any* exception which isn't a failure or
+        # Test::Unit::Exception should get rebuilt and added to the
+        # result as a Test::Unit::Error, so that the stringify()
+        # method can be called on it for nice reporting.
+        my $error = shift;
+        $error = Test::Unit::Error->make_new_from_error($error)
+          unless $error->isa('Test::Unit::Exception');
+        $self->add_error($test, $error);
     };
 }
 
