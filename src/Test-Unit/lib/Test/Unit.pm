@@ -12,8 +12,6 @@ require Exporter;
 
 @EXPORT = qw(assert create_suite run_suite add_suite);
 
-$VERSION = '0.11';
-
 # private
 
 my $test_suite = Test::Unit::TestSuite->empty_new("Test::Unit");
