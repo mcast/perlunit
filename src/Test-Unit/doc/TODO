@@ -34,11 +34,6 @@ the way before we bump the version number.
 
 Piers is doing this imminently.
 
-** Deal with broken base.pm in older Perls
-
-Or we could always be nasty and stop supporting < 5.6, best to avoid
-if we can though.
-
 * Nice to have before 1.0
 
 Some of these could be left until after 1.0.  Adam thinks it makes
