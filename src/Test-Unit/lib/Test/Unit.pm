@@ -30,7 +30,7 @@ sub add_to_suites {
 
 # public
 
-sub assert {
+sub assert ($;$) {
     my ($condition, $message) = @_;
     my $asserter = caller();
     add_to_suites($asserter);
@@ -182,7 +182,7 @@ __END__
     Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
 
     Thanks for patches go to:
-    Matthew Astley.
+    Matthew Astley, David Esposito.
 
 =head1 SEE ALSO
 
