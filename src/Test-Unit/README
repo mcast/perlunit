@@ -1,7 +1,12 @@
 use TestRunner.pl like this (lib adjusted for this directory):
 
-	perl -I./lib TestRunner.pl Test::Unit::tests::AllTests
+	perl -w -I./lib TestRunner.pl Test::Unit::tests::AllTests
 
 and TkTestRunner like this:
 
-	perl -I./lib TkTestRunner.pl Test::Unit::tests::AllTests
+	perl -w -I./lib TkTestRunner.pl Test::Unit::tests::AllTests
+
+and the examples for the procedural API like this:
+
+	perl -w examples/procedural-ok-example.pl
+	perl -w examples/procedural-fail-example.pl
