@@ -5,11 +5,7 @@ package Test::Unit::tests::OneTestCase;
 use base qw(Test::Unit::TestCase);
 
 sub new {
-    my $class = shift;
-    my ($name) = @_;
-    my $self = bless {}, $class;
-    my $a_test_case = $self->SUPER::new($name);
-    return bless $a_test_case, $class;
+    shift()->SUPER::new(@_);
 }
 
 sub no_test_case {

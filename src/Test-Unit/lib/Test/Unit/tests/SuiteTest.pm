@@ -8,13 +8,9 @@ use Test::Unit::tests::TornDown;
 use Test::Unit::tests::WasRun;
 
 sub new {
-    my $class = shift;
-    my ($name) = @_;
-    my $self = bless {}, $class;
-    my $a_test_case = $self->SUPER::new($name);
-    bless $a_test_case, $class;
-    $a_test_case->{_my_result} = undef;
-    return $a_test_case;
+    my $self = shift()->SUPER::new(@_);
+    $self->{_my_result} = undef;
+    return $self;
 }
 
 sub result {

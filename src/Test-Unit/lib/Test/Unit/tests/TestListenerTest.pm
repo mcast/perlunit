@@ -7,17 +7,13 @@ use base qw(Test::Unit::TestCase Test::Unit::TestListener Test::Unit::InnerClass
 use Test::Unit::TestResult;
 
 sub new {
-    my $class = shift;
-    my ($name) = @_;
-    my $self = bless {}, $class;
-    my $a_test_case = $self->SUPER::new($name);
-    bless $a_test_case, $class;
-    $a_test_case->{_my_result} = 0;
-    $a_test_case->{_my_start_count} = 0;
-    $a_test_case->{_my_end_count} = 0;
-    $a_test_case->{_my_failure_count} = 0;
-    $a_test_case->{_my_error_count} = 0;
-    return $a_test_case;
+    my $self = shift()->SUPER::new(@_);
+    $self->{_my_result} = 0;
+    $self->{_my_start_count} = 0;
+    $self->{_my_end_count} = 0;
+    $self->{_my_failure_count} = 0;
+    $self->{_my_error_count} = 0;
+    return $self;
 }
 
 sub add_error {
