@@ -96,18 +96,24 @@ sub make_test_from_coderef {
 # DO NOT OVERRIDE THIS UNLESS YOU KNOW WHAT YOU ARE DOING!
 sub list_tests {
     my $class = ref($_[0]) || $_[0];
-    my @tests;
+    my @tests = ();
     no strict 'refs';
     if (defined(@{"$class\::TESTS"})) {
         push @tests, @{"$class\::TESTS"};
     }
     else {
-        my $st = Devel::Symdump->new($class);
-        push @tests, map {/::(test[^:]*$)/ ? $1 : () } $st->functions;
+        push @tests, $class->get_matching_methods(qr/::(test[^:]*)$/);
     }
     push @tests, map {$_->can('list_tests') ? $_->list_tests : () } @{"$class\::ISA"};
-    my %tests = map {$_ => ''} @tests if @tests;
+    my %tests = map {$_ => ''} @tests;
     return keys %tests;
+}
+
+sub get_matching_methods {
+    my $class = ref($_[0]) || $_[0];
+    my $re = $_[1];
+    my $st = Devel::Symdump->new($class);
+    return map { /$re/ ? $1 : () } $st->functions();
 }
 
 1;
@@ -277,7 +283,11 @@ on how this is generated.
 
 Returns the list of test methods in this class and its parents. You
 can override this in your own classes, but remember to call
-C<SUPER::list_tests> in there too.
+C<SUPER::list_tests> in there too.  Uses C<get_matching_methods>.
+
+=item get_matching_methods (REGEXP)
+
+Returns the list of methods in this class matching REGEXP.
 
 =item set_up
 
