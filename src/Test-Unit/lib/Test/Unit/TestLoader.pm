@@ -16,6 +16,8 @@ sub load {
 	# first up: is this a real test case?
 	$suite=try_test_case($test_case);
 	return $suite if ($suite);
+	$suite=try_test_suite($test_case);
+	return $suite if ($suite);
   } else {
 	print $@ if DEBUG;
   }
@@ -37,10 +39,17 @@ sub load {
 sub try_test_case {
   my $test_case=shift;
   no strict 'refs';
-  my $method = \&{"$test_case" . "::" . "suite"};
   if ($test_case->isa("Test::Unit::TestCase")) {
 	print "$test_case is indeed a subclass of TestCase.\n" if DEBUG;
 	return Test::Unit::TestSuite->new($test_case);
+  } 
+}
+sub try_test_suite {
+  my $test_case=shift;
+  no strict 'refs';
+  if ($test_case->can("suite")) {
+	print "$test_case is indeed a subclass of TestCase.\n" if DEBUG;
+	return $test_case->suite();
   } 
 }
 sub try_test_harness {
