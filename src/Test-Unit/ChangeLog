@@ -1,5 +1,31 @@
 2002-05-23  Adam Spiers  <perlunit@adamspiers.org>
 
+	* lib/Test/Unit.pm: version 0.22
+			
+	* ChangeLog:
+	get this uptodate by merging auto-generated entries with existing ones
+	
+	* lib/Test/Unit/TestSuite.pm:
+	allow 'ALL' as a magic test name which matches all methods in this class, e.g.
+
+	package MyTest37;
+
+	use base qw(Test::Unit::TestCase);
+
+	...
+
+	sub filter {{
+	  skip_thirty_seven => [ 'ALL' ],
+	  slow              => [ qw(test_I_am_slow test_I_am_slow_too) ],
+	}}
+
+	* lib/Test/Unit/Assert.pm, t/tlib/AssertTest.pm:
+	assert_(str|num)(_not)?_equals now fail with undef parameters,
+	to avoid tests passing by accident.  The user should either use
+	assert_null/assert_not_null, or check for undef before the assertion.
+
+2002-05-23  Adam Spiers  <perlunit@adamspiers.org>
+
 	* lib/Test/Unit/TestSuite.pm:
 	allow 'ALL' as a magic test name which matches all methods in this class, e.g.
 
