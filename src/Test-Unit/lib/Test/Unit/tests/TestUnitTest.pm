@@ -68,6 +68,8 @@ open(FH, '>$filename');
 run_suite(undef, \*FH);
 close(FH);
 EOT
+    # must close open file (from eval())
+    close(main::FH) or die "Could not close $filename: $!";
     # this depends on the die message in Test::Unit::TestRunner
     $self->assert($@ eq "\nTest was not successful.\n"); # exit status
     $self->assert(-s $self->{_my_tmpfile}); # visible output
@@ -107,6 +109,8 @@ open(FH, '>$filename');
 run_suite("Foo_Fail", \*FH);
 close(FH);
 EOT
+    # must close open file (from eval())
+    close(Bar_Fail::FH) or die "Could not close $filename: $!";
     # this depends on the die message in Test::Unit::TestRunner
     $self->assert($@ eq "\nTest was not successful.\n"); # exit status
     $self->assert(-s $self->{_my_tmpfile}); # visible output
@@ -131,6 +135,8 @@ open(FH, '>$filename');
 run_suite(undef, \*FH);
 close(FH);
 EOT
+    # must close open file (from eval())
+    close(To_Add_To::FH) or die "Could not close $filename: $!";
     # this depends on the die message in Test::Unit::TestRunner
     $self->assert($@ eq "\nTest was not successful.\n"); # exit status
     $self->assert(-s $self->{_my_tmpfile}); # visible output
@@ -157,6 +163,8 @@ open(FH, '>$filename');
 run_suite("To_Add_To_Explicitly", \*FH);
 close(FH);
 EOT
+    # must close open file (from eval())
+    close(A_Third_Package::FH) or die "Could not close $filename: $!";
     # this depends on the die message in Test::Unit::TestRunner
     $self->assert($@ eq "\nTest was not successful.\n"); # exit status
     $self->assert(-s $self->{_my_tmpfile}); # visible output
