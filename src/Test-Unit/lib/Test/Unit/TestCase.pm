@@ -312,6 +312,12 @@ Returns the list of methods in this class matching REGEXP.
 If you don't have any setup or tear down code that needs to be run, we
 provide a couple of null methods. Override them if you need to.
 
+=item print
+
+You can accumulate helpful debugging for each testcase method via this
+method, and it will only be outputted if the test fails or encounters
+an error.
+
 =back
 
 =head2 How it All Works
