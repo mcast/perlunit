@@ -7,13 +7,9 @@ use base qw(Test::Unit::TestCase);
 use constant DEBUG => 0;
 
 sub new {
-    my $class = shift;
-    my ($name) = @_;
-    my $self = bless {}, $class;
-    my $a_test_case = $self->SUPER::new($name);
-    bless $a_test_case, $class;
-    $a_test_case->{_my_tmpfile} = "./_tmpfile";
-    return $a_test_case;
+    my $self = shift()->SUPER::new(@_);
+    $self->{_my_tmpfile} = "./_tmpfile";
+    return $self;
 }
 
 sub set_up {

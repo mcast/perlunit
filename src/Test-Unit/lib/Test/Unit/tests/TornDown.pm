@@ -3,11 +3,9 @@ package TornDown;
 use base qw(Test::Unit::TestCase);
 
 sub new {
-    my $class = shift;
-    my ($name) = @_;
-    my $self = bless {_TornDown => 0}, $class;
-    my $a_test_case = $self->SUPER::new($name);
-    return bless $a_test_case, $class;
+    my $self = shift()->SUPER::new(@_);
+    $self->{_TornDown} = 0;
+    return $self;
 }
 
 sub tear_down {
