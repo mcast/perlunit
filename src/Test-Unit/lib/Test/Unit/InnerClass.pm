@@ -3,7 +3,7 @@ package Test::Unit::InnerClass;
 use strict;
 
 use vars qw($SIGNPOST $HOW_OFTEN);
-# provide emulation of Java anonymous inner classes feature
+
 # we have a problem here to generate unique class names
 # to avoid name clashes if we are used several times
 
@@ -29,3 +29,35 @@ if (defined($Test::Unit::InnerClass::SIGNPOST)) {
 } 
 
 1;
+
+
+=head1 NAME
+
+    Test::Unit::InnerClass - unit testing framework helper class
+
+=head1 SYNOPSIS
+
+    # this class is not intended to be used directly 
+
+=head1 DESCRIPTION
+
+    This class is used by the framework to emulate the anonymous 
+    inner classes feature of Java. It is much easier to port Java
+    to Perl using this class.
+
+=head1 AUTHOR
+
+    Copyright (c) 2000 Christian Lemburg, <lemburg@acm.org>.
+
+    All rights reserved. This program is free software; you can
+    redistribute it and/or modify it under the same terms as
+    Perl itself.
+
+    Thanks go to the other PerlUnit framework people: 
+    Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
+
+=head1 SEE ALSO
+
+    - the JUnit testing framework by Kent Beck and Erich Gamma
+
+=cut

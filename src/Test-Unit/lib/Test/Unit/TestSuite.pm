@@ -192,3 +192,66 @@ EOIC
 }
 
 1;
+
+
+=head1 NAME
+
+    Test::Unit::TestSuite - unit testing framework base class
+
+=head1 SYNOPSIS
+
+    use Test::Unit::TestSuite;
+
+    # more code here ...
+
+    sub suite {
+	my $class = shift;
+
+	# create an empty suite
+	my $suite = Test::Unit::TestSuite->empty_new("A Test Suite");
+	
+	# get and add an existing suite
+	$suite->add_test(Test::Unit::TestSuite->new("MyModule::Suite_1"));
+
+	# extract suite by way of suite method and add
+	$suite->add_test(MyModule::Suite_2->suite());
+	
+	# get and add another existing suite
+	$suite->add_test(Test::Unit::TestSuite->new("MyModule::TestCase_2"));
+
+	# return the suite built
+	return $suite;
+    }
+
+=head1 DESCRIPTION
+
+    This class is normally not used directly, but it can be used
+    for creating your own custom built aggregate suites.
+
+    Normally, this class just provides the functionality of 
+    auto-building a test suite by extracting methods with a name
+    prefix of "test" from a given package to the test runners.
+
+=head1 AUTHOR
+
+    Framework JUnit authored by Kent Beck and Erich Gamma.
+
+    Ported from Java to Perl by Christian Lemburg.
+
+    Copyright (c) 2000 Christian Lemburg, <lemburg@acm.org>.
+
+    All rights reserved. This program is free software; you can
+    redistribute it and/or modify it under the same terms as
+    Perl itself.
+
+    Thanks go to the other PerlUnit framework people: 
+    Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
+
+=head1 SEE ALSO
+
+    - Test::Unit::TestRunner
+    - Test::Unit::TkTestRunner
+    - For further examples, take a look at the framework self test 
+      collection (Test::Unit::tests::AllTests).
+
+=cut
