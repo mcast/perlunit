@@ -7,7 +7,7 @@ This is what a successful test looks like:
 
 	perl -I ../lib procedural-ok-example.pl
 
-This is what a faild test looks like:
+This is what a failed test looks like:
 	
 	perl -I ../lib procedural-fail-example.pl
 	
