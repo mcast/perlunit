@@ -1,7 +1,7 @@
 package Test::Unit;
 
 use strict;
-use vars qw($VERSION @ISA @EXPORT $SIGNPOST $test_suite);
+use vars qw($VERSION @ISA @EXPORT $SIGNPOST %suites);
 
 use Test::Unit::TestSuite;
 use Test::Unit::TestRunner;
@@ -17,20 +17,31 @@ if (defined($SIGNPOST)) {
     goto END_OF_THIS_MODULE;
 } else {
     $SIGNPOST = 'I was here';
-    $test_suite = Test::Unit::TestSuite->empty_new("Scripting API");
+    my $test_suite = Test::Unit::TestSuite->empty_new("Test::Unit");
+    %suites = ('Test::Unit' => $test_suite);
 }
     
 $VERSION = '0.10';
 
+sub add_suite {
+    my $suite_holder = shift;
+    if (not exists $suites{$suite_holder}) {
+	my $test_suite = Test::Unit::TestSuite->empty_new($suite_holder);
+	$suites{$suite_holder} = $test_suite;
+    }
+}
+
 sub assert {
     my ($condition, $message) = @_;
-    $test_suite->assert($condition, $message);
+    my $asserter = caller();
+    add_suite($asserter);
+    $suites{$asserter}->assert($condition, $message);
 }
 
 sub create_suite {
     my ($test_package_name) = @_;
     $test_package_name = caller() unless defined($test_package_name);
-    $test_suite = Test::Unit::TestSuite->empty_new($test_package_name);
+    add_suite($test_package_name);
     
     no strict 'refs';
 
@@ -67,15 +78,16 @@ sub tear_down {
     $tear_down_call ;
 }
 EOIC
-	    $test_suite->add_test($test_case);
+	    $suites{$test_package_name}->add_test($test_case);
 	}
     }
 }
 
 sub run_suite {
-    my ($filehandle) = @_;
+    my ($test_package_name, $filehandle) = @_;
+    $test_package_name = caller() unless defined($test_package_name);
     my $test_runner = Test::Unit::TestRunner->new($filehandle);
-    $test_runner->do_run($test_suite);
+    $test_runner->do_run($suites{$test_package_name});
 }
 
 END_OF_THIS_MODULE:
