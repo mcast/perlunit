@@ -5,28 +5,28 @@ use constant DEBUG => 0;
 use base qw(Test::Unit::Decorator);
 
 sub run {
-	my $self    = shift();
+    my $self    = shift();
     my($result) = @_;
-	my $protectable = sub {
+    my $protectable = sub {
         $self->set_up();
         $self->basic_run($result);
         $self->tear_down();
     };
-	$result->run_protected($self, $protectable);
+    $result->run_protected($self, $protectable);
 }
 
 # Sets up the fixture. Override to set up additional fixture
 # state.
 
-sub set_up() {
-	print "Suite setup\n";
+sub set_up {
+    print "Suite setup\n";
 }
 
 # Tears down the fixture. Override to tear down the additional
 # fixture state.
  
-sub tear_down(){
-	print "Suite teardown\n";
+sub tear_down {
+    print "Suite teardown\n";
 }
 
 1;
@@ -59,7 +59,6 @@ Perl itself.
 
 =head1 SEE ALSO
 
-- Test::Unit::TestCase
-- Test::Unit::Exception
+L<Test::Unit::TestCase>, L<Test::Unit::Exception>
 
 =cut
