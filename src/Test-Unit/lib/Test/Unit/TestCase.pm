@@ -216,10 +216,11 @@ clean-up after a test by overriding C<tear_down()>.
 =back
 
 
-Implement your tests as methods. By default, all methods that match
-the regex C</^test/> are taken to be test methods. Note that, by
+Implement your tests as methods.  By default, all methods that match
+the regex C</^test/> are taken to be test methods (see
+L</list_tests()> and L</get_matching_methods()>).  Note that, by
 default all the tests defined in the current class and all of its
-parent classes will be run. 
+parent classes will be run.  To change this behaviour, see L</NOTES>.
 
 By default, each test runs in its own fixture so there can be no side
 effects among test runs. Here is an example:
@@ -340,26 +341,55 @@ Better docs will be forthcoming.
 
 =head1 NOTES
 
-Here's a few things to remember when you're writing your test suite
-
-=over 4
-
-=item 1
+Here's a few things to remember when you're writing your test suite:
 
 Tests are run in 'random' order; the list of tests in your TestCase
 are generated automagically from its symbol table, which is a hash, so
 methods aren't sorted there. 
 
-If you need to specify the test order you should either override the
-C<'list_tests'> method to return an ordered list of methodnames, or
-provide a C<'suite'> method, which returns a Test::Unit::TestSuite.
+If you need to specify the test order, you can do one of the
+following:
+
+=over 4
+
+=item * Set @TESTS
+
+  our @TESTS = qw(my_test my_test_2);
+
+This is the simplest, and recommended way.
+
+=item * Override the C<list_tests()> method
+
+to return an ordered list of methodnames
+
+=item * Provide a C<suite()> method
+
+which returns a Test::Unit::TestSuite.
+
+=back
 
 However, even if you do manage to specify the test order, be careful,
 object data will not be retained from one test to another, if you want
 to use persistent data you'll have to use package lexicals or globals.
 (Yes, this is probably a bug).
 
-=back
+If you only need to restrict which tests are run, there is a filtering
+mechanism available.  Override the C<filter()> method in your testcase
+class to return a hashref whose keys are filter tokens and whose
+values are arrayrefs of test method names, e.g.
+
+  sub filter {{
+      slow => [ qw(my_slow_test my_really_slow_test) ],
+  }}
+
+Then, set the filter state in your runner before the test run starts:
+
+  # @filter_tokens = ( 'slow', ... );
+  $runner->filter(@filter_tokens);
+  $runner->start(@args);
+
+This interface is public, but currently undocumented (see
+F<doc/TODO>).
 
 =head1 BUGS
 
