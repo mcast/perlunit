@@ -17,7 +17,7 @@ See http://c2.com/cgi/wiki?TestingFrameworks
 PerlUnit is free software, redistributable under the
 same terms as Perl.
 
-$Id: TkTestRunner.pm,v 1.16 2002-06-10 15:02:41 adamspiers Exp $
+$Id: TkTestRunner.pm,v 1.17 2002-06-10 15:16:03 adamspiers Exp $
 END_COPYRIGHT_NOTICE
 
 use Tk;
@@ -124,7 +124,7 @@ sub create_punit_menu {
                 -menuitems =>  [
                     [
                         command  => 'A~bout PerlUnit',
-                        -command => sub {$self->about()}
+                        -command => sub { $self->about() }
                     ],
                 ],
             ],
@@ -165,7 +165,7 @@ sub create_ui {
         -textvariable => \$self->{suite_name},
         -choices      => [],
     );
-    $self->{add_text_listener} = sub { $self->run_suite(); };
+    $self->{add_text_listener} = sub { $self->run_suite() };
     $self->{run} = $mw->Button(
         -text    => 'Run',
         -state   => 'normal',
@@ -199,12 +199,12 @@ sub create_ui {
     $self->{rerun_button} = $mw->Button(
         -text    => 'ReRun',
         -state   => 'normal',
-        -command => sub { $self->rerun(); }
+        -command => sub { $self->rerun() }
     );
     $self->{show_error_button} = $mw->Button(
         -text    => 'Show...',
         -state   => 'normal',
-        -command => sub { $self->show_error_trace(); }
+        -command => sub { $self->show_error_trace() }
     );
 
 
@@ -212,7 +212,7 @@ sub create_ui {
     $self->{status_line_box}->configure(-relief => 'sunken', -bg => 'grey');
   
     # Bindings go here, so objects are already defined.
-    $self->{failure_list}->bind('<Double-1>' => sub {$self->show_error_trace()});
+    $self->{failure_list}->bind('<Double-1>' => sub { $self->show_error_trace() });
 
     # all geometry management BELOW this point. Otherwise bindings
     # wont work.
@@ -262,10 +262,11 @@ sub create_ui {
         -bottom => [$self->{quit_button}],
         -top    => [$self->{failure_list}]
     );
-    $self->{rerun_button}->form(
-        -right => [$self->{show_error_button}],
-        -top   => [$self->{failure_list}]
-    );
+#   Rerun doesn't work yet.
+#     $self->{rerun_button}->form(
+#         -right => [$self->{show_error_button}],
+#         -top   => [$self->{failure_list}]
+#     );
   
     $self->{status_line_box}->form(
         -left   => [ '%0' ],
