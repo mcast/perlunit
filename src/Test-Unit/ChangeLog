@@ -1,6 +1,6 @@
 2001-09-02  Piers Cawley  <pdcawley@iterative-software.com>
 
-	* lib/Test/Unit/TestLoader.pm
+	* lib/Test/Unit/Loader.pm
 	(load): Improved the error message when a file can be found, but
 	has a syntax error.
 
@@ -30,7 +30,7 @@
 	(do_assertion): Switched to a slightly more sensible way of
 	generating failure messages.
 
-	* lib/Test/Unit/TestLoader.pm
+	* lib/Test/Unit/Loader.pm
 	(load): Changed the order in which we call C<try_test_suite> and
 	C<try_test_case>. 
 

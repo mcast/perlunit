@@ -1,4 +1,4 @@
-package Test::Unit::TestLoader;
+package Test::Unit::Loader;
 use strict;
 use FileHandle;
 use constant DEBUG => 0;
@@ -106,7 +106,7 @@ __END__
 
 =head1 NAME
 
-Test::Unit::TestLoader - unit testing framework helper class
+Test::Unit::Loader - unit testing framework helper class
 
 =head1 SYNOPSIS
 

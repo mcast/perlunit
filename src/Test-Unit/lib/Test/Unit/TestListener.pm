@@ -1,5 +1,5 @@
 package Test::Unit::TestListener;
-use Test::Unit::TestLoader;
+use Test::Unit::Loader;
 use Carp;
 use strict;
 

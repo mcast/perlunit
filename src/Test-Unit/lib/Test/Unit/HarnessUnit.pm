@@ -104,7 +104,7 @@ sub start {
 
     my $test_case = "";
     my $wait      = 0;
-    my $suite     = Test::Unit::TestLoader::load(@args);
+    my $suite     = Test::Unit::Loader::load(@args);
     if ($suite) {
         my $count=$suite->count_test_cases();
         $self->_print("\nSTARTING TEST RUN\n1..$count\n");

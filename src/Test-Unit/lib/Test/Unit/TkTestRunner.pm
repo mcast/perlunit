@@ -12,7 +12,7 @@ See http://c2.com/cgi/wiki?TestingFrameworks
 PerlUnit is free software, redistributable under the
 same terms as Perl.
 
-$Id: TkTestRunner.pm,v 1.11.6.1 2001-09-02 16:14:19 pdcawley Exp $
+$Id: TkTestRunner.pm,v 1.11.6.2 2001-09-07 14:16:41 pdcawley Exp $
 END_COPYRIGHT_NOTICE
 
 use Tk;
@@ -266,7 +266,7 @@ sub load_frame_icon {
 }
 
 sub main {
-  my $main=new Test::Unit::TkTestRunner()->start("Test::Unit::TestLoader",@_);
+  my $main=new Test::Unit::TkTestRunner()->start("Test::Unit::Loader",@_);
 }
 
 sub rerun {
@@ -631,7 +631,7 @@ David Esposito.
 
 =item *
 
-L<Test::Unit::TestLoader>
+L<Test::Unit::Loader>
 
 =item *
 
