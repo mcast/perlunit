@@ -485,36 +485,31 @@ Test::Unit::Assert - unit testing framework assertion class
     $self->assert($your_condition_here, $your_optional_message_here);
 
     # or, for regular expression comparisons:
-
     $self->assert(qr/some_pattern/, $result);
 
     # or, for functional style coderef tests:
-
     $self->assert(sub {
                       $_[0] == $_[1]
                         or $self->fail("Expected $_[0], got $_[1]");
                   }, 1, 2); 
 
-    # or, for old style regular expression comparisons:
-
+    # or, for old style regular expression comparisons
+    # (strongly deprecated; see warning below)
     $self->assert(scalar("foo" =~ /bar/), $your_optional_message_here);
 
     # Or, if you don't mind us guessing
-
     $self->assert_equals('expected', $actual [, $optional_message]);
     $self->assert_equals(1,$actual);
     $self->assert_not_equals('not expected', $actual [, $optional_message]);
     $self->assert_not_equals(0,1);
 
     # Or, if you want to force the comparator
-
     $self->assert_num_equals(1,1);
     $self->assert_num_not_equals(1,0);
     $self->assert_str_equals('string','string');
     $self->assert_str_not_equals('stringA', 'stringB');
 
     # assert defined/undefined status
-
     $self->assert_null(undef);
     $self->assert_not_null('');
 
@@ -586,6 +581,13 @@ Checks if the BOOLEAN expression returns a true value that is neither
 a CODE ref nor a REGEXP.  Note that MESSAGE is almost non optional in
 this case, otherwise all the assertion has to go on is the truth or
 otherwise of the boolean.
+
+If you want to use the "old" style for testing regular expression
+matching, please be aware of this: the arguments to assert() are
+evaluated in list context, e.g. making a failing regex "pull" the
+message into the place of the first argument. Since this is usually
+just plain wrong, please use scalar() to force the regex comparison
+to yield a useful boolean value.
 
 =item assert(qr/PATTERN/, ACTUAL [, MESSAGE])
 
