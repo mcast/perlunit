@@ -280,7 +280,8 @@ sub filter_test {
     my @filter_tokens = $runner->filter();
 
     foreach my $token (@filter_tokens) {
-        return 1 if $test->filter_method($token, $test->name());
+        return 1 if $test->filter_method($token, $test->name())
+                 || $test->filter_method($token, 'ALL');
     }
 
     return 0;
