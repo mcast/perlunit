@@ -53,7 +53,7 @@ lib/Test/Unit/TestCase.pm
 lib/Test/Unit/TestDecorator.pm
 lib/Test/Unit/TestListener.pm
 lib/Test/Unit/TestLoader.pm
-lib/Test/Unit/TestResult.pm
+lib/Test/Unit/Result.pm
 lib/Test/Unit/TestRunner.pm
 lib/Test/Unit/TestSetup.pm
 lib/Test/Unit/TestSuite.pm

@@ -72,7 +72,7 @@ sub run {
   for my $line (<$fh>) {
     if( $verbose ){ print $line; }
     if ($line=~/^1\.\.([0-9]+)/) {
-	  # Not supported in TestResult - It's needed!!!
+	  # Not supported in Result - It's needed!!!
       #$result->plan($1);
       $next=1;
       $max=$1;

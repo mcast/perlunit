@@ -5,7 +5,7 @@ use constant DEBUG => 0;
 use base qw(Test::Unit::TestListener); 
 
 use Test::Unit::TestSuite;
-use Test::Unit::TestResult;
+use Test::Unit::Result;
 
 use Benchmark;
 
@@ -45,7 +45,7 @@ sub add_pass {
 
 sub create_test_result {
     my $self = shift;
-    return Test::Unit::TestResult->new();
+    return Test::Unit::Result->new();
 }
 	
 sub do_run {
@@ -248,7 +248,7 @@ L<Test::Unit::TestSuite>
 
 =item *
 
-L<Test::Unit::TestResult>
+L<Test::Unit::Result>
 
 =item *
 

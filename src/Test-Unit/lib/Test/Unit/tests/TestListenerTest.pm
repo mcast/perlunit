@@ -4,7 +4,7 @@ package Test::Unit::tests::TestListenerTest;
 
 use base qw(Test::Unit::TestCase Test::Unit::TestListener Test::Unit::InnerClass);
 
-use Test::Unit::TestResult;
+use Test::Unit::Result;
 
 sub new {
     my $self = shift()->SUPER::new(@_);
@@ -36,7 +36,7 @@ sub end_test {
 
 sub set_up {
     my $self = shift;
-    $self->{_my_result} = Test::Unit::TestResult->new();
+    $self->{_my_result} = Test::Unit::Result->new();
     $self->{_my_result}->add_listener($self);
     $self->{_my_start_count} = 0;
     $self->{_my_end_count} = 0;

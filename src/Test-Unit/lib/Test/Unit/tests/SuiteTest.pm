@@ -4,7 +4,7 @@ use strict;
 
 use base qw(Test::Unit::TestCase);
 
-use Test::Unit::TestResult;
+use Test::Unit::Result;
 use Test::Unit::TestSuite;
 use Test::Unit::tests::TornDown;
 use Test::Unit::tests::WasRun;
@@ -53,7 +53,7 @@ sub result {
     
 sub set_up {
     my $self = shift;
-    $self->{_my_result} = Test::Unit::TestResult->new();
+    $self->{_my_result} = Test::Unit::Result->new();
 }
 
 sub suite {

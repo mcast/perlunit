@@ -1,4 +1,4 @@
-package Test::Unit::TestResult;
+package Test::Unit::Result;
 use strict;
 use constant DEBUG => 0;
 
@@ -156,7 +156,7 @@ __END__
 
 =head1 NAME
 
-Test::Unit::TestResult - unit testing framework helper class
+Test::Unit::Result - unit testing framework helper class
 
 =head1 SYNOPSIS
 

@@ -7,7 +7,7 @@ use base qw(Test::Unit::Test);
 
 use Test::Unit::ExceptionFailure; 
 use Test::Unit::ExceptionError; 
-use Test::Unit::TestResult;
+use Test::Unit::Result;
 
 use Devel::Symdump;
 use Class::Inner;
@@ -26,7 +26,7 @@ sub count_test_cases {
 
 sub create_result {
     my $self = shift;
-    return Test::Unit::TestResult->new();
+    return Test::Unit::Result->new();
 }
 
 sub name {

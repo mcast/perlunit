@@ -12,12 +12,12 @@ See http://c2.com/cgi/wiki?TestingFrameworks
 PerlUnit is free software, redistributable under the
 same terms as Perl.
 
-$Id: TkTestRunner.pm,v 1.11 2001-02-20 21:31:05 mca-gdl Exp $
+$Id: TkTestRunner.pm,v 1.11.6.1 2001-09-02 16:14:19 pdcawley Exp $
 END_COPYRIGHT_NOTICE
 
 use Tk;
 use Tk::BrowseEntry;
-use Test::Unit::TestResult;
+use Test::Unit::Result;
 use Benchmark;
 use strict;
 
@@ -117,7 +117,7 @@ sub create_menus {
 
 sub create_test_result {
   my $self=shift;
-  return new Test::Unit::TestResult();
+  return new Test::Unit::Result();
 }
 
 sub create_ui {
@@ -639,7 +639,7 @@ L<Test::Unit::TestListener>
 
 =item *
 
-L<Test::Unit::TestResult>
+L<Test::Unit::Result>
 
 =item *
 

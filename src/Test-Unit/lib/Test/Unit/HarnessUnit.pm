@@ -7,7 +7,7 @@ use constant DEBUG => 0;
 use base qw(Test::Unit::TestListener); 
 
 use Test::Unit::TestSuite;
-use Test::Unit::TestResult;
+use Test::Unit::Result;
 
 sub new {
     my $class = shift;
@@ -70,7 +70,7 @@ sub end_test {
 
 sub create_test_result {
     my $self = shift;
-    return Test::Unit::TestResult->new();
+    return Test::Unit::Result->new();
 }
 	
 sub do_run {
