@@ -1,52 +1,21 @@
-Run the examples in this directory like indicated in the text below. 
+This directory contains examples of the framework in use.
+It's a bit out of date now...
 
--------------------------------------------------- 
-1 Simple examples:
+tester.png: 
+-----------
+This is a screenshot of the GUI running (view with a PNG viewer, e.g.,
+your favorite web browser):
 
-This is what a successful test looks like:
+patch100132*, fail_example.pm
+-----------------------------
 
-	perl -I ../lib procedural-ok-example.pl
+Very mysterious.  They get used by 'make test' via t/try_examples.t
+though.  fail_example.pm is supposed to be an example for
+TestDecorator and Setup.  You can run it via:
 
-This is what a failed test looks like:
-	
-	perl -I ../lib procedural-fail-example.pl
-	
-This is a screenshot of the GUI running (view with a PNG viewer,
-e.g., your favorite web browser):
-	
-	tester.png
+  perl -I../lib/ ../TestRunner.pl fail_example
 
--------------------------------------------------- 
-2 More involved examples:
+tester.pl
+---------
 
-These examples show how to build suites from other packages,
-and how to add suites to each other:
-
-	perl -I ../lib procedural-adding-suites-example.pl
-	perl -I ../lib procedural-another-package-example.pl
-
-The next example shows some ways to test other classes. 
-
-Please note that the example named 'patch100132' will not run. 
-It is just provided so you can see the difference between it 
-and the (running) examples named 'patch100132-1' and 
-'patch100132-2'.
-
-	# will not run: patch100132
-	
-	perl -I ../lib -I ./ patch100132-1
-	perl -I ../lib -I ./ patch100132-2
-
--------------------------------------------------- 
-3 Example for TestDecorator and Setup:
-
-perl -I../lib/ ../TestRunner.pl fail_example
-
-
--------------------------------------------------- 
-4 Supplementary stuff
-
-A file that Brian is working on ... 
-	
-	tester.pl
-
+A file that Brian is (was?) working on ... 
