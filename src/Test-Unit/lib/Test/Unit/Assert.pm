@@ -47,12 +47,13 @@ __END__
    
     # more code here ...
     
-    $self->assert($your_condition_here);
+    $self->assert($your_condition_here, $your_optional_message_here);
 
 =head1 DESCRIPTION
 
     This class is used by the framework to assert boolean conditions
-    that determine the result of a given test. Normally, it is not
+    that determine the result of a given test. The optional message
+    will be displayed if the condition fails. Normally, it is not
     used directly, but you get the functionality by subclassing from 
     Test::Unit::TestCase.
 
@@ -68,7 +69,7 @@ __END__
     Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
 
     Thanks for patches go to:
-    Matthew Astley.
+    Matthew Astley, David Esposito.
 
 =head1 SEE ALSO
 
