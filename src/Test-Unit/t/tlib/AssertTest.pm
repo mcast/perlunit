@@ -48,14 +48,17 @@ sub test_assert_equals_null {
 sub test_ok_boolean {
     my $self = shift;
     $self->ok(1);
-    $self->check_failures('Expected ok(0) to fail' => sub { shift->ok(0) });
+    $self->check_failures('Expected ok(0) to fail'
+                              => [ __LINE__, sub { shift->ok(0) } ]);
 }
 
 sub test_ok_bad_args {
     my $self = shift;
     $self->check_errors(
-        'Expected ok() to fail'        	  => sub { shift->ok()           },
-        'Expected ok(1, 2, 3, 4) to fail' => sub { shift->ok(1, 2, 3, 4) },
+        'Expected ok() to fail'
+            => [ __LINE__, sub { shift->ok()           } ],
+        'Expected ok(1, 2, 3, 4) to fail'
+            => [ __LINE__, sub { shift->ok(1, 2, 3, 4) } ],
     );
 }
 
@@ -87,16 +90,19 @@ sub test_ok_not_equals {
     my %tests = ();
     while (my ($targs, $args) = each %checks) {
         my $message = "ok($targs) should fail";
-	$tests{$message} = sub { shift->ok(@$args) };
+	$tests{$message}
+          = [ __LINE__, sub { shift->ok(@$args) } ];
         $message =~ s/(\) should fail)/, 'comment'$1/;
-	$tests{$message} = sub { shift->ok(@$args, "comment: $message") };
+	$tests{$message}
+          = [ __LINE__, sub { shift->ok(@$args, "comment: $message") } ];
     }
     $self->check_failures(%tests);
 }
 
 sub test_fail {
     my $self = shift;
-    $self->check_failures('Expected fail() to fail' => sub { shift->fail() });
+    $self->check_failures('Expected fail() to fail'
+                            => [ __LINE__, sub { shift->fail() } ]);
 }
 
 sub test_succeed_assert_null {
@@ -107,8 +113,10 @@ sub test_succeed_assert_null {
 sub test_fail_assert_null {
     my $self = shift;
     $self->check_failures(
-        'Defined is defined' => sub { shift->assert_null('Defined') },
-        'Weirdness'          => sub { shift->assert_null('Defined', 'Weirdness') },
+        'Defined is defined'
+          => [ __LINE__, sub { shift->assert_null('Defined') } ],
+        'Weirdness'
+          => [ __LINE__, sub { shift->assert_null('Defined', 'Weirdness') } ],
     );
 }
 
@@ -133,7 +141,8 @@ sub test_fail_assert_not_equals {
         my ($a, $b) = @$pair;
         $_ ||= 'undef' foreach $a, $b;
 	my $code = "assert_not_equals($a, $b)";
-        $tests{"$code should fail"} = sub { shift->assert_not_equals(@$pair) };
+        $tests{"$code should fail"}
+          = [ __LINE__, sub { shift->assert_not_equals(@$pair) } ];
     }
     $self->check_failures(%tests);
 }
@@ -142,7 +151,7 @@ sub test_fail_assert_not_null {
     my $self = shift;
     $self->check_failures(
         'assert_not_null(undef) should fail'
-            => sub { shift->assert_not_null(undef) }
+          => [ __LINE__, sub { shift->assert_not_null(undef) } ]
     );
 }
 
@@ -157,35 +166,51 @@ sub test_succeed_assert_not_null {
 
 sub check_failures {
     my $self = shift;
-    my %tests = @_;
-    while (my ($message, $test) = each %tests) {
-	my $got_fail = 0;
-	try { $self->$test() }
-	catch Test::Unit::Failure with {
-	    $got_fail = 1;
-	}
-	otherwise {
-	    $got_fail = 0;
-	};
-	$got_fail || throw Test::Unit::Failure -text => $message, -object => $self;
-    }
+    $self->check_exceptions('Test::Unit::Failure', @_);
 }
 
 sub check_errors {
     my $self = shift;
-    my %tests = @_;
-    while (my ($message, $test) = each %tests) {
-	my $got_error = 0;
+    $self->check_exceptions('Test::Unit::Error', @_);
+}
+
+sub check_exceptions {
+    my $self = shift;
+    my ($exception_class, %tests) = @_;
+    while (my ($message, $test_components) = each %tests) {
+        my ($test_code_line, $test) = @$test_components;
+	my $exception;
 	try {
-	    $self->$test()
+	    $self->$test();
 	}
-	catch Test::Unit::Error with {
-	    $got_error = 1;
+	catch $exception_class with {
+	    $exception = shift;
 	}
 	otherwise {
-	    $got_error = 0;
+	    $exception = 0;
 	};
-	$got_error || throw Test::Unit::Failure -text => $message, -object => $self;
+	$exception || throw Test::Unit::Failure -text => $message, -object => $self;
+        $self->check_file_and_line($exception, $test_code_line);
+    }
+}
+
+sub check_file_and_line {
+    my $self = shift;
+    my ($exception, $test_code_line) = @_;
+    if ($exception->file() ne __FILE__) {
+        throw Test::Unit::Failure(
+            -text   => "failure's file() should have returned "
+                       . __FILE__
+                       . " (line $test_code_line), not " . $exception->file(),
+            -object => $self,
+        );
+    }
+    if ($exception->line() != $test_code_line) {
+        throw Test::Unit::Failure(
+            -text   => "failure's line() should have returned "
+                       . "$test_code_line, not " . $exception->file(),
+            -object => $self,
+        );
     }
 }
 
