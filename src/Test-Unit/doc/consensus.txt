@@ -17,10 +17,22 @@ active developers use emacs. Open to other suggestions of course.
 
 				-- MCA 27/2/2001
 
+I like this idea, but we should agree that all changes to this
+file happen in HEAD rather than any other branch, otherwise we're
+really going to be in trouble  -- Adam Spiers 7/11/2001
+
 ** Links back to the mailing list
 
 Might be handy for those with local archives, but dropping message-ids
 in this file will make a mess IMHO  -- mca
+
+* Coding conventions
+
+** use vs. require
+
+After a discussion on perlunit-devel in March 2001, subject 'Towards
+sensible failure messages', we settled on use rather than require, except
+where we only want to load a module if we need it, of course.
 
 * Test::Unit::Assert::assert()
 
