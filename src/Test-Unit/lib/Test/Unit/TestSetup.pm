@@ -2,7 +2,7 @@ package Test::Unit::TestSetup;
 use strict;
 use constant DEBUG => 0;
 
-use base qw(Test::Unit::TestDecorator);
+use base qw(Test::Unit::Decorator);
 
 sub run {
 	my $self    = shift();

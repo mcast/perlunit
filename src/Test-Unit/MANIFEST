@@ -50,7 +50,7 @@ lib/Test/Unit/ExceptionFailure.pm
 lib/Test/Unit/HarnessUnit.pm
 lib/Test/Unit/Test.pm
 lib/Test/Unit/TestCase.pm
-lib/Test/Unit/TestDecorator.pm
+lib/Test/Unit/Decorator.pm
 lib/Test/Unit/TestListener.pm
 lib/Test/Unit/Loader.pm
 lib/Test/Unit/Result.pm
