@@ -10,7 +10,7 @@ use Test::Unit::ExceptionError;
 use Test::Unit::TestResult;
 
 use Devel::Symdump;
-    
+use Class::Inner;
 use Error qw/:try/;
 
 sub new {
@@ -51,7 +51,7 @@ sub run_bare {
         $self->run_test();
     }
     catch Error::Simple with {
-        throw Test::Unit::ExceptionError->make_from_error_simple(shift, $self);
+        Test::Unit::ExceptionError->make_from_error_simple(shift, $self)->throw;
     }
     finally {
         # Only gets called if 'set_up' succeed
@@ -81,6 +81,16 @@ sub to_string {
     my $class = ref($self);
     return $self->name() . "(" . $class . ")";
 }
+
+sub make_test_from_coderef {
+    my $self = shift;
+    my $coderef = shift;
+    die "Need a coderef argument" unless $coderef;
+    return Class::Inner->new(parent => ($self||ref $self),
+                            methods => {run_test => $coderef},
+                            args => [@_]);
+}
+    
 
 # Returns a list of the tests run by this class and its superclasses.
 # DO NOT OVERRIDE THIS UNLESS YOU KNOW WHAT YOU ARE DOING!
