@@ -42,6 +42,15 @@ sub add_failure {
     }
 }
 
+sub add_pass {
+    my $self = shift;
+    print ref($self) . "::add_pass() called\n" if DEBUG;
+    my ($test) = @_;
+    for my $e (@{$self->listeners()}) {
+	$e->add_pass($test);
+    }
+}
+
 sub add_listener {
     my $self = shift;
     print ref($self) . "::add_listener() called\n" if DEBUG;
@@ -98,7 +107,15 @@ sub run {
 	} else {
 	    $self->add_error($test, $exception);
 	}
-    }
+    } else {
+        # I think recording positives is a good thing!
+        # You *can* get this info otherwise by remembering the
+        # start event object and checking no fail/error has
+        # been recorded when you get the end event with a
+        # matching tag... (nb tests may nest, they're not consecutive
+        # events) ... but isnt this easier? - Brian. 
+        $self->add_pass($test);
+	}
     $self->end_test($test);
 } 
 

@@ -2,3 +2,6 @@ use TestRunner.pl like this (lib adjusted for this directory):
 
 	perl -I./lib TestRunner.pl Test::Unit::tests::TestTest
 
+and TkTestRunner like this:
+
+	perl -I./lib TkTestRunner.pl Test::Unit::tests::TestTest

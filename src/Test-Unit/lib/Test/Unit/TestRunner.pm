@@ -38,6 +38,10 @@ sub add_failure {
     $self->_print("F");
 }
 
+sub add_pass {
+    # in this runner passes are ignored.
+}
+
 sub create_test_result {
     my $self = shift;
     return Test::Unit::TestResult->new();

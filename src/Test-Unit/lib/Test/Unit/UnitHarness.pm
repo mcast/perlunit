@@ -1,6 +1,9 @@
-package Test::SuiteWrapper;
+# This is a makeover of Test::Harness to allow its tests
+# to be retrofitted as unit tests.
+package Test::Unit::UnitHarness;
 
 BEGIN {require 5.002;}
+use base qw(Test::Unit::TestListener);
 use Exporter;
 use Config;
 use FileHandle;
@@ -24,11 +27,6 @@ sub new {
   $self->{'test'}=shift;
   $self->{'listener'}=$self;
   return $self;
-}
-
-sub add_listener {
-  my $self=shift;
-  $self->{'listener'}=shift;
 }
 
 sub run {
