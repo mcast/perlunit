@@ -1,7 +1,7 @@
 package Test::Unit::TestLoader;
 use strict;
 use FileHandle;
-use constant DEBUG => 1;
+use constant DEBUG => 0;
 
 use Test::Unit::TestSuite;
 use Test::Unit::TestCase;
@@ -12,10 +12,20 @@ sub load {
   my $test_case=shift;
   my $suite;
   # Is it a test class?
-  print "About to load $test_case\n" if DEBUG;
-  if ($test_case=~/^[\w:]+$/ and eval "require $test_case") {
-	print "Eval succeeded.\n" if DEBUG;
+  if ($test_case=~/^[\w:]+$/ 
+	  and eval "require $test_case"
+	  and not $@) {
 	# first up: is this a real test case?
+	$suite=try_test_case($test_case);
+	return $suite if ($suite);
+	$suite=try_test_suite($test_case);
+	return $suite if ($suite);
+  } elsif ($test_case=~/\.pm$/ 
+		   and eval "require \"$test_case\""
+		   and not $@) {
+	#In this case I need to figure out what the class
+	#was I just loaded!
+	$test_case=get_package_name_from_file($test_case);
 	$suite=try_test_case($test_case);
 	return $suite if ($suite);
 	$suite=try_test_suite($test_case);
@@ -34,7 +44,7 @@ sub load {
   # one last shot: is it a _directory_?
   $suite=try_test_dir($test_case);
   return $suite if $suite;
-  die "Suite class " . $test_case . " not found: $@";
+  die "(This error is expected) Suite class " . $test_case . " not found: $@";
  
 }
 
@@ -70,5 +80,29 @@ sub try_test_dir {
   }
 }
 
+# The next bit of code is a helper function which attempts
+# to identify the class we are trying to use from a '.pm'
+# file. If we've reached this point, we managed to 'require'
+# the file already, but we dont know the file the package was
+# loaded from. Somehow I feel this information is in perl
+# somwhere but if it is I dont know where...
+sub get_package_name_from_file {
+  my $test_case=shift;
+  my $fh = new FileHandle;
+  my $filename;
+  # first off we've actually got to find the thing. It's in
+  # @INC somewhere...
+  foreach my $file (map {"$_/$test_case"} @INC) {
+	$fh->open($file) or next; 
+	foreach my $line (<$fh>) {
+	  if ($line=~/^\s*package\s+([\w:]+)/) {
+		return $1;
+	  }
+	}
+	$fh->close or 
+	  die "Didnt find 'package' in $test_case and couldnt close it!";
+  }
+  die "Got a $test_case but cant find 'package'";
+}
 
 1;

@@ -2,13 +2,14 @@
 #
 # Copyright (C) 2000 Brian Ewins
 #
-# $Id: TkTestRunner.pm,v 1.2 2000-02-23 11:04:59 ba22a Exp $
+# $Id: TkTestRunner.pm,v 1.3 2000-02-23 18:13:11 ba22a Exp $
 #
 
 
 package Test::Unit::TkTestRunner;
 use base qw(Test::Unit::TestListener);
 use Tk;
+use Tk::BrowseEntry;
 use Test::Unit::TestResult;
 use Benchmark;
 use strict;
@@ -60,7 +61,7 @@ sub new {
   # fill in the test name from the command line if possible.
   $self->{'testname'}=shift; 
   map {$self->{$_}=0} 
-  qw(runs errors failures passes start history_size);
+  qw(runs errors failures passes start history_size planned);
   $self->{'status'}='STOPPPED';
   $self->{'history'}=[];
   # Lay the window out....
@@ -150,7 +151,7 @@ sub new {
 			-width=>50, 
 			-relief=>'raised')
 	  ->form(-right=>['%100'],-top=>[$btn_quit]);
-  my $lab_time=$main
+  my $lab_status=$main
 	->Entry(
 			-text=>\$self->{'status'},
 			-state=>'disabled',
@@ -207,8 +208,8 @@ sub run {
   # if the test just run isn't the one at the top of the list,
   # then add it.
   $self->{'history'}=[$self->{'testname'},
-		      grep { $_ ne $self->{'testname'}} 
-		      (@{$self->{'history'}})[0..9]];
+					  grep { defined $_ and $_ ne $self->{'testname'}} 
+					  (@{$self->{'history'}})[0..9]];
   $self->{'runs'}++;
   map {$self->{$_}=0} qw(errors failures passes);
   $self->clear_messages();
@@ -327,7 +328,7 @@ sub _arrange {
   my $bw = $c->cget('-borderwidth') + $c->cget('-highlightthickness');
   my $x = abs(int($c->{Configure}{'-padx'})) + $bw;
   my $y = abs(int($c->{Configure}{'-pady'})) + $bw;
-  my $value = $c->value;
+  my $value=$c->cget('-variable');
   my $horz = $c->{Configure}{'-anchor'} =~ /[ew]/i ? 1 : 0;
   my $dir  = $c->{Configure}{'-anchor'} =~ /[ne]/i ? -1 : 1;
   
@@ -364,7 +365,6 @@ sub _arrange {
 					  -width => 0,
 					  -outline => undef);
   my $total;
-  my $value=$c->cget('-variable');
   my $count_value=scalar(@$value)-1;
   foreach my $val (@$value) {
 	$total+=$val>0?$val:0;
