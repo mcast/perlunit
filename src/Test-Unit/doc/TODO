@@ -24,11 +24,6 @@ the way before we bump the version number.
 
 Piers is doing this imminently.
 
-* Nice to have before 1.0
-
-Some of these could be left until after 1.0.  Adam thinks it makes
-sense to do the first two before the release, however.
-
 ** Tidy up copyrights, credits, and licensing
 
 We currently have copyrights, licenses, and out of date author
@@ -40,6 +35,34 @@ in all the other files into something which refers to that one file,
 and also states that none of the files should be distributed
 separately, only as an entire package, thereby preventing the
 copyright-containing file from being disassociated from the others.
+
+* Nice to have before 1.0
+
+Some of these could be left until after 1.0.  Adam thinks it makes
+sense to do them before the release, however; none of them are big
+jobs.
+
+** Pinch more assertions from Test::More
+
+I don't think there's even any particular reason against importing
+them directly from Test::More.  No point in duplicating code across
+CPAN modules without good reason.
+
+I like these ones:
+
+*** use_ok(), require_ok(), eq_set()
+
+import straight in
+
+*** is_deeply()
+
+either import or write using FreezeThaw::cmpStr or Data::Compare
+or whatever
+
+*** eq_array(), eq_hash()
+
+Hmm.  Test::Unit::Assertion::Array / Test::Unit::Assertion::Hash?
+
 
 ** Rethink how the tests are split up between the t/*.t.
 
