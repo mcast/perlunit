@@ -36,6 +36,10 @@ and also states that none of the files should be distributed
 separately, only as an entire package, thereby preventing the
 copyright-containing file from being disassociated from the others.
 
+* Document stuff better
+
+** @TESTS isn't documented.
+
 * Nice to have before 1.0
 
 Some of these could be left until after 1.0.  Adam thinks it makes
