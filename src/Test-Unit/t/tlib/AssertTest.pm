@@ -2,24 +2,17 @@ package AssertTest;
 
 use strict;
 
+use ExceptionChecker;
+use TestObject;
 use Test::Unit::TestCase;
-
 use Test::Unit::Failure;
 use Test::Unit::Error;
 
 use Error qw/:try/;
 use Class::Inner;
 
-package TestObject;
-sub new {
-    my $class = shift;
-    bless [@_], $class;
-}
-
-package AssertTest;
-
 use vars qw/@ISA/;
-@ISA = 'Test::Unit::TestCase';
+@ISA = qw(Test::Unit::TestCase ExceptionChecker);
 
 sub assertion_has_failed {
     my $error = shift;
@@ -120,6 +113,11 @@ sub test_assert_raises {
         sub { AssertTest::Exception->throw(-text => 'boom'); }
     );
     $self->assert_str_equals('boom', AssertTest::Exception->prior->{-text});
+    $self->assert_raises(
+        'Error::Simple',
+        sub { die "bang"; }
+    );
+    $self->assert_str_equals('bang', AssertTest::Exception->prior->{-text});
     $self->check_failures(
         'No AssertTest::Exception was raised'
           => [
@@ -366,94 +364,6 @@ sub test_assert_deep_equals {
                                                      "$expected with comment") } ];
     }
     $self->check_failures(@tests);
-}
-
-sub check_failures {
-    my $self = shift;
-    $self->check_exceptions('Test::Unit::Failure', @_);
-}
-
-sub check_errors {
-    my $self = shift;
-    $self->check_exceptions('Test::Unit::Error', @_);
-}
-
-sub check_exceptions {
-    my $self = shift;
-    my ($exception_class, @tests) = @_;
-    my ($asserter, $file, $line)
-      = caller($Error::Depth + 1); # EVIL hack!  Assumes check_exceptions
-                                   # always called via check_{failures,errors}.
-                                   # My brain hurts too much right now to think
-                                   # of a better way. 
-    while (@tests) {
-        my $expected        = shift @tests;
-        my $test_components = shift @tests;
-        my ($test_code_line, $test) = @$test_components;
-	my $exception;
-	try {
-	    $self->$test();
-	}
-	catch $exception_class with {
-	    $exception = shift;
-	}
-	catch Error::Simple with {
-	    $exception = shift;
-	}
-	otherwise {
-	    $exception = 0;
-	};
-
-        try {
-            $self->check_exception($exception_class, $expected, $exception);
-            $self->check_file_and_line($exception, $test_code_line);
-        }
-        catch Test::Unit::Failure with {
-            my $failure = shift;
-            $failure->throw_new(
-                -package => $asserter,
-                -file    => $file,
-                -line    => $line,
-                -object  => $self
-            );
-        }
-    }
-}
-
-sub check_exception {
-    my $self = shift;
-    my ($exception_class, $expected, $exception) = @_;
-    Test::Unit::Failure->throw(
-        -text => "Didn't get $exception_class `$expected'",
-        -object => $self,
-    ) unless $exception;
-
-    my $got = $exception->text();
-    Test::Unit::Failure->throw(
-        -text => "Expected $exception_class `$expected', got `$got'",
-        -object => $self,
-    ) unless UNIVERSAL::isa($expected, 'Regexp')
-               ? $got =~ /$expected/ : $got eq $expected;
-}
-
-sub check_file_and_line {
-    my $self = shift;
-    my ($exception, $test_code_line) = @_;
-    if ($exception->file() ne __FILE__) {
-        throw Test::Unit::Failure(
-            -text   => "failure's file() should have returned "
-                       . __FILE__
-                       . " (line $test_code_line), not " . $exception->file(),
-            -object => $self,
-        );
-    }
-    if ($exception->line() != $test_code_line) {
-        throw Test::Unit::Failure(
-            -text   => "failure's line() should have returned "
-                       . "$test_code_line, not " . $exception->line(),
-            -object => $self,
-        );
-    }
 }
 
 # Key = assert_method
