@@ -1,5 +1,9 @@
 2001-09-02  Piers Cawley  <pdcawley@iterative-software.com>
 
+	* lib/Test/Unit/TestLoader.pm
+	(load): Improved the error message when a file can be found, but
+	has a syntax error.
+
 	* lib/Test/Unit/TestFailure.pm:
 	Removed.
 

@@ -25,7 +25,9 @@ sub load {
         #In this case I need to figure out what the class
         #was I just loaded!
         $test_case = get_package_name_from_file($test_case);        
-        $suite = try_test_case($test_case) || try_test_suite($test_case);
+        $suite = try_test_suite($test_case) || try_test_case($test_case);
+    } elsif ($@ !~ /^Can\'t locate .* in \@INC \(\@INC contains/) {
+        die $@;
     } else {
         print "Debug: ".$@ if DEBUG;
     }
