@@ -20,7 +20,7 @@ require Exporter;
 # looking at the version of this module if you say 
 # "install Test::Unit" in the CPAN shell
 
-$VERSION = '0.13';
+$VERSION = '0.14';
 
 # private
 
@@ -199,7 +199,8 @@ All rights reserved. This program is free software; you can
 redistribute it and/or modify it under the same terms as Perl itself.
 
 Thanks go to the other PerlUnit framework people: 
-Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
+Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen, Matthew Astley,
+Adam Spiers, Piers Cawley.
 
 Thanks for patches go to:
 Matthew Astley, David Esposito.
