@@ -18,6 +18,18 @@ sub fail {
     die $ex;
 }
 
+sub quell_backtrace {
+    my $self = shift;
+    $self->{_no_backtrace_on_fail} = 1;
+}
+
+sub get_backtrace_on_fail {
+    my $self = shift;
+    return $self->{_no_backtrace_on_fail} ? 0 : 1;
+}
+
+
+
 1;
 __END__
 
