@@ -175,6 +175,11 @@ To achieve this, this class gets called with a test case as argument.
 It will call this test case's run method back and catch any exceptions
 thrown.
 
+It could be argued that Test::Unit::Result is the heart of the
+PerlUnit framework, since TestCase classes vary, and you can use one
+of several Test::Unit::TestRunners, but we always gather the results
+in a Test::Unit::Result object.
+
 This is the quintessential call tree of the communication needed to
 record the results of a given test:
 
@@ -195,6 +200,10 @@ record the results of a given test:
 	    }
 	}
     }
+
+Note too that, in the presence of Test::Unit::TestSuites, this call
+tree can get a little more convoluted, but if you bear the above in
+mind it should be apparent what's going on.
 
 =head1 AUTHOR
 
