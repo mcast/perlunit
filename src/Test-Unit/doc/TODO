@@ -15,10 +15,6 @@ usage; after all, many people will check out PerlUnit for the first
 time when they hear 1.0 being announced, and first impressions count
 for a lot.
 
-** Move test libraries out of lib/Test/Unit/tests.
-
-Adam's doing this imminently ...
-
 ** Rename Test::Unit to Test::Unit::Procedural
 
 Adam's also doing this imminently ...
