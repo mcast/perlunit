@@ -1,4 +1,55 @@
-2002-05-23  Adam Spiers  <perlunit@adamspiers.org>
+2002-06-13  adamspiers  <adamspiers@juno.london.guideguide.com>
+
+	* lib/Test/Unit.pm: version 0.23
+
+	* doc/TODO: mention that Attribute::Handlers probably won't work
+
+	* t/tlib/TestTest.pm, lib/Test/Unit/Error.pm, lib/Test/Unit/Exception.pm, lib/Test/Unit/Result.pm, lib/Test/Unit/TestCase.pm:
+	Rework the exception handling mechanisms of run_protected/run_bare so
+	that run-time exceptions in set_up or tear_down no longer halt the
+	framework, and neither do user-defined exceptions thrown in the test
+	methods themselves (where the framework only used to handle
+	straight-forward exceptions where $@ was a scalar, I think).  Some
+	assumptions about Error.pm internals have had to be made,
+	unfortunately.
+
+	* lib/Test/Unit/Procedural.pm: remove spurious 'use' line
+
+2002-06-12  adamspiers  <adamspiers@juno.london.guideguide.com>
+
+	* lib/Test/Unit/Debug.pm: allow debugging to a file with debug_to_file
+
+2002-06-10  adamspiers  <adamspiers@juno.london.guideguide.com>
+
+	* lib/Test/Unit/Runner/Terminal.pm:
+	use \e[4A\r instead of \e[4F, which not all terminals support
+
+	* lib/Test/Unit/Runner/Terminal.pm:
+	Ahem.  Forgot to change package name.
+
+	* lib/Test/Unit/TkTestRunner.pm:
+	check that something is selected when the user clicks 'Show...'
+
+	* lib/Test/Unit/TkTestRunner.pm: disable broken rerun button
+
+	* MANIFEST, lib/Test/Unit/Listener.pm, lib/Test/Unit/Runner.pm, lib/Test/Unit/Runner/Terminal.pm, lib/Test/Unit/TestRunner.pm, lib/Test/Unit/TestSuite.pm:
+	- new start_suite/end_suite events sent to listeners, to track where
+	  current test is in the suite hierarchy ($runner->suites_running)
+
+	- new T::U::Runner::Terminal runner which uses terminal escape
+	  sequences to show which suites/tests are currently being run
+
+	- result object now stored in the runner
+
+	* lib/Test/Unit/TkTestRunner.pm: clean up of code style
+
+	* lib/Test/Unit/Listener.pm:
+	pseudo-document the parameters for the listener interface
+
+2002-05-23  adamspiers  <adamspiers@juno.london.guideguide.com>
+
+	* doc/TODO, lib/Test/Unit/TestCase.pm:
+	(poorly) document @TESTS and the filtering mechanism
 
 	* lib/Test/Unit.pm: version 0.22
 			
