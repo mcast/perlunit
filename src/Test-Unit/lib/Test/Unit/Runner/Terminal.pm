@@ -89,22 +89,27 @@ __END__
 
 =head1 NAME
 
-Test::Unit::TestRunner - unit testing framework helper class
+Test::Unit::Runner::Terminal - unit testing framework helper class
 
 =head1 SYNOPSIS
 
-    use Test::Unit::TestRunner;
+    use Test::Unit::Runner::Terminal;
 
-    my $testrunner = Test::Unit::TestRunner->new();
+    my $testrunner = Test::Unit::Runner::Terminal->new();
     $testrunner->start($my_test_class);
 
 =head1 DESCRIPTION
 
-This class is the test runner for the command line style use
+This class is a test runner for the command line style use
 of the testing framework.
 
-It is used by simple command line tools like the F<TestRunner.pl>
-script provided.
+It is similar to its parent class, Test::Unit::TestRunner, but it uses
+terminal escape sequences to continually update a more informative
+status report as the runner progresses through the tests than just a
+string of dots, E's and F's.  The status report indicates the number
+of tests run, the number of failures and errors encountered, which
+test is currently being run, and where it lives in the suite
+hierarchy.
 
 The class needs one argument, which is the name of the class
 encapsulating the tests to be run.
