@@ -2,7 +2,7 @@
 // (hacked from) Default Web Page for groups that haven't setup their page yet
 // Please replace this file with your own website
 //
-// $Id: index.php,v 1.4 2001-04-27 20:01:45 mca-gdl Exp $
+// $Id: index.php,v 1.5 2001-04-27 20:09:46 mca-gdl Exp $
 //
 $headers = getallheaders();
 ?>
@@ -108,10 +108,12 @@ $headers = getallheaders();
     Extreme Programming site
 <li><a href="http://JUnit.sourceforge.net/">http://JUnit.sourceforge.net/</a>,
     Java unit testing framework from which Perlunit was cloned
+<li><a href="http://c2.com/cgi/wiki?PerlUnit">http://c2.com/cgi/wiki?PerlUnit</a>,
+    A forest of data at the Wiki Wiki Web
 </ul>
 
 <p align="right"><small>Last update:
-$Date: 2001-04-27 20:01:45 $
+$Date: 2001-04-27 20:09:46 $
 </small></p>
 
     </TD>
