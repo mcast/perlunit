@@ -93,11 +93,11 @@ sub failures {
  
 sub run {
     my $self = shift;
-    print ref($self) . "::run() called\n" if DEBUG;
     my ($test) = @_;
+    printf "%s::run(%s) called\n", ref($self), $test->name() if DEBUG;
     $self->start_test($test);
     eval { 
-	$test->run_bare(); 
+	$test->run_bare();
     };
     my $exception = $@;
     if ($exception) {
@@ -119,7 +119,7 @@ sub run {
 	# others have to implement  - Christian
 
         $self->add_pass($test);
-	}
+    }
     $self->end_test($test);
 } 
 
