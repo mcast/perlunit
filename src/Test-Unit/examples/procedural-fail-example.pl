@@ -1,5 +1,3 @@
-use lib './lib';
-
 use Test::Unit;
 
 use constant DEBUG => 0;

@@ -8,5 +8,5 @@ and TkTestRunner like this:
 
 and the examples for the procedural API like this:
 
-	perl -w examples/procedural-ok-example.pl
-	perl -w examples/procedural-fail-example.pl
+	perl -w -I./lib examples/procedural-ok-example.pl
+	perl -w -I./lib examples/procedural-fail-example.pl
