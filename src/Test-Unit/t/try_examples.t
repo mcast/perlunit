@@ -59,7 +59,7 @@ Test Results:
 Run: 2, Failures: 1, Errors: 0
 
 There was 1 failure:
-1) examples/fail_example.pm:22 - test_fail(fail_example)
+1) examples/fail_example.pm:19 - test_fail(fail_example)
 Born to lose ...
 EGC
 

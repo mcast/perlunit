@@ -1,14 +1,11 @@
-package fail_example;
+package fail_example; # this is the test case to be decorated
+
 use strict;
+
 use constant DEBUG => 0;
 
 use base qw(Test::Unit::TestCase);
 use Test::Unit::TestSuite;
-
-sub new {
-    my $self = shift()->SUPER::new(@_);
-    return $self;
-}
 
 sub test_ok {
     my $self = shift();
@@ -35,7 +32,6 @@ sub tear_down {
 
 sub suite {
     my $testsuite = Test::Unit::TestSuite->new(__PACKAGE__);
-
     my $wrapper = fail_example_testsuite_setup->new($testsuite);
     return $wrapper;
 }
@@ -43,6 +39,8 @@ sub suite {
 1;
 
 package fail_example_testsuite_setup;
+# this suite will decorate fail_example with additional fixture
+
 use strict;
 use constant DEBUG => 0;
 
