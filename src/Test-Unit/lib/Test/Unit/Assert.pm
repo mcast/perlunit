@@ -1,8 +1,12 @@
 package Test::Unit::Assert;
+
+
 use strict;
 use constant DEBUG => 0;
 
 require Test::Unit::ExceptionFailure;
+use Test::Unit::Assertion::CodeRef;
+use Carp;
 
 sub assert {
     my $self = shift;
@@ -10,6 +14,49 @@ sub assert {
     print "Calling $assertion\n" if DEBUG;
     $assertion->do_assertion(@_) ||
         $self->fail("$assertion failed\n");
+}
+
+sub is_numeric {
+    my $str = shift;
+    return defined $str && ! ($str == 0 && $str !~ /[+-]?0(e0)?/);
+}
+
+sub assert_equals {
+    my $self = shift;
+    if (is_numeric($_[0])) {
+        $self->assert_num_equals(@_);
+    }
+    elsif (eval {ref($_[0]) && $_[0]->isa('UNIVERSAL')}) {
+        require overload;
+        if (overload::Method($_[0], '==')) {
+            $self->assert_num_equals(@_);
+        }
+        else {
+            $self->assert_str_equals(@_);
+        }
+    }
+    else {
+        $self->assert_str_equals(@_);
+    }
+}
+
+{
+    my %assert_subs =
+        (
+         str_equals => sub {local $^W; $_[0] eq $_[1]},
+         num_equals => sub {local $^W; $_[0] == $_[1]},
+         null       => sub {!defined($_[0])},
+         not_null   => sub {defined($_[0])},
+        );
+    foreach my $type (keys %assert_subs) {
+        my $assertion = Test::Unit::Assertion::CodeRef->new($assert_subs{$type});
+        no strict 'refs';
+        *{"Test\::Unit\::Assert\::assert_$type"} =
+            sub {
+                my $self = shift;
+                $assertion->do_assertion(@_);
+            };
+    }
 }
 
 sub normalize_assertion {
@@ -47,19 +94,18 @@ sub fail {
     my $self = shift;
     print ref($self) . "::fail() called\n" if DEBUG;
     my $message = join '', @_;
-    my $ex = Test::Unit::ExceptionFailure->new($message);
-    $ex->hide_backtrace() unless $self->get_backtrace_on_fail();
-    die $ex;
+    Test::Unit::ExceptionFailure->throw(-text => $message,
+                                        -object => $self);
 }
 
 sub quell_backtrace {
     my $self = shift;
-    $self->{_no_backtrace_on_fail} = 1;
+    carp "quell_backtrace deprecated";
 }
 
 sub get_backtrace_on_fail {
     my $self = shift;
-    return $self->{_no_backtrace_on_fail} ? 0 : 1;
+    carp "get_backtrace_on_fail deprecated";
 }
 
 
