@@ -186,6 +186,7 @@ sub warning {
 sub run_test {
     my \$self = shift;
     \$self->fail('$message');
+}
 EOIC
 }
 
