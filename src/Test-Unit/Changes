@@ -1,5 +1,15 @@
 Revision history for Perl extension Test::Unit.
 
+0.14    - lots of changes and additions:
+          Piers Cawley fixed a bad bug that caused inherited tests to 
+	  be called on the parent class instead of the inheriting class.
+          Piers Cawley also put in a lot of new functionality for regular
+	  expression assertions and coderef assertions.
+	  Matthew Astley fixed the POD documentation.
+	  Matthew Astley and Adam Spiers fixed a number of smaller things.
+	  Greatly improved formatting of failure reports.
+	  Version number is now (hopefully) handled correctly for CPAN.
+
 0.13    - patched the patch from 0.12, added patches by David Esposito,
           (documentation for optional message arg to assert(), make
 	  TkTestRunner use to_string() for exception display), added

@@ -39,9 +39,9 @@ PREREQUISITES
 INSTALLATION
     Just perform the usual incantation:
 
-    gunzip Test-Unit-0.13.tar.gz
-    tar -xvf Test-Unit-0.13.tar 
-    cd Test-Unit-0.13
+    gunzip Test-Unit-0.14.tar.gz
+    tar -xvf Test-Unit-0.14.tar 
+    cd Test-Unit-0.14
     perl Makefile.PL
     make
     make test
