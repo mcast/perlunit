@@ -19,6 +19,48 @@ sub assert {
     $self->do_assertion($assertion, (caller($Error::Depth))[0 .. 2], @_);
 }
 
+sub normalize_assertion {
+    my $self      = shift;
+    my $assertion = shift;
+
+    if (!ref($assertion) || ref($assertion) =~ 'ARRAY') {
+        debug((defined $assertion ? $assertion : '_undef_') .
+              " normalized as boolean\n");
+        require Test::Unit::Assertion::Boolean;
+        return Test::Unit::Assertion::Boolean->new($assertion);
+    }
+
+    # If we're this far, we must have a reference.
+
+    if (eval {$assertion->isa('Regexp')}) {
+        debug("$assertion normalized as Regexp\n");
+        require Test::Unit::Assertion::Regexp;
+        return Test::Unit::Assertion::Regexp->new($assertion);
+    }
+
+    if (ref($assertion) eq 'CODE') {
+        debug("$assertion normalized as coderef\n");
+        require Test::Unit::Assertion::CodeRef;
+        return Test::Unit::Assertion::CodeRef->new($assertion);
+    }
+
+#   if (ref($assertion) eq 'SCALAR') {
+#       debug("$assertion normalized as scalar ref\n");
+#       require Test::Unit::Assertion::Scalar;
+#       return Test::Unit::Assertion::Scalar->new($assertion);
+#   }
+
+    if (ref($assertion) !~ /^(GLOB|LVALUE|REF|SCALAR)$/) {
+        debug("$assertion already an object\n");
+        require Test::Unit::Assertion::Boolean;
+        return $assertion->can('do_assertion') ? $assertion :
+            Test::Unit::Assertion::Boolean->new($assertion);
+    }
+    else {
+        die "Don't know how to normalize $assertion (ref ", ref($assertion), ")\n";
+    }
+}
+
 sub assert_raises {
     my $self = shift;
     require Test::Unit::Assertion::Exception;
@@ -398,36 +440,6 @@ sub _format_stack {
                 my $self = shift;
                 $assertion->do_assertion(@_);
             };
-    }
-}
-
-sub normalize_assertion {
-    my $self      = shift;
-    my $assertion = shift;
-    if (!ref($assertion) || ref($assertion) eq 'ARRAY') {
-        require Test::Unit::Assertion::Boolean;
-        return Test::Unit::Assertion::Boolean->new($assertion);
-    }
-    elsif (eval {$assertion->isa('Regexp')}) {
-        require Test::Unit::Assertion::Regexp;
-        return Test::Unit::Assertion::Regexp->new($assertion);
-    }
-    elsif (eval {$assertion->isa('UNIVERSAL')}) {
-        # It's an object already.
-        require Test::Unit::Assertion::Boolean;
-        return $assertion->can('do_assertion') ? $assertion :
-            Test::Unit::Assertion::Boolean->new($assertion);
-    }
-    elsif (ref($assertion) eq 'CODE') {
-        require Test::Unit::Assertion::CodeRef;
-        return Test::Unit::Assertion::CodeRef->new($assertion);
-    }
-#     elsif (ref($assertion) eq 'SCALAR') {
-#         require Test::Unit::Assertion::Scalar;
-#         return Test::Unit::Assertion::Scalar->new($assertion);
-#     }
-    else {
-        die "Don't know how to normalize $assertion\n";
     }
 }
 

@@ -38,6 +38,7 @@ sub test_assert {
     $self->assert([]);
     $self->assert([ 'foo', 7 ]);
     $self->check_failures(
+        'Boolean assertion failed' => [ __LINE__, sub { shift->assert(undef) } ],
         'Boolean assertion failed' => [ __LINE__, sub { shift->assert(0)   } ],
         'Boolean assertion failed' => [ __LINE__, sub { shift->assert('')  } ],
 
