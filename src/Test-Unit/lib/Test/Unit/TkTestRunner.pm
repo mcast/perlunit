@@ -1,16 +1,22 @@
 #!/usr/bin/perl
-#
-# Copyright (C) 2000 Brian Ewins
-#
-# $Id: TkTestRunner.pm,v 1.6 2000-02-24 15:08:57 ba22a Exp $
-#
-
-
 package Test::Unit::TkTestRunner;
 use base qw(Test::Unit::TestListener);
+use constant COPYRIGHT_NOTICE => <<'END_COPYRIGHT_NOTICE';
+This the PerlUnit Tk Test Runner. 
+Copyright (C) 2000 Christian Lindner, Brian Ewins,
+Cayte Lindner, jefritz, Zohn.
+
+PerlUnit is a Unit Testing framework based on JUnit.
+See http://c2.com/cgi/wiki?TestingFrameworks
+
+PerlUnit is free software, redistributable under the
+same terms as Perl.
+
+$Id: TkTestRunner.pm,v 1.7 2000-02-25 11:36:04 ba22a Exp $
+END_COPYRIGHT_NOTICE
+
 use Tk;
 use Tk::BrowseEntry;
-use Tk::FileSelect;
 use Test::Unit::TestResult;
 use Benchmark;
 use strict;
@@ -25,9 +31,12 @@ sub new {
 
 sub about {
   my $self=shift;
-  $self->{'frame'}->Dialog(-title=>"About PerlUnit",
-				-text=>"(C) 2000 Christian Lemburg, Brian Ewins",
-				-buttons=>["OK"])->Show();
+  my $dialog=$self->{'frame'}
+  ->DialogBox(-title=>'About PerlUnit',-buttons=>['OK']);
+  my $text=$dialog->add("ROText"); #, -width=>80, -height=>20);
+  $text->insert("end",COPYRIGHT_NOTICE);
+  $text->pack();
+  $dialog->Show();
 }
 
 sub add_error {
@@ -60,22 +69,44 @@ sub plan{
   $self->{'planned'}=shift;
 }
 
+
+sub choose_file {
+  my $self=shift;
+  my $name = $self->{'suite_name'};
+  my @types = (['All Files', '*']);
+  my $dir   = undef;
+  if (defined $name) {
+	require File::Basename;
+	my $sfx;
+	($name,$dir,$sfx) = File::Basename::fileparse($name,'\..*');
+	if (defined($sfx) && length($sfx)) {
+	  unshift(@types,['Similar Files',[$sfx]]);
+	  $name .= $sfx;
+	}
+  }
+  my $file=$self->{'frame'}
+	->getOpenFile(-title=>"Select test case",
+				  -initialdir  => $dir, 
+				  -initialfile => $name,
+				  -filetypes => \@types);
+  if (defined $file) {
+	$file=~s/\/+/\//g;
+  }
+  $self->{'suite_name'}=$file;
+}
+
 sub create_punit_menu {
   my $self=shift;
-  my $main_menu=$self->{'frame'}->Menu(-type=>'menubar');
-  my $menu=$main_menu->Menu(-type=>'normal');
-  $menu->add('command',-label=>'File...',
-			 -command=>sub { 
-			   my $fs=$self->{'frame'}->FileSelect(); 
-			   $self->{'suite_name'}=$fs->Show();
-			 });
-  $menu->add('command',-label=>'About...',
-			 -command=>sub { $self->about() });
-  $menu->add('separator');
-  $menu->add('command',-label=>'Exit',
-			 -command=>sub { $self->{'frame'}->destroy(); });
-  $main_menu->add('cascade',
-			   -label=>'PerlUnit',-menu=>$menu);
+  my $main_menu=$self->{'frame'}
+  ->Menu(-type=>'menubar',
+		 -menuitems=> 
+		 [['cascade'=>'F~ile',-menuitems=>
+		   [['command'=>'O~pen', -command=>sub { $self->choose_file() }],
+			['command'=>'Ex~it',-command=>sub{$self->{'frame'}->destroy();}]
+		   ]],
+		  ['cascade'=>'H~elp',-menuitems=>
+		   [['command'=>'A~bout PerlUnit',-command=>sub {$self->about()}]
+		   ]]]);
   return $main_menu;
 }
 
