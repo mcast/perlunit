@@ -1,7 +1,9 @@
-use lib '../../lib';
+#!/usr/bin/perl -w
+
+use strict;
 
 use Experimental::Sample;
-use Test::Unit;
+use Test::Unit::Procedural;
 
 use constant DEBUG => 0;
 

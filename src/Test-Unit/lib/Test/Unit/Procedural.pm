@@ -1,4 +1,4 @@
-package Test::Unit;
+package Test::Unit::Procedural;
 
 use strict;
 use vars qw($VERSION @ISA @EXPORT);
@@ -116,11 +116,11 @@ __END__
 
 =head1 NAME
 
-Test::Unit - Procedural style unit testing interface
+Test::Unit::Procedural - Procedural style unit testing interface
 
 =head1 SYNOPSIS
 
-    use Test::Unit;
+    use Test::Unit::Procedural;
 
     # your code to be tested goes here
 
@@ -145,19 +145,19 @@ Test::Unit - Procedural style unit testing interface
 
 =head1 DESCRIPTION
 
-Test::Unit is the procedural style interface to a sophisticated unit
+Test::Unit::Procedural is the procedural style interface to a sophisticated unit
 testing framework for Perl that is derived from the JUnit testing
 framework for Java by Kent Beck and Erich Gamma. While this framework
 is originally intended to support unit testing in an object-oriented
 development paradigm (with support for inheritance of tests etc.),
-Test::Unit is intended to provide a simpler interface to the framework
+Test::Unit::Procedural is intended to provide a simpler interface to the framework
 that is more suitable for use in a scripting style environment.
-Therefore, Test::Unit does not provide much support for an
+Therefore, Test::Unit::Procedural does not provide much support for an
 object-oriented approach to unit testing - if you want that, please
 have a look at L<Test::Unit::TestCase>.
 
 You test a given unit (a script, a module, whatever) by using
-Test::Unit, which exports the following routines into your namespace:
+Test::Unit::Procedural, which exports the following routines into your namespace:
 
 =over 4
 
@@ -192,9 +192,9 @@ or an "F" for any failed test run, to indicate progress), one result
 line ("OK" or "!!!FAILURES!!!"), and possibly many lines reporting
 detailed error messages for any failed tests.
 
-Please remember, Test::Unit is intended to be a simple and convenient
-interface. If you need more functionality, take the object-oriented
-approach outlined in L<Test::Unit::TestCase>.
+Please remember, Test::Unit::Procedural is intended to be a simple and
+convenient interface. If you need more functionality, take the
+object-oriented approach outlined in L<Test::Unit::TestCase>.
 
 
 =head1 AUTHOR

@@ -16,7 +16,6 @@ examples/patch100132-1
 examples/patch100132-2
 examples/tester.pl
 examples/tester.png
-lib/Test/Unit.pm
 lib/Test/Unit/Assert.pm
 lib/Test/Unit/Assertion.pm
 lib/Test/Unit/Assertion/Boolean.pm
@@ -29,6 +28,7 @@ lib/Test/Unit/Failure.pm
 lib/Test/Unit/HarnessUnit.pm
 lib/Test/Unit/Listener.pm
 lib/Test/Unit/Loader.pm
+lib/Test/Unit/Procedural.pm
 lib/Test/Unit/Result.pm
 lib/Test/Unit/Runner.pm
 lib/Test/Unit/Setup.pm

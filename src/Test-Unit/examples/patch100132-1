@@ -1,10 +1,9 @@
-# please don't do stuff like this ...
-# put it on the command-line with the -I option
-#
-# use lib '../../lib';
+#!/usr/bin/perl -w
+
+use strict;
 
 use Experimental::Sample;
-use Test::Unit;
+use Test::Unit::Procedural;
 
 use constant DEBUG => 0;
 

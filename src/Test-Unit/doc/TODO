@@ -15,10 +15,6 @@ usage; after all, many people will check out PerlUnit for the first
 time when they hear 1.0 being announced, and first impressions count
 for a lot.
 
-** Rename Test::Unit to Test::Unit::Procedural
-
-Adam's also doing this imminently ...
-
 ** Rename Test::Unit::HarnessUnit and Test::Unit::UnitHarness
 
 Not sure what to yet, but we want to get these big API changes out of
