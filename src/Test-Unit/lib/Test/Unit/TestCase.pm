@@ -50,7 +50,8 @@ sub run_bare {
     $self->tear_down();
     if ($exception) {
 	print ref($self) . "::run_bare() propagating exception\n" if DEBUG;
-	if (not $exception->isa("Test::Unit::ExceptionFailure")) {
+	if (!ref($exception) ||
+	    !UNIVERSAL::isa($exception,"Test::Unit::ExceptionFailure")) {
 	    $exception = Test::Unit::ExceptionError->new($exception);
 	}
 	die $exception; # propagate exception

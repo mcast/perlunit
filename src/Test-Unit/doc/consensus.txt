@@ -114,3 +114,13 @@ about that. 8-)  -- mca
 
 We're going to try to avoid it while generating "inner classes" or
 whatever, for the self-tests.
+
+* Test::Unit::tests that need adding
+
+** die errors that look like variable names  [mca]
+
+A test that fails with an error like
+
+  die '$lotsofdollars';
+
+and make sure it gets wrapped into an ExceptionError
