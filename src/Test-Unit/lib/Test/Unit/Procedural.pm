@@ -67,7 +67,7 @@ sub create_suite {
     $set_up_func = \&{$set_up_candidates[0]} if @set_up_candidates;
 
     my @tear_down_candidates = grep /::tear_down$/, $st->functions;
-    $tear_down_func = \&{$set_up_candidates[0]} if @set_up_candidates;
+    $tear_down_func = \&{$tear_down_candidates[0]} if @tear_down_candidates;
 
     for my $test_method (grep /::test[^:]*$/, $st->functions) {
         my($method_name) = $test_method =~ /::(test[^:]*)/;
