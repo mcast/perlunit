@@ -11,7 +11,7 @@ sub new {
 sub add_error { 
     my $self = shift;
     my $class = ref($self);
-    croak "call to abstract method ${class}::count_test_cases";
+    croak "call to abstract method ${class}::add_error";
 }
 
 sub add_failure {
