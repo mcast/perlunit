@@ -8,6 +8,7 @@ use base qw(Test::Unit::Runner);
 
 use Test::Unit::TestSuite;
 use Test::Unit::Result;
+use Test::Unit::Loader;
 
 sub new {
     my $class = shift;
