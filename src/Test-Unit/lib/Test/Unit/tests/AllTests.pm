@@ -3,7 +3,6 @@ package Test::Unit::tests::AllTests;
 use Test::Unit::TestRunner;
 use Test::Unit::TestSuite;
 use Test::Unit::tests::SuiteTest;
-use Test::Unit::InnerClass;
 
 sub new {
     my $class = shift;

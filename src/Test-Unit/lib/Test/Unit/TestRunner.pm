@@ -95,8 +95,9 @@ sub print_errors {
 
         my $i = 0;
         for my $e (@{$result->errors()}) {
+	    chomp $e;
             $i++;
-            $self->_print("$i) $e");
+            $self->_print("$i) $e\n");
         }
     }
 }
@@ -108,8 +109,9 @@ sub print_failures {
     $self->_print(($failure_count == 1) ? "There was 1 failure:\n" : "There were $failure_count failures:\n");
 	my $i = 0; 
 	for my $e (@{$result->failures()}) {
+            chomp $e;
 	    $i++;
-	    $self->_print("$i ) $e");
+	    $self->_print("$i ) $e\n");
 	}
 }
 
@@ -117,7 +119,7 @@ sub print_header {
     my $self = shift;
     my ($result) = @_;
     if ($result->was_successful()) {
-        $self->_print("\n", "OK", " (", $result->run_count(), " tests)");
+        $self->_print("\n", "OK", " (", $result->run_count(), " tests)\n");
     } else {
         $self->_print("\n", "!!!FAILURES!!!", "\n",
                       "Test Results:\n",

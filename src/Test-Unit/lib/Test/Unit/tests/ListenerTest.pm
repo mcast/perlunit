@@ -2,7 +2,7 @@ package Test::Unit::tests::ListenerTest;
     
 # Test class used in SuiteTest
 
-use base qw(Test::Unit::TestCase Test::Unit::Listener Test::Unit::InnerClass);
+use base qw(Test::Unit::TestCase Test::Unit::Listener);
 
 use Test::Unit::Result;
 

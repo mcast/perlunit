@@ -10,7 +10,8 @@ use Carp;
 use FileHandle;
 use constant DEBUG => 0;
 use Test::Unit::TestCase;
-use Test::Unit::InnerClass;
+#use Test::Unit::InnerClass;
+use Class::Inner;
 use Test::Unit::Exception;
 
 use strict;
@@ -149,11 +150,10 @@ sub to_string {
 sub warning {
     my $self = shift;
     my ($message) = @_;
-    return Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<"EOIC", "warning");
-sub run_test {
-    my \$self = shift;
-    \$self->fail('$message');
-EOIC
+	return Class::Inner->new(
+		parent => 'Test::Unit::TestCase',
+		methods => { run_test => sub { (shift)->fail($message) } },
+	    args => ['warning']);
 }
 
 package Test::Unit::UnitHarness::TestCase;
