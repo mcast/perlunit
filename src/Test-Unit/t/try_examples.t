@@ -1,3 +1,7 @@
+#!/usr/bin/perl -w
+
+use strict;
+
 use lib 't/tlib', 'tlib';
 
 # using the standard built-in 'Test' module (assume nothing)

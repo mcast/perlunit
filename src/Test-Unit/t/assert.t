@@ -1,3 +1,7 @@
+#!/usr/bin/perl -w
+
+use strict;
+
 use Test::Unit::HarnessUnit;
 
 use lib 't/tlib', 'tlib';
