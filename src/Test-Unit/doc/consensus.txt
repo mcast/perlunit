@@ -40,62 +40,6 @@ where we only want to load a module if we need it, of course.
 
 No hard tabs, 4 column indent level.  
 
-* Test::Unit::Assert::assert()
-
-What is Test::Unit::Assert for? -- pdc
-
-** assert_eq(this, that, message) and other comparison routines
-
-PerlUnit doesn't include these because the user should be left to
-decide for s/himself whether to use == or eq .
-
-For the same reason we suggest users should roll their own structure
-comparison routines or use FreezeThaw::cmpStr()
-
-Having said this, we don't have concrete examples of Bad Things
-happening, as Adam pointed out. Please add examples below...
-
-[PDC: With coderefs, it becomes:
-
-    assert( sub {($_[0] eq $_[1]) || die "Expected '$_[0]', got '$_[1]'"},
-	   $expected, $got );
-
-There's nothing to stop us having a utility Test::Unit::CodeRef class method
-that'd return an appropriate anon subroutine:
-
-    assert(Test::Unit::Coderef->assert_eq, $expect, $got);
-
-    assert(Test::Unit::Coderef->assert_numeric, $expect, $got);
-
-Just a talking point.]
-
-** assert_regexp(string, qr/regexp/, message)
-
-Seems like a good idea, not yet committed
-
-[PDC: Changed this slightly by reifying the first argument to
-Test::Unit::Assert::assert into an 'assertion' object. If the first argument
-is a regular expression (using hte qr/.../ method) then it becomes a
-Test::Unit::Assertion::Regexp, which compares against the second argument and
-returns a default error message.
-
-Nothing to stop us extending this to take a possible different message as the
-last argument and use that as the message instead of the default.]
-
-** coderef_assert($cr, $self);
-
-Code that returns true for success and dies with an exception if it
-needs to make leave a message.
-
-This and other (blessed) objects get their 'do_assert' method called.
-
-See the 'pdc_coderefassert' branch of CVS.
-
-[PDC: No longer using the 'coderef_assert' method. This functionality is now
-rolled into the standard 'assert' method. If the first argument is a CODE
-reference, it becomes a Test::Unit::CodeRef assertion and gets all sorts of
-canny error reporting associated with it...]
-
 * Auto-adding tests, Test::Unit::TestSuite->new()
 
 ** interaction with inheritance
