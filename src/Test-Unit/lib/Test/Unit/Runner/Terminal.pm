@@ -1,4 +1,4 @@
-package Test::Unit::Runner::ASCII;
+package Test::Unit::Runner::Terminal;
 use strict;
 
 use base qw(Test::Unit::TestRunner); 
