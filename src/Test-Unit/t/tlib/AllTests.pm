@@ -15,6 +15,7 @@ sub suite {
     $suite->add_test(Test::Unit::TestSuite->new("TestTest"));
     $suite->add_test(SuiteTest->suite());
     $suite->add_test(Test::Unit::TestSuite->new("ListenerTest"));
+    $suite->add_test(Test::Unit::TestSuite->new("BadSuitesTest"));
     return $suite;
 }
 
