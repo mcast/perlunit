@@ -172,6 +172,14 @@ the best practice. See the discussion in Damian Conway's Object Oriented Perl.
 
    -- pdc
 
+* TODO lists
+** Matthew
+*** Consider removing examples/tester* (uses old Test::SuiteWrapper)
+*** Make Debian package
+*** Find a neat way to run unit-tested programs without the suite
+It's convenient for medium sized projects to stick the test subs in
+the classes they test, but then you have a run-time dependence on perlunit.
+
 * Tests to add
 
 ** PerlUnit selftests, Test::Unit::tests
@@ -236,7 +244,7 @@ It's not nice but we're doing it already, in an untidy way.
 
 Likely uses are 
 
- - backtrace quelledness
+ - backtrace quelledness (this goes away when we bin the backtrace)
  - (some) debug handlers
  - tagging tests (eg. "slow") for selective execution
 
@@ -244,3 +252,36 @@ It should be stored per-run (in the Listener) not per suite or
 testcase.
 
 I think it should be locally modifiable otherwise it's too inflexible.
+
+
+* Packaging
+
+[mca: Christian has SourceForge and CPAN packaging pretty much wrapped
+up *cough*, this is documented in another file in this directory]
+
+** Debian GNU/Linux
+
+[mca: Since I use perlunit for production work, I'm tempted to roll a
+package if it's not too tricky. There is a stack of reading to do
+first though (I'm not an official Debian developer)
+
+Relevant bit from /usr/doc/dh-make-perl/README
+
+  dh-make-perl will create the files required to build
+  a debian source package out of a perl package.
+  This works for most simple packages and is also useful
+  for getting started with packaging perl modules.
+
+  There is an override mechanism in place to handle most of
+  the little changes that may be needed for some modules
+  (this hasn't been tested much, though).
+
+  Using this program is no excuse for not reading the
+  debian developer documentation, including the policy,
+  the perl policy, the packaging manual and so on.
+
+See also http://www.uk.debian.org/devel/  ]
+
+** RedHat
+
+[mca: I made a RH package a long time ago... don't remember how]
