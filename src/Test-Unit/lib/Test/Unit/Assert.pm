@@ -83,34 +83,37 @@ Test::Unit::Assert - unit testing framework assertion class
 
     $self->assert($your_condition_here, $your_optional_message_here);
 
-    # NOTE: if you want to use regexes in comparisons, do it like this:
+    # or, for regular expression comparisons:
+
+    $self->assert(qr/some_pattern/, $result);
+
+    # or, for functional style coderef tests:
+
+    $self->assert(sub {$_[0] == $_[1] || die "Expected $_[0], got $_[1]"},
+                  1, 2); 
+
+    # or, for old style regular expression comparisons:
 
     $self->assert(scalar("foo" =~ /bar/), $your_optional_message_here);
+
 
 =head1 DESCRIPTION
 
 This class is used by the framework to assert boolean conditions that
 determine the result of a given test. The optional message will be
 displayed if the condition fails. Normally, it is not used directly,
-but you get the functionality by subclassing from
-Test::Unit::TestCase.
+but you get the functionality by subclassing from Test::Unit::TestCase.
 
-There is one problem with C<assert()>: the arguments to C<assert()>
-are evaluated in list context, e.g. making a failing regex "pull" the
+You can also pass in a regular expression object or a coderef as first
+argument to get additional functionality. Note that this is the
+recommended approach to testing regular expression matching.
+
+If you want to use the "old" style for testing regular expression
+matching, please be aware of this: the arguments to assert() are
+evaluated in list context, e.g. making a failing regex "pull" the
 message into the place of the first argument. Since this is ususally
-just plain wrong, please use C<scalar()> to force the regex comparison
-to yield a useful boolean value. I currently do not see a way around
-this, since function prototypes don't work for object methods, and any
-other tricks (counting argument number, and complaining if there is
-only one argument and it looks like a string, etc.) don't appeal to
-me. Thanks to Matthew Astley for noting this effect.
-
-The procedural interface to this framework, Test::Unit, does not have
-this problem, as it exports a "normal" C<assert()> function, and that
-can and does use a function prototype to correct the problem.
-
-
-=head1 AUTHOR
+just plain wrong, please use scalar() to force the regex comparison
+to yield a useful boolean value.
 
 Copyright (c) 2000 Christian Lemburg, E<lt>lemburg@acm.orgE<gt>.
 
@@ -121,11 +124,27 @@ Thanks go to the other PerlUnit framework people:
 Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
 
 Thanks for patches go to:
-Matthew Astley, David Esposito.
+Matthew Astley, David Esposito, Piers Cawley.
 
 =head1 SEE ALSO
 
 =over 4
+
+=item *
+
+L<Test::Unit::Assertion>
+
+=item *
+
+L<Test::Unit::Assertion::Regexp>
+
+=item *
+
+L<Test::Unit::Assertion::CodeRef>
+
+=item *
+
+L<Test::Unit::Assertion::Boolean>
 
 =item *
 
