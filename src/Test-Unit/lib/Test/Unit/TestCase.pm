@@ -75,6 +75,7 @@ sub run_test {
     debug(ref($self) . "::run_test() called\n");
     my $method = $self->name();
     if ($self->can($method)) {
+        debug("  running `$method'\n");
         $self->$method();
     } else {
         $self->fail("Method `$method' not found");
