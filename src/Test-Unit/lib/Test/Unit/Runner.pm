@@ -1,4 +1,23 @@
 package Test::Unit::Runner;
+
+=head1 NAME
+
+Test::Unit::Runner - abstract base class for test runners
+
+=head1 SYNOPSIS
+
+    my $runner = Test::Unit::TestRunner->new();
+    $runner->filter(@filter_tokens);
+    $runner->start(...);
+
+=head1 DESCRIPTION
+
+This class is a parent class of all test runners, and hence is not
+intended to be used directly.  It provides functionality such as state
+(e.g. run-time options) available to all runner classes.
+
+=cut
+
 use strict;
 
 use Test::Unit::Result;
@@ -24,52 +43,59 @@ sub end_suite {
     pop @{ $self->{_suites_running} };
 }
 
+=head2 suites_running()
+
+Returns an array stack of the current suites running.  When a new
+suite is started, it is pushed on the stack, and it is popped on
+completion.  Hence the first element in the returned array is
+the top-level suite, and the last is the innermost suite.
+
+=cut
+
 sub suites_running {
     my $self = shift;
     return @{ $self->{_suites_running} || [] };
 }
 
+=head2 filter([ @tokens ])
+
+Set the runner's filter tokens to the given list.
+
+=cut
+
 sub filter {
     my $self = shift;
-    my (@filter) = @_;
-
-    $self->{_filter} = [ @filter ] if @filter;
-
+    $self->{_filter} = [ @_ ] if @_;
     return @{ $self->{_filter} || [] };
 }
 
+=head2 reset_filter()
+
+Clears the current filter.
+
+=cut
+
+sub reset_filter {
+    my $self = shift;
+    $self->{_filter} = [];    
+}
+
 1;
-__END__
-
-
-=head1 NAME
-
-    Test::Unit::Runner - abstract base class for test runners
-
-=head1 SYNOPSIS
-
-    # this class is not intended to be used directly 
-
-=head1 DESCRIPTION
-
-    This class is a parent class of all test runners, and represents
-    state (e.g. run-time options) available to all runner classes.
 
 =head1 AUTHOR
 
-    Copyright (c) 2000 Brian Ewins, Christian Lemburg, <lemburg@acm.org>.
+Copyright (c) 2000 Brian Ewins, Christian Lemburg, <lemburg@acm.org>.
 
-    All rights reserved. This program is free software; you can
-    redistribute it and/or modify it under the same terms as
-    Perl itself.
+All rights reserved. This program is free software; you can
+redistribute it and/or modify it under the same terms as Perl itself.
 
-    Thanks go to the other PerlUnit framework people: 
-    Cayte Lindner, J.E. Fritz, Zhon Johansen.
+Thanks go to the other PerlUnit framework people: Cayte Lindner,
+J.E. Fritz, Zhon Johansen.
 
 =head1 SEE ALSO
 
-    - Test::Unit::HarnessUnit
-    - Test::Unit::TestRunner
-    - Test::Unit::TkTestRunner
+L<Test::Unit::HarnessUnit>,
+L<Test::Unit::TestRunner>,
+L<Test::Unit::TkTestRunner>
 
 =cut
