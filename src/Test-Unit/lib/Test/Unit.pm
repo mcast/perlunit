@@ -51,6 +51,16 @@ L<Test::Unit::Procedural>
 
 =back
 
+=head1 FEEDBACK
+
+The Perl Unit development team are humans. In part we develop stuff
+because it scratches our collective itch but we'd also really like to
+know if it scratches yours. Please subscribe to the perlunit-users
+mailing list at
+L<http://lists.sourceforge.net/lists/listinfo/perlunit-users> and let
+us know what you love and hate about PerlUnit and what else you want
+to do with it.
+
 =cut
 
 package Test::Unit;
