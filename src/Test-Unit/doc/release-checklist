@@ -1,3 +1,63 @@
+-------------------------------------------------
+The procedure should be:
+-------------------------------------------------
+
+1. Commit new files in src/Test-Unit
+2. Changes (section for release at the top)
+3. Makefile.PL (set new $VERSION, which is used by make tardist)
+4. lib/Test/Unit.pm - put in the same $VERSION that is in Makefile.PL
+   (for explanation why see below)
+5. README (Version numbers on installation commands .. surely we
+   could put something generic in here? - Sure, and you also can just
+   do a simple regex replace in your favorite editor)
+6. MANIFEST if files are to be added to the tarball
+7. cvs rtag -r HEAD REL_0_14 releasemodule
+   (with the $VERSION number from above)
+8. make clean ; perl Makefile.PL ; make tardist
+9. upload to incoming as per Sourceforge docs
+10. notify lemburg@acm.org for upload to CPAN
+
+Cheers,
+
+Christian Lemburg
+
+-------------------------------------------------
+Explanation on version number synchronization:
+-------------------------------------------------
+
+The CPAN module will decide to upgrade a module when the version number
+of the module installed locally is less than the highest version number
+of any version of the module it can find on CPAN. It will find out the
+distribution file this module is in, and then install this distribution
+file. This can lead to surprising results for distribution files that
+contain multiple modules.
+
+Take this common situation: package Foo-0.22.tar.gz contains modules
+Foo, Foo::Bar, and Foo::Baz. Now, something changes in Foo::Bar, and
+Foo::Bar gets a new version number. The module author happily uploads
+Foo-0.23.tar.gz to CPAN.
+
+Now, will the CPAN module use Foo-0.23.tar.gz to upgrad package Foo if you
+tell it "install Foo"? No. CPAN will look at the version number for Foo,
+determine it has not changed compared to the locally installed version,
+and do nothing. You have to tell it "install Foo::Bar" to get the new
+distribution file, which is bad, since nobody will know she has to
+do that.
+
+The solution is to make sure any time a distribution file gets upgraded,
+its top level module should get a new, higher version number.  This way,
+things will work like people expect them to work.
+
+Please note that any module on CPAN should have a version number, even
+if it is contained in a package with many other modules. This ensures
+that people can require a certain version of any module in a given
+distribution file.
+
+
+-------------------------------------------------
+References
+-------------------------------------------------
+
 Date: Wed, 21 Feb 2001 14:06:35 +0000
 From: Matthew Astley <mca-gdl@users.sourceforge.net>
 To: perlunit-devel@lists.sourceforge.net
