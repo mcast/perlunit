@@ -5,23 +5,8 @@ use base qw(Test::Unit::TestCase);
 
 use Test::Unit::tests::TornDown;
 use Test::Unit::tests::WasRun;
+use Test::Unit::InnerClass;
 
-# helper to emulate Java inner class syntax feature
-# clever, eh
-
-{
-    my $i = 0;
-    sub make_inner_class {
-	my ($class, $extension_text, @constructor_args) = @_;
-	$i++;
-	eval  "package $class" . "::" ."Anonymous$i; "
-	    . "use base qw($class); "
-		. $extension_text;
-	no strict 'refs';
-	return ("$class" . "::" . "Anonymous$i")->new(@constructor_args);
-	}
-} 
-   
 sub new {
     my $class = shift;
     my ($name) = @_;
@@ -66,7 +51,7 @@ sub test_case_to_string {
 
 sub test_error {
     my $self = shift;
-    my $error = make_inner_class("Test::Unit::TestCase", <<'EOIC', "error"); 
+    my $error = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<'EOIC', "error"); 
 sub run_test {
     my $self = shift;
     my $e = Test::Unit::ExceptionError->new();
@@ -78,7 +63,7 @@ EOIC
 
 sub test_fail {
     my $self = shift;
-    my $fail = make_inner_class("Test::Unit::TestCase", <<'EOIC', "fail"); 
+    my $fail = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<'EOIC', "fail"); 
 sub run_test {
     my $self = shift;
     fail();
@@ -89,7 +74,7 @@ EOIC
 
 sub test_failure {
     my $self = shift;
-    my $failure = make_inner_class("Test::Unit::TestCase", <<'EOIC', "failure"); 
+    my $failure = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<'EOIC', "failure"); 
 sub run_test {
     my $self = shift;
     $self->assert(0);
@@ -112,7 +97,7 @@ sub test_failure_exception {
 
 sub test_run_and_tear_down_fails {
     my $self = shift;
-    my $fails = make_inner_class("TornDown", <<'EOIC', "fails");
+    my $fails = Test::Unit::InnerClass::make_inner_class("TornDown", <<'EOIC', "fails");
 sub tear_down {
     my $self = shift;
     $self->SUPER::tear_down();
@@ -135,7 +120,7 @@ sub test_runner_printing {
 
 sub test_setup_fails {
     my $self = shift;
-    my $fails = make_inner_class("Test::Unit::TestCase", <<'EOIC', "fails"); 
+    my $fails = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<'EOIC', "fails"); 
 sub set_up {
     my $e = Test::Unit::ExceptionError->new();
     die $e;
@@ -148,7 +133,7 @@ EOIC
 
 sub test_success {
     my $self = shift;
-    my $success = make_inner_class("Test::Unit::TestCase", <<'EOIC', "success"); 
+    my $success = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<'EOIC', "success"); 
 sub run_test {
     my $self = shift;
     $self->assert(1);
@@ -159,14 +144,14 @@ EOIC
 
 sub test_tear_down_after_error {
     my $self = shift;
-    my $fails = make_inner_class("TornDown", "", "fails");
+    my $fails = Test::Unit::InnerClass::make_inner_class("TornDown", "", "fails");
     $self->verify_error($fails);
     $self->assert($fails->torn_down());
 }
 
 sub test_tear_down_fails {
     my $self = shift;
-    my $fails = make_inner_class("Test::Unit::TestCase", <<'EOIC', "fails"); 
+    my $fails = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<'EOIC', "fails"); 
 sub tear_down {
     my $e = Test::Unit::ExceptionError->new();
     die $e;
@@ -179,7 +164,7 @@ EOIC
 
 sub test_tear_down_setup_fails {
     my $self = shift;
-    my $fails = make_inner_class("TornDown", <<'EOIC', "fails");
+    my $fails = Test::Unit::InnerClass::make_inner_class("TornDown", <<'EOIC', "fails");
 sub set_up {
     my $self = shift;
     my $e = Test::Unit::ExceptionError->new();
@@ -192,7 +177,7 @@ EOIC
 
 sub test_was_not_successful {
     my $self = shift;
-    my $failure = make_inner_class("Test::Unit::TestCase", <<'EOIC', "fail"); 
+    my $failure = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<'EOIC', "fail"); 
 sub run_test {
     my $self = shift;
     $self->fail();
@@ -214,7 +199,7 @@ sub test_was_run {
 
 sub test_was_successful {
     my $self = shift;
-    my $success = make_inner_class("Test::Unit::TestCase", <<'EOIC', "success"); 
+    my $success = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<'EOIC', "success"); 
 sub run_test {
     my $self = shift;
     $self->assert(1);

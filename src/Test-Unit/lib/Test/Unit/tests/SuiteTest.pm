@@ -7,22 +7,6 @@ use Test::Unit::TestSuite;
 use Test::Unit::tests::TornDown;
 use Test::Unit::tests::WasRun;
 
-# helper to emulate Java inner class syntax feature
-# clever, eh
-
-{
-    my $i = 0;
-    sub make_inner_class {
-	my ($class, $extension_text, @constructor_args) = @_;
-	$i++;
-	eval  "package $class" . "::" ."Anonymous$i; "
-	    . "use base qw($class); "
-		. $extension_text;
-	no strict 'refs';
-	return ("$class" . "::" . "Anonymous$i")->new(@constructor_args);
-	}
-} 
-   
 sub new {
     my $class = shift;
     my ($name) = @_;

@@ -4,6 +4,7 @@ use constant DEBUG => 0;
 use base qw(Test::Unit::Test);
 
 use Test::Unit::TestCase;
+use Test::Unit::InnerClass;
 
 # helper subroutines
 
@@ -28,21 +29,6 @@ sub is_a_test_case_class {
     }
     return 0;
 }
-
-# emulate Java inner class syntax feature
-
-{
-    my $i = 0;
-    sub make_inner_class {
-	my ($class, $extension_text, @constructor_args) = @_;
-	$i++;
-	eval  "package $class" . "::" ."Anonymous$i; "
-	    . "use base qw($class); "
-		. $extension_text;
-	no strict 'refs';
-	return ("$class" . "::" . "Anonymous$i")->new(@constructor_args);
-	}
-} 
 
 # get list of all parent classes of a class
 
@@ -196,7 +182,7 @@ sub to_string {
 sub warning {
     my $self = shift;
     my ($message) = @_;
-    return make_inner_class("Test::Unit::TestCase", <<"EOIC", "warning");
+    return Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<"EOIC", "warning");
 sub run_test {
     my \$self = shift;
     \$self->fail('$message');

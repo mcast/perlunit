@@ -4,4 +4,4 @@ use TestRunner.pl like this (lib adjusted for this directory):
 
 and TkTestRunner like this:
 
-	perl -I./lib TkTestRunner.pl Test::Unit::tests::TestTest
+	perl -I./lib TkTestRunner.pl Test::Unit::tests::AllTests

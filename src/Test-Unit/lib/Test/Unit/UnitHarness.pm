@@ -10,7 +10,9 @@ use Carp;
 use FileHandle;
 use constant DEBUG => 0;
 use Test::Unit::TestCase;
+use Test::Unit::InnerClass;
 use Test::Unit::Exception;
+
 use strict;
 
 use vars qw($VERSION $verbose $switches $have_devel_corestack $curtest
@@ -142,7 +144,7 @@ sub to_string {
 sub warning {
     my $self = shift;
     my ($message) = @_;
-    return make_inner_class("Test::Unit::TestCase", <<"EOIC", "warning");
+    return Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<"EOIC", "warning");
 sub run_test {
     my \$self = shift;
     \$self->fail('$message');

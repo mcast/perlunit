@@ -70,7 +70,7 @@ sub run_test {
     my $method = $self->name();
     no strict 'refs';
     print "Should now call $class\:\:$method\n" if DEBUG;
-    if (defined &{$class . "::" . $method}) {
+    if ($class->can($method)) {
 	&{$class . "::" .$method}($self);
     } else {
 	$self->fail("Method $method not found");
