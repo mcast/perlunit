@@ -259,6 +259,8 @@ sub run {
     my $self = shift;
     my ($result, $runner) = @_;
 
+    debug("$self\::run($result, ", $runner || 'undef', ") called\n");
+
     $result ||= create_result();
     $result->tell_listeners(start_suite => $self);
 
@@ -267,12 +269,13 @@ sub run {
 
     for my $t (@{$self->tests()}) {
         if ($runner && $self->filter_test($runner, $t)) {
-            debug(sprintf "skipping %s\n", $t->name());
+            debug(sprintf "+ skipping '%s'\n", $t->name());
             next;
         }
+        debug(sprintf "+ didn't skip '%s'\n", $t->name());
  
         last if $result->should_stop();
-        $t->run($result);
+        $t->run($result, $runner);
     }
 
     $result->tell_listeners(end_suite => $self);
@@ -283,9 +286,13 @@ sub run {
 sub filter_test {
     my $self = shift;
     my ($runner, $test) = @_;
+
+    debug(sprintf "checking whether to filter '%s'\n", $test->name);
+
     my @filter_tokens = $runner->filter();
 
     foreach my $token (@filter_tokens) {
+        debug("  - by token $token\n");
         return 1 if $test->filter_method($token, $test->name())
                  || $test->filter_method($token, 'ALL');
     }

@@ -43,7 +43,7 @@ sub filter_method {
     }
 
     my $filtered = $self->{$private}{$token}{$method};
-    debug("filter $method by token $token? ",
+    debug("      filter $method by token $token? ",
           $filtered ? 'yes' : 'no',
 	  "\n");
     return $filtered;
