@@ -47,7 +47,7 @@ sub run_bare {
     my $exception = $@;
     $self->tear_down();
     if ($exception) {
-	print ref($self) . "::_run_bare() propagating exception\n" if DEBUG;
+	print ref($self) . "::run_bare() propagating exception\n" if DEBUG;
 	if (not $exception->isa("Test::Unit::ExceptionFailure")) {
 	    $exception = Test::Unit::ExceptionError->new($exception);
 	}
