@@ -37,13 +37,18 @@ happening, as Adam pointed out. Please add examples below...
 
 ** assert_regexp(string, qr/regexp/, message)
 
-seems like a good idea, not yet implemented? -- mca
+Seems like a good idea, not yet committed
 
 ** coderef_assert($cr, $self);
 
-Write some stuff Piers! I'm a bit baffled -- mca
+Code that returns true for success and dies with an exception if it
+needs to make leave a message.
 
-* Test::Unit::TestSuite, auto-adding tests
+This and other (blessed) objects get their 'do_assert' method called.
+
+See the 'pdc_coderefassert' branch of CVS.
+
+* Auto-adding tests, Test::Unit::TestSuite->new()
 
 ** interaction with inheritance
 
@@ -113,15 +118,6 @@ essence of the structure, but they're getting old.
 Also, the SF message boards have some knowledge which needs
 distilling.
 
-* Generic tests for users to include
-
-Matthew wrote some. Whether anyone else wants them remains to be seen.
-
-* Test coverage tests
-
-There was a big thread on this but it's someone else's turn to write
-about that. 8-)  -- mca
-
 * Namespace pollution
 
 ** classes used during self-tests
@@ -137,9 +133,11 @@ wondering whether we should go to '__' prefix in the C tradition for
 "magic things", since the perlunit user shouldn't need to mess with
 this? -- mca
 
-* Test::Unit::tests that need adding
+* Tests to add
 
-** die errors that look like variable names  [mca]
+** PerlUnit selftests, Test::Unit::tests
+
+*** die errors that look like variable names  [mca]
 
 A test that fails with an error like
 
@@ -147,7 +145,7 @@ A test that fails with an error like
 
 and make sure it gets wrapped into an ExceptionError
 
-** checking PerlUnit does the right OOP thing in constructors and isa() checks
+*** doing the right OOP thing in constructors and isa() checks
 
 Possibly a test that overrides the 'isa' method so Piers' fix to my
 patch
@@ -158,3 +156,49 @@ can be exercised.
 
 Also Adam has patched some of the PerlUnit constructors to allow
 passing a classname instead of being invoked as a method.
+
+** Generic tests for users to include
+
+Matthew wrote some. Whether anyone else wants them remains to be seen.
+
+The potentially useful ones:
+
+*** test_SubsAllNeedTests
+
+Checks all subs in a module are tested. Take the code and put it
+somewhere else.
+
+*** test_PodChecker
+
+Look the sourcecode up in %INC and run it through the Pod::Checker
+(which spits out stuff to STDOUT regardless).
+
+*** test_HaveWarnings
+
+Check $^W .. a bit cheeky. I was actually after a check for
+strictness, after forgetting to use it in some module I broke off, but
+this is either tricky or impossible.
+
+** Test coverage tests
+
+There was a big thread on this but it's someone else's turn to write
+about that. 8-)  -- mca
+
+Current thinking is to keep test-coverage tests away from the executed
+tests, mainly so you can have a script which draws a pretty chart of
+how well your code is tested. Adam has some code for this.
+
+* Keeping state
+
+It's not nice but we're doing it already, in an untidy way.
+
+Likely uses are 
+
+ - backtrace quelledness
+ - (some) debug handlers
+ - tagging tests (eg. "slow") for selective execution
+
+It should be stored per-run (in the Listener) not per suite or
+testcase.
+
+I think it should be locally modifiable otherwise it's too inflexible.
