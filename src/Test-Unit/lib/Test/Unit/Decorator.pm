@@ -22,7 +22,7 @@ sub count_test_cases() {
 sub run {
     my $self = shift;
     my ($result) = @_;
-    $self->{_fTest}->basic_run($result);
+    $self->basic_run($result);
 }
 
 sub to_string {
