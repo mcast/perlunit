@@ -12,8 +12,8 @@ use Test::Unit::TestResult;
 sub new {
     my $class = shift;
     my ($filehandle) = @_;
-	# should really use the IO::Handle package here.
-	# this is very ugly.
+    # should really use the IO::Handle package here.
+    # this is very ugly.
     $filehandle = \*STDOUT unless $filehandle;
     bless { _Print_stream => $filehandle }, $class;
 }
@@ -31,44 +31,44 @@ sub _print {
 }
 
 sub start_test {
-  my $self=shift;
-  my $test=shift;
+    my $self=shift;
+    my $test=shift;
 }
 
 sub not_ok {
     my $self = shift;
     my ($test, $exception) = @_;
-    $self->_print("\n".$exception->stacktrace()
-				  ."\n\nnot ok ERROR "
-				  .$test->name()."\n");
+    $self->_print("\nnot ok ERROR "
+		  . $test->name()
+		  . "\n"
+		  . $exception->to_string()
+		  . "\n");
 }
 
 sub ok {
     my $self = shift;
     my ($test) = @_;
-    $self->_print("\n\nok PASS "
-				  .$test->name()."\n");
+    $self->_print("ok PASS " . $test->name() . "\n");
 }
 
 sub add_error {
     my $self = shift;
-	$self->not_ok(@_);
+    $self->not_ok(@_);
 }
 	
 sub add_failure {
     my $self = shift;
-	$self->not_ok(@_);
+    $self->not_ok(@_);
 }
 
 sub add_pass {
     my $self = shift;
-	$self->ok(@_);
+    $self->ok(@_);
 }
 
 sub end_test {
     my $self = shift;
     my ($test) = @_;
-	$self->_print("\nTEST ".$test->name()." complete.\n");
 }
 
 sub create_test_result {
@@ -80,13 +80,9 @@ sub do_run {
     my $self = shift;
     my ($suite) = @_;
     my $result = $self->create_test_result();
-	my $count=$suite->count_test_cases();
+    my $count=$suite->count_test_cases();
     $result->add_listener($self);
     $suite->run($result);
-    if (not $result->was_successful()) {
-    	exit(-1);
-    }
-    exit(0);		
 }
 
 sub this_package {
@@ -119,16 +115,16 @@ sub start {
 
     my $test_case = "";
     my $wait = 0;
-	my $suite=Test::Unit::TestLoader::load(@args);
-	if ($suite) {
-	  my $count=$suite->count_test_cases();
-	  $self->_print("\nSTARTING TEST RUN\n1..$count\n");
-	  $self->do_run($suite);
-	  exit(0);
+    my $suite=Test::Unit::TestLoader::load(@args);
+    if ($suite) {
+	my $count=$suite->count_test_cases();
+	$self->_print("\nSTARTING TEST RUN\n1..$count\n");
+	$self->do_run($suite);
+	exit(0);
     } else {
-	  $self->_print("Invalid argument to test runner: $args[0]\n");
-	  exit(1);
-	}
+	$self->_print("Invalid argument to test runner: $args[0]\n");
+	exit(1);
+    }
 }
 
 1;
