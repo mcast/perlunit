@@ -18,7 +18,6 @@ use Class::Inner;
 use Error qw/:try/;
 use Test::Unit::Exception;
 use Test::Unit::Failure;
-use Test::Unit::Error;
 
 # private
 
