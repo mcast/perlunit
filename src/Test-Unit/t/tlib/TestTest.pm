@@ -48,9 +48,9 @@ sub make_dummy_testcase {
     my $method_name = shift || 'run_test';
     my $test_name = (caller(1))[3] . '_inner';
     
-    Class::Inner->new(parent => 'Test::Unit::TestCase',
+    Class::Inner->new(parent  => 'Test::Unit::TestCase',
                       methods => { $method_name => $sub },
-                      args => [$test_name]);
+                      args    => [ $test_name ]);
 }
 
 sub test_case_to_string {
@@ -100,19 +100,19 @@ sub test_failure_exception {
 
 sub test_run_and_tear_down_fails {
     my $self = shift;
-    my $fails = Class::Inner->new
-        (
-         parent => 'TornDown',
-         methods => { tear_down => sub {
-                          my $self = shift;
-                          $self->SUPER;
-                          throw Test::Unit::Error -object => $self;
-                      },
-                      run_test => sub {
-                          throw Test::Unit::Error -object => $_[0];
-                      }
-                    }
-        );
+    my $fails = Class::Inner->new(
+        parent  => 'TornDown',
+        methods => { tear_down => sub {
+                         my $self = shift;
+                         $self->SUPER;
+                         throw Test::Unit::Error -object => $self;
+                     },
+                     run_test => sub {
+                         throw Test::Unit::Error -object => $_[0];
+                     }
+                   },
+        args    => [ 'test_run_and_tear_down_fails' ],
+    );
     $self->verify_error($fails);
     $self->assert($fails->torn_down());
 }
@@ -124,14 +124,15 @@ sub test_runner_printing {
 
 sub test_setup_fails {
     my $self = shift;
-    my $fails = Class::Inner->new
-        (parent => 'Test::Unit::TestCase',
-         methods => { set_up => sub {
-                          my $self = shift;
-                          throw Test::Unit::Error -object => $self;
-                      },
-                      run_test => sub {},
-                    },
+    my $fails = Class::Inner->new(
+        parent  => 'Test::Unit::TestCase',
+        methods => { set_up => sub {
+                         my $self = shift;
+                         throw Test::Unit::Error -object => $self;
+                     },
+                     run_test => sub {},
+                   },
+        args    => [ 'test_setup_fails' ],
         );
     $self->verify_error($fails);
 }
@@ -144,28 +145,36 @@ sub test_success {
 
 sub test_tear_down_after_error {
     my $self = shift;
-    my $fails = Class::Inner->new
-        (parent => 'TornDown',
-         methods => {dummy => sub {}});
+    my $fails = Class::Inner->new(
+        parent  => 'TornDown',
+        methods => { dummy => sub {} },
+        args    => [ 'test_tear_down_after_error' ],
+    );
     $self->verify_error($fails);
     $self->assert($fails->torn_down());
 }
 
 sub test_tear_down_fails {
     my $self = shift;
-    my $fails = Class::Inner->new
-        (parent => 'Test::Unit::TestCase',
-         methods => {tear_down => sub { throw Test::Unit::Error -object => $_[0] },
-                     run_test  => {}});
+    my $fails = Class::Inner->new(
+        parent  => 'Test::Unit::TestCase',
+        methods => { tear_down => sub {
+                         throw Test::Unit::Error -object => $_[0]
+                     },
+                     run_test  => {}
+                   },
+        args    => [ 'test_tear_down_fails' ],
+    );
     $self->verify_error($fails);
 }
 
 sub test_tear_down_setup_fails {
     my $self = shift;
-    my $fails = Class::Inner->new
-        (parent => 'TornDown',
-         methods => { set_up => sub { throw Test::Unit::Error -object => $_[0] } },
-        );
+    my $fails = Class::Inner->new(
+        parent  => 'TornDown',
+        methods => { set_up => sub { throw Test::Unit::Error -object => $_[0] } },
+        args    => [ 'test_tear_down_setup_fails' ],
+    );
     $self->verify_error($fails);
     $self->assert(! $fails->torn_down());
 }
