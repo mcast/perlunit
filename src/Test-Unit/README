@@ -34,10 +34,14 @@ DESCRIPTION
     'make test' command (see t/all_tests.t).
 
 PREREQUISITES
-    The Tk module is needed for the GUI.
+    Class::Inner, Devel::Symdump and Error.pm are required.  A new-ish
+    version of base.pm (> 1.0) is required to avoid the problem where
+    earlier versions failed to compile in the parent class.  The Tk
+    module is needed for the GUI.
 
 INSTALLATION
-    Just perform the usual incantation:
+    Once you have installed the prerequisites, just perform the usual
+    incantation:
 
     gunzip Test-Unit-0.14.tar.gz
     tar -xvf Test-Unit-0.14.tar 
