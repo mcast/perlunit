@@ -11,7 +11,7 @@ sub new {
 
 sub suite {
     my $class = shift;
-    my $suite = Test::Unit::TestSuite->new("Framework Tests");
+    my $suite = Test::Unit::TestSuite->empty_new("Framework Tests");
     $suite->add_test(Test::Unit::TestSuite->new("Test::Unit::tests::TestTest"));
     $suite->add_test(Test::Unit::tests::SuiteTest->suite());
     return $suite;
