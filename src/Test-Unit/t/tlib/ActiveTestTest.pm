@@ -6,6 +6,7 @@ use Test::Unit::TestCase ();
 use base 'Test::Unit::TestCase';
 use Test::Unit::Result;
 use Test::Unit::TestSuite ();
+use Success;
 
 sub testActiveTest {
     my $self = shift;
@@ -51,15 +52,9 @@ sub create_active_test_suite () {
     my $self = shift;
     my $suite = Test::Unit::TestSuite->new;
     for (1 .. 100) {
-        $suite->add_test(SuccessTest->new("success"));
+        $suite->add_test(Success->new("test_success"));
     }
     return $suite;
 }
-
-package SuccessTest;
-
-use base 'Test::Unit::TestCase';
-    
-sub success { }
 
 1;

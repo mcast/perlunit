@@ -1,13 +1,13 @@
 package Success;
 
-use Test::Unit::TestCase;
 use strict;
 use warnings;
 
-use vars qw/@ISA/;
+use base 'Test::Unit::TestCase';
 
-@ISA = 'Test::Unit::TestCase';
-
-sub test {
+sub test_success {
+  my $self = shift;
+  $self->assert(1);
 }
 
+1;
