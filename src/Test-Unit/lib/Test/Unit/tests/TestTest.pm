@@ -1,60 +1,10 @@
+package Test::Unit::tests::TestTest;
 use strict;
 
-# ------------------------------------------------ 
-package TornDown;
-
 use base qw(Test::Unit::TestCase);
 
-sub new {
-    my $class = shift;
-    my ($name) = @_;
-    my $self = bless {_TornDown => 0}, $class;
-    my $a_test_case = $self->SUPER::new($name);
-    return bless $a_test_case, $class;
-}
-
-sub tear_down {
-    my $self = shift;
-    $self->{_TornDown} = 1;
-}
-
-sub torn_down {
-    my $self = shift;
-    return $self->{_TornDown};
-}
-
-sub run_test {
-    my $self = shift;
-    my $e = new Test::Unit::ExceptionError();
-    die $e;
-}
-
-# ------------------------------------------------ 
-package WasRun;
-use base qw(Test::Unit::TestCase);
-
-sub new {
-    my $class = shift;
-    my ($name) = @_;
-    my $self = bless {_WasRun => 0}, $class;
-    my $a_test_case = $self->SUPER::new($name);
-    return bless $a_test_case, $class;
-}
-
-sub run_test {
-    my $self = shift;
-    $self->{_WasRun} = 1;
-}
-
-sub was_run {
-    my $self = shift;
-    return $self->{_WasRun};
-}
-
-# ------------------------------------------------ 
-package Test::Unit::tests::TestTest;
-
-use base qw(Test::Unit::TestCase);
+use Test::Unit::tests::TornDown;
+use Test::Unit::tests::WasRun;
 
 # helper to emulate Java inner class syntax feature
 # clever, eh

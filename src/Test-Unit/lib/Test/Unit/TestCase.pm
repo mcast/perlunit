@@ -5,6 +5,7 @@ use constant DEBUG => 0;
 use base qw(Test::Unit::Assert Test::Unit::Test);
 
 use Test::Unit::ExceptionFailure; 
+use Test::Unit::ExceptionError; 
 
 sub new {
     my $class = shift;
@@ -30,7 +31,8 @@ sub name {
 sub run {
     my $self = shift;
     print ref($self) . "::run() called\n" if DEBUG;
-    my $result = create_result();
+    my ($result) = @_;
+    $result = create_result() unless defined($result);
     $self->_run($result);
     return $result;
 }

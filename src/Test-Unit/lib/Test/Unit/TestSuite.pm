@@ -3,6 +3,49 @@ use strict;
 use constant DEBUG => 0;
 use base qw(Test::Unit::Test);
 
+use Test::Unit::TestCase;
+
+# helper subroutines
+
+# determine if a string is the name of a class
+
+sub is_not_name_of_a_class {
+    # assume it is a class if we can load it
+    # don't know any better, if you do, please tell me
+    my $name = shift;
+    return 1 if $name =~ /\s+/; # can't be an classname?
+    eval "require $name";
+    print $@ if DEBUG;
+    return 1 if $@;
+}
+
+sub is_a_test_case_class {
+    my $pkg = shift;
+    return 0 if is_not_name_of_a_class($pkg);
+    no strict 'refs';
+    if ("$pkg"->isa("Test::Unit::TestCase")) {
+	return 1;
+    }
+    return 0;
+}
+
+# emulate Java inner class syntax feature
+
+{
+    my $i = 0;
+    sub make_inner_class {
+	my ($class, $extension_text, @constructor_args) = @_;
+	$i++;
+	eval  "package $class" . "::" ."Anonymous$i; "
+	    . "use base qw($class); "
+		. $extension_text;
+	no strict 'refs';
+	return ("$class" . "::" . "Anonymous$i")->new(@constructor_args);
+	}
+} 
+
+# class and object methods
+
 sub new {
     my $class = shift;
     my ($name) = @_;
@@ -11,24 +54,52 @@ sub new {
     my $self = {
 	_Tests => \@_Tests,
 	_Name => $name,
+	_Names => [],
     };
     bless $self, $class;
-    print ref($self) . "::new() called\n" if DEBUG;
+    print ref($self) . "::new($name) called\n" if DEBUG;
     
-    if (defined($name)) {
+    if (is_not_name_of_a_class($name)) {
+	# it is a test suite name, create an empty suite
+	print "Creating empty suite '$name' at ", ref($self) , "::new()\n" 
+	    if DEBUG;
+	return $self;
+    } else {
+	# it is a class, create a suite with its tests
+	# ... and that of its ancestors, if they are Test::Unit::TestCase
 	no strict 'refs';
-	my @candidates = grep /^test/, keys %{"$name" . "::"};
-	for my $c (@candidates) {
-	    if (defined(&{$name . "::" . $c})) {
-		my $method = $name . "::" . $c;
-		$self->add_test_method($method);
+	if (not is_a_test_case_class($name)) {
+	    my $message = "Class " . $name . " is not a Test::Unit::TestCase";
+	    $self->add_test($self->warning($message));
+	    return $self;
+	}
+	my @packages_to_search = ($name, @{$name . "::ISA"});
+	for my $pkg (@packages_to_search) {
+	    next unless is_a_test_case_class($pkg);
+	    my @candidates = grep /^test/, keys %{$pkg . "::"};
+	    for my $c (@candidates) {
+		if (defined(&{$pkg . "::" . $c})) {
+		    my $method = $pkg . "::" . $c;
+		    $self->add_test_method($method, $self->names());
+		}
 	    }
 	}
-    } else {
-	$self->add_test($self->warning("No tests found in $class"));
+	if (not @{$self->tests()}) {
+	    $self->add_test($self->warning("No tests found in $class"));
+	}
     }
 
     return $self;
+}
+
+sub name {
+    my $self = shift;
+    return $self->{_Name};
+}
+
+sub names {
+    my $self = shift;
+    return $self->{_Names};
 }
 
 sub add_test {
@@ -39,9 +110,11 @@ sub add_test {
 
 sub add_test_method {
     my $self = shift;
-    my ($test_method) = @_;
+    my ($test_method, $names) = @_;
     my ($class, $method) = ($test_method =~ m/^(.*)::(.*)$/);
+    return if grep /^\Q$method\E$/, @{$names}; 
     no strict 'refs';
+    push @{$self->names()}, $method;
     my $a_test_case_sub_class_instance = "$class"->new($method);
     unless ($a_test_case_sub_class_instance) {
 	$self->add_test($self->warning("add_test_method: Could not call $class"."::"."new()"));
@@ -61,12 +134,10 @@ sub count_test_cases {
 
 sub run {
     my $self = shift;
-    print ref($self) . "::run() called\n" if DEBUG;
-    my ($result) = shift;
+    my ($result) = @_;
     for my $e (@{$self->tests()}) {
 	last if $result->should_stop();
-	print ref($e) . "::_run(\$result) should be called\n" if DEBUG;
-	$e->_run($result);
+	$e->run($result);
     }
 }
     
@@ -94,7 +165,11 @@ sub to_string {
 sub warning {
     my $self = shift;
     my ($message) = @_;
-    return Test::Unit::Test_case->new("warning")->fail($message);
+    return make_inner_class("Test::Unit::TestCase", <<"EOIC", "warning");
+sub run_test {
+    my \$self = shift;
+    \$self->fail('$message');
+EOIC
 }
 
 1;

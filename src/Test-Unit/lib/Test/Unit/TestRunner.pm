@@ -150,7 +150,11 @@ sub print_header {
 sub run {
     my $self = shift;
     my ($class) = @_;
-    $self->_run(Test::Unit::TestSuite->new($class));
+    if ($class->isa("Test::Unit::Test")) {
+	$self->_run($class);
+    } else {
+	$self->_run(Test::Unit::TestSuite->new($class));
+    }
 }
 	
 sub _run {
@@ -186,17 +190,24 @@ sub start {
 	}
     }
     if ($test_case eq "") {
-	print "Usage Test_runner.pl [-wait] test_case_name, where name is the name of the Test_case class", "\n";
+	print "Usage TestRunner.pl [-wait] name, where name is the name of the TestCase class", "\n";
 	exit(-1);
     }
 
     eval "require $test_case" 
 	or die "Suite class " . $test_case . " not found: $@";
     no strict 'refs';
-    my $suite = "$test_case"->new();
-    my $suite_method = \&{"$test_case" . "::" . "suite"};
-    if ($suite_method) {
+    my $suite;
+    my $suite_method = defined(&{"$test_case" . "::" . "suite"}) ? 
+	    \&{"$test_case" . "::" . "suite"} : undef; 
+    if (not $suite_method) {
 	$suite = Test::Unit::TestSuite->new($test_case);
+    }
+    if (not $suite) {
+	eval {
+	    $suite = $suite_method->();
+	};
+	die "Could not invoke the suite() method: $@" if $@;
     }
     $self->do_run($suite, $wait);
 }

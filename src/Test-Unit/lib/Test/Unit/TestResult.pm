@@ -27,7 +27,7 @@ sub add_error {
     print ref($self) . "::add_error() called\n" if DEBUG;
     my ($test, $exception) = @_;
     push @{$self->errors()}, Test::Unit::TestFailure->new($test, $exception);
-    for my $e (@{$self->listeners()}) {
+    for my $e (@{$self->clone_listeners()}) {
 	$e->add_error($test, $exception);
     }
 }
@@ -37,7 +37,7 @@ sub add_failure {
     print ref($self) . "::add_failure() called\n" if DEBUG;
     my ($test, $exception) = @_;
     push @{$self->failures()}, Test::Unit::TestFailure->new($test, $exception);
-    for my $e (@{$self->listeners()}) {
+    for my $e (@{$self->clone_listeners()}) {
 	$e->add_failure($test, $exception);
     }
 }
@@ -58,16 +58,22 @@ sub add_listener {
     push @{$self->listeners()}, $listener;
 }
 
-# change clone_listeners() to listeners()
 sub listeners {
     my $self = shift;
     return $self->{_Listeners};
 }
  
+sub clone_listeners {
+    my $self = shift;
+    my @clone = @{$self->{_Listeners}};
+    return \@clone;
+}
+ 
 sub end_test {
     my $self = shift;
-    for my $e (@{$self->listeners()}) {
-	$e->end_test();
+    my ($test) = @_;
+    for my $e (@{$self->clone_listeners()}) {
+	$e->end_test($test);
     }
 }
 
@@ -102,7 +108,7 @@ sub run {
     my $exception = $@;
     if ($exception) {
 	print ref($self) . "::run() caught exception: $exception\n" if DEBUG;
-	if (ref($exception) eq "Test::Unit::ExceptionFailure") {
+	if ($exception->isa("Test::Unit::ExceptionFailure")) {
 	    $self->add_failure($test, $exception);
 	} else {
 	    $self->add_error($test, $exception);
@@ -126,6 +132,12 @@ sub run_count {
     return $self->{_Run_tests};
 }
 
+sub run_count_inc {
+    my $self = shift;
+    ++$self->{_Run_tests};
+    return $self->{_Run_tests};
+}
+    
 sub should_stop {
     my $self = shift;
     return $self->{_Stop};
@@ -134,8 +146,8 @@ sub should_stop {
 sub start_test {
     my $self = shift;
     my ($test) = @_;
-    $self->{_Run_tests}++;
-    for my $e (@{$self->listeners()}) {
+    $self->run_count_inc();
+    for my $e (@{$self->clone_listeners()}) {
 	$e->start_test($test);
     }
 }
