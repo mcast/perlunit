@@ -1,0 +1,105 @@
+PerlUnit TODO
+=============
+
+Here's our roadmap.  It should give you an idea of what is planned,
+and in some cases when it's planned for and who's going to do it.
+
+* Before release 1.0
+
+None of these are big jobs, but Adam thinks they should all be done
+before 1.0 if we want the framework to gain respect and widespread
+usage; after all, many people will check out PerlUnit for the first
+time when they hear 1.0 being announced, and first impressions count
+for a lot.
+
+** Move test libraries out of lib/Test/Unit/tests.
+
+Adam's doing this imminently ...
+
+** Rename Test::Unit to Test::Unit::Procedural
+
+Adam's also doing this imminently ...
+
+** Rename Test::Unit::HarnessUnit and Test::Unit::UnitHarness
+
+Not sure what to yet, but we want to get these big API changes out of
+the way before we bump the version number.
+
+** Get working build on 5.7.2
+
+Piers is doing this imminently.
+
+** Change suite-building API so that MySuite really ISA TestSuite.
+
+Suites get instantiated via new() rather than the current suite()
+nonsense.  This is a *big* API change, but Adam's utterly convinced we
+need to do it.  He also thinks it should be possible to keep backwards
+compatibility.
+
+** Fix error message from failed compilation of suites.
+
+If a testcase fails compilation, you currently get `Suite class
+MyTests::Foo not found', rather than `Failed to load ...'; this needs
+fixing.  Adam has an old patch for this.
+
+** Stop `make test' failing when DEBUG is enabled?
+
+** Deal with broken base.pm in older Perls
+
+Or we could always be nasty and stop supporting < 5.6, best to avoid
+if we can though.
+
+* Nice to have
+
+Some of these could be left until after 1.0.
+
+However, given that Adam will certainly be aiming to commit some of
+them very soon (today, tomorrow ...), it's probably more hassle than
+it's worth branching off for the release straight away.
+
+** Test::Unit::Loader working with whole directories.
+
+** Allow runner state
+
+Refactoring of runner classes to allow storing state in the runner.
+(Adam already has a patch for this.)
+
+This paves the way for choosing which tests to skip in a given run;
+see next item.
+
+** Test filtering
+
+Piers suggested the beautiful idea of using Attribute::Handlers so you
+could do things like:
+
+  sub test_something : todo {...}
+  sub test_something : skip_if(<condition>) {...}
+  sub test_something : skip {...}
+
+Adam needs this for work ASAP, and will probably implement very soon.
+
+** Rethink how the tests are split up between the t/*.t.
+
+Currently we have t/all_tests.t, which is clearly a misnomer, and we
+have some tests for the assertion code being run from that rather than
+from t/assert.t.
+
+* Personal TODO lists
+
+Moved here from consensus.txt.
+
+** Matthew
+
+*** Consider removing examples/tester* (uses old Test::SuiteWrapper)
+
+*** Make Debian package
+
+*** Find a neat way to run unit-tested programs without the suite
+
+It's convenient for medium sized projects to stick the test subs in
+the classes they test, but then you have a run-time dependence on perlunit.
+
+**** Local Variables:
+**** mode: outline
+**** End:
+
