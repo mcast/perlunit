@@ -3,6 +3,12 @@
 use strict;
 use Test;
 
+warn("\nThe STDERR redirection may not work or may behave differently under\n".
+     "your OS. This will probably cause this test to fail.\n")
+    if $^O =~ /Win32/i;
+# this will apply to various OSes. Is there a "capable of doing unix
+# redirections" flag somewhere?
+
 foreach (qw(Makefile.PL Makefile examples lib t)) {
     die("Please run 'make test' from the top-level source directory\n".
 	"(I can't see $_)\n")
