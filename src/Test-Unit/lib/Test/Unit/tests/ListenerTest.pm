@@ -1,10 +1,10 @@
-package Test::Unit::tests::TestListenerTest;
+package Test::Unit::tests::ListenerTest;
     
 # Test class used in SuiteTest
 
-use base qw(Test::Unit::TestCase Test::Unit::TestListener Test::Unit::InnerClass);
+use base qw(Test::Unit::TestCase Test::Unit::Listener);
 
-use Test::Unit::TestResult;
+use Test::Unit::Result;
 
 sub new {
     my $self = shift()->SUPER::new(@_);
@@ -36,7 +36,7 @@ sub end_test {
 
 sub set_up {
     my $self = shift;
-    $self->{_my_result} = Test::Unit::TestResult->new();
+    $self->{_my_result} = Test::Unit::Result->new();
     $self->{_my_result}->add_listener($self);
     $self->{_my_start_count} = 0;
     $self->{_my_end_count} = 0;
@@ -52,14 +52,18 @@ sub add_pass {
 }
 
 # the tests
+sub make_dummy_testcase {
+    my $self = shift;
+    my $sub  = pop;
+    my $method_name = shift || 'run_test';
+
+    Class::Inner->new(parent => 'Test::Unit::TestCase',
+                      methods => { $method_name => $sub });
+}
 
 sub test_error {
     my $self = shift;
-    my $test = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<'EOIC', "noop");
-sub run_test {
-    die;
-}
-EOIC
+    my $test = $self->make_dummy_testcase(sub {die});
     $test->run($self->{_my_result});
     $self->assert(1 == $self->{_my_error_count});
     $self->assert(1 == $self->{_my_end_count});
@@ -67,12 +71,7 @@ EOIC
 
 sub test_failure {
     my $self = shift;
-    my $test = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<'EOIC', "noop");
-sub run_test {
-    my $self = shift;
-    $self->fail();
-}
-EOIC
+    my $test = $self->make_dummy_testcase(sub {shift->fail()});
     $test->run($self->{_my_result});
     $self->assert(1 == $self->{_my_failure_count});
     $self->assert(1 == $self->{_my_end_count});
@@ -80,10 +79,7 @@ EOIC
 
 sub test_start_stop {
     my $self = shift;
-    my $test = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<'EOIC', "noop");
-sub run_test {
-}
-EOIC
+    my $test = $self->make_dummy_testcase(sub {});
     $test->run($self->{_my_result});
     $self->assert(1 == $self->{_my_start_count});
     $self->assert(1 == $self->{_my_end_count});

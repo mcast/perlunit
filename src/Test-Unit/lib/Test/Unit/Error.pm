@@ -1,13 +1,20 @@
-package Test::Unit::ExceptionError;
+package Test::Unit::Error;
 use strict;
 use base qw(Test::Unit::Exception);
+
+sub make_from_error_simple {
+    my $self = shift;
+    my $ex = shift;
+    my $object = shift;
+    $self->throw(%$ex, -object => $object);
+}
 
 1;
 __END__
 
 =head1 NAME
 
-Test::Unit::ExceptionError - unit testing framework exception class
+Test::Unit::Error - unit testing framework exception class
 
 =head1 SYNOPSIS
 

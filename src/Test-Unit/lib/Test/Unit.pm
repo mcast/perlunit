@@ -12,6 +12,16 @@ require Exporter;
 
 @EXPORT = qw(assert create_suite run_suite add_suite);
 
+# Helper classes
+use Devel::Symdump;
+use Class::Inner;
+
+# Exception handling
+use Error qw/:try/;
+use Test::Unit::Exception;
+use Test::Unit::Failure;
+use Test::Unit::Error;
+
 # NOTE: 
 # this version number has to be kept in sync 
 # with the number in the distribution file name 
@@ -39,10 +49,20 @@ sub add_to_suites {
 # public
 
 sub assert ($;$) {
-    my ($condition, $message) = @_;
-    my $asserter = caller();
+    my($condition, $message) = @_;
+    my($asserter,$file,$line) = caller(1);
+    
     add_to_suites($asserter);
-    $suites{$asserter}->assert($condition, $message);
+    try {
+        $suites{$asserter}->assert($condition, $message);
+    }
+    catch Test::Unit::Exception with {
+        my $e = shift;
+        $e->throw_new(
+                      -package => $asserter,
+                      -file    => $file,
+                      -line    => $line);
+    }
 }
 
 sub create_suite {
@@ -52,42 +72,28 @@ sub create_suite {
     
     no strict 'refs';
 
-    my $set_up_call = "42";
-    my $tear_down_call = "23";
+    my $set_up_func    = sub {};
+    my $tear_down_func = sub {};
 
-    my @set_up_candidates = grep /^set_up$/, keys %{"$test_package_name" . "::"};
-    for my $c (@set_up_candidates) {
-	if (defined(&{$test_package_name . "::" . $c})) {
-	    $set_up_call = $test_package_name . "::" . $c . "()";
-	}
-    }
+    my $st = Devel::Symdump->new($test_package_name);
+    my @set_up_candidates = grep /::set_up$/, $st->functions;
+    $set_up_func = \&{$set_up_candidates[0]} if @set_up_candidates;
 
-    my @tear_down_candidates = grep /^tear_down$/, keys %{"$test_package_name" . "::"};
-    for my $c (@tear_down_candidates) {
-	if (defined(&{$test_package_name . "::" . $c})) {
-	    $tear_down_call = $test_package_name . "::" . $c . "()";
-	}
-    }
+    my @tear_down_candidates = grep /::tear_down$/, $st->functions;
+    $tear_down_func = \&{$set_up_candidates[0]} if @set_up_candidates;
 
-    my @candidates = grep /^test/, keys %{"$test_package_name" . "::"};
-    for my $c (@candidates) {
-	if (defined(&{$test_package_name . "::" . $c})) {
-	    my $test_method_call = $test_package_name . "::" . $c . "()";
-	    my $test_case = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<"EOIC", $c);
-# note: interpolation mode here
-sub set_up {
-    $set_up_call ;
-}
-sub $c {
-    $test_method_call ;
-}
-sub tear_down {
-    $tear_down_call ;
-}
-EOIC
+    for my $test_method (grep /::test[^:]*$/, $st->functions) {
+        my($method_name) = $test_method =~ /::(test[^:]*)/;
+        my $subref = \&{$test_method};
+        my $test_case = Class::Inner->new
+            (parent  => 'Test::Unit::TestCase',
+             methods => {set_up       => $set_up_func,
+                         tear_down    => $tear_down_func,
+                         $method_name => $subref,
+                        },
+             args    => [$method_name],);
 	    $suites{$test_package_name}->add_test($test_case);
 	}
-    }
 }
 
 sub run_suite {

@@ -1,5 +1,5 @@
-package Test::Unit::TestListener;
-use Test::Unit::TestLoader;
+package Test::Unit::Listener;
+use Test::Unit::Loader;
 use Carp;
 use strict;
 
@@ -38,7 +38,7 @@ __END__
 
 =head1 NAME
 
-Test::Unit::TestListener - unit testing framework abstract base class
+Test::Unit::Listener - unit testing framework abstract base class
 
 =head1 SYNOPSIS
 

@@ -1,54 +1,51 @@
-package Test::Unit::TestResult;
+package Test::Unit::Result;
 use strict;
 use constant DEBUG => 0;
 
-use Test::Unit::TestFailure;
+use Test::Unit::Failure;
+use Test::Unit::Error;
+
+use Error qw/:try/;
 
 sub new {
     my $class = shift;
-
-    my @_Failures = ();
-    my @_Errors = ();
-    my @_Listeners = ();
-    my $_Run_tests = 0;
-    my $_Stop = 0;
-
-    bless { 
-	_Failures => \@_Failures,
-	_Errors => \@_Errors,
-	_Listeners => \@_Listeners,
-	_Run_tests => $_Run_tests,
-	_Stop => $_Stop,
+    bless {
+           _Failures  => [],
+           _Errors    => [],
+           _Listeners => [],
+           _Run_tests => 0,
+           _Stop      => 0,
     }, $class;
 }
 
+sub tell_listeners {
+    my $self = shift;
+    my $method = shift;
+    foreach (@{$self->listeners}) {
+        $_->$method(@_);
+    }
+}
 sub add_error { 
     my $self = shift;
     print ref($self) . "::add_error() called\n" if DEBUG;
     my ($test, $exception) = @_;
-    push @{$self->errors()}, Test::Unit::TestFailure->new($test, $exception);
-    for my $e (@{$self->listeners()}) {
-	$e->add_error($test, $exception);
-    }
+    push @{$self->errors()}, $exception;
+    $self->tell_listeners(add_error => @_);
 }
 
 sub add_failure {
     my $self = shift;
     print ref($self) . "::add_failure() called\n" if DEBUG;
     my ($test, $exception) = @_;
-    push @{$self->failures()}, Test::Unit::TestFailure->new($test, $exception);
-    for my $e (@{$self->listeners()}) {
-	$e->add_failure($test, $exception);
-    }
+    push @{$self->failures()}, $exception;
+    $self->tell_listeners(add_failure => @_);
 }
 
 sub add_pass {
     my $self = shift;
     print ref($self) . "::add_pass() called\n" if DEBUG;
     my ($test) = @_;
-    for my $e (@{$self->listeners()}) {
-	$e->add_pass($test);
-    }
+    $self->tell_listeners(add_pass => @_);
 }
 
 sub add_listener {
@@ -62,13 +59,11 @@ sub listeners {
     my $self = shift;
     return $self->{_Listeners};
 }
- 
+
 sub end_test {
     my $self = shift;
     my ($test) = @_;
-    for my $e (@{$self->listeners()}) {
-	$e->end_test($test);
-    }
+    $self->tell_listeners(end_test => $test);
 }
 
 sub error_count {
@@ -90,45 +85,33 @@ sub failures {
     my $self = shift;
     return $self->{_Failures};
 }
- 
+
 sub run {
     my $self = shift;
     my ($test) = @_;
     printf "%s::run(%s) called\n", ref($self), $test->name() if DEBUG;
     $self->start_test($test);
-    $self->run_protected($test, sub {$test->run_bare();});
+    $self->run_protected($test, sub {
+                             $test->run_bare() ? $self->add_pass($test) :
+                             $self->add_failure($test)
+                         });
     $self->end_test($test);
 } 
 
 sub run_protected {
     my $self = shift;
-    print ref($self) . "::run_protected() called\n" if DEBUG;
-    my ($test, $protected) = @_;
+    my $test = shift;
+    my $closure = shift;
 
-    eval { 
-		&$protected(); 
+    try {
+        &$closure();
+    }
+    catch Test::Unit::Failure with {
+        $self->add_failure($test, shift);
+    }
+    catch Test::Unit::Error with {
+        $self->add_error($test, shift);
     };
-    my $exception = $@;
-    if ($exception) {
-	print ref($self) . "::run() caught exception: $exception\n" if DEBUG;
-	if ($exception->isa("Test::Unit::ExceptionFailure")) {
-	    $self->add_failure($test, $exception);
-	} else {
-	    $self->add_error($test, $exception);
-	}
-    } else {
-        # I think recording positives is a good thing!
-        # You *can* get this info otherwise by remembering the
-        # start event object and checking no fail/error has
-        # been recorded when you get the end event with a
-        # matching tag... (nb tests may nest, they're not consecutive
-        # events) ... but isnt this easier? - Brian. 
-
-	# yes, but it also adds to the public API 
-	# others have to implement  - Christian
-
-        $self->add_pass($test);
-	}
 }
 
 sub run_count {
@@ -151,9 +134,7 @@ sub start_test {
     my $self = shift;
     my ($test) = @_;
     $self->run_count_inc();
-    for my $e (@{$self->listeners()}) {
-	$e->start_test($test);
-    }
+    $self->tell_listeners(start_test => $test);
 }
 
 sub stop {
@@ -178,7 +159,7 @@ __END__
 
 =head1 NAME
 
-Test::Unit::TestResult - unit testing framework helper class
+Test::Unit::Result - unit testing framework helper class
 
 =head1 SYNOPSIS
 
@@ -193,6 +174,11 @@ case of errors or failures.
 To achieve this, this class gets called with a test case as argument.
 It will call this test case's run method back and catch any exceptions
 thrown.
+
+It could be argued that Test::Unit::Result is the heart of the
+PerlUnit framework, since TestCase classes vary, and you can use one
+of several Test::Unit::TestRunners, but we always gather the results
+in a Test::Unit::Result object.
 
 This is the quintessential call tree of the communication needed to
 record the results of a given test:
@@ -214,6 +200,10 @@ record the results of a given test:
 	    }
 	}
     }
+
+Note too that, in the presence of Test::Unit::TestSuites, this call
+tree can get a little more convoluted, but if you bear the above in
+mind it should be apparent what's going on.
 
 =head1 AUTHOR
 

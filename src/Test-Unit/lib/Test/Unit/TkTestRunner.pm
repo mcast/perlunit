@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 package Test::Unit::TkTestRunner;
-use base qw(Test::Unit::TestListener);
+use base qw(Test::Unit::Listener);
 use constant COPYRIGHT_NOTICE => <<'END_COPYRIGHT_NOTICE';
 This the PerlUnit Tk Test Runner. 
 Copyright (C) 2000 Christian Lemburg, Brian Ewins,
@@ -12,12 +12,12 @@ See http://c2.com/cgi/wiki?TestingFrameworks
 PerlUnit is free software, redistributable under the
 same terms as Perl.
 
-$Id: TkTestRunner.pm,v 1.11 2001-02-20 21:31:05 mca-gdl Exp $
+$Id: TkTestRunner.pm,v 1.12 2001-11-12 16:23:29 pdcawley Exp $
 END_COPYRIGHT_NOTICE
 
 use Tk;
 use Tk::BrowseEntry;
-use Test::Unit::TestResult;
+use Test::Unit::Result;
 use Benchmark;
 use strict;
 
@@ -117,7 +117,7 @@ sub create_menus {
 
 sub create_test_result {
   my $self=shift;
-  return new Test::Unit::TestResult();
+  return new Test::Unit::Result();
 }
 
 sub create_ui {
@@ -266,7 +266,7 @@ sub load_frame_icon {
 }
 
 sub main {
-  my $main=new Test::Unit::TkTestRunner()->start("Test::Unit::TestLoader",@_);
+  my $main=new Test::Unit::TkTestRunner()->start("Test::Unit::Loader",@_);
 }
 
 sub rerun {
@@ -631,15 +631,15 @@ David Esposito.
 
 =item *
 
-L<Test::Unit::TestLoader>
+L<Test::Unit::Loader>
 
 =item *
 
-L<Test::Unit::TestListener>
+L<Test::Unit::Listener>
 
 =item *
 
-L<Test::Unit::TestResult>
+L<Test::Unit::Result>
 
 =item *
 

@@ -17,52 +17,13 @@ foreach (qw(Makefile.PL Makefile examples lib t)) {
 
 my @examples = grep { $_ ne '.' && $_ ne '..' } glob "examples/*";
 
-my %guru_checked =
-    ("examples/procedural-adding-suites-example.pl" => <<'EGC',
---- Testing FooBar ---
-....
-Time:  0 wallclock secs ( 0.00 usr +  0.00 sys =  0.00 CPU)
-
-OK (4 tests)
---- Testing Bar with Foo added to it ---
-....
-Time:  0 wallclock secs ( 0.01 usr +  0.00 sys =  0.01 CPU)
-
-OK (4 tests)
-EGC
-
-     "examples/procedural-ok-example.pl" => <<'EGC',
-..
-TIME-SUMMARY
-
-OK (2 tests)
-EGC
-
-     "examples/procedural-another-package-example.pl" => <<'EGC',
-..
-Time:  0 wallclock secs ( 0.01 usr +  0.00 sys =  0.01 CPU)
-
-OK (2 tests)
-EGC
-
-     # setting autoflush on STDOUT & STDERR in this example will pop
-     # the first line to the bottom
-     "examples/procedural-fail-example.pl" => <<'EGC',
-Test was not successful.
-.F.
-Time:  0 wallclock secs ( 0.01 usr +  0.00 sys =  0.01 CPU)
-
-!!!FAILURES!!!
-Test Results:
-Run: 2 Failures: 1 Errors: 0
-There was 1 failure:
-1) test_fail(Test::Unit::TestCase::Load1_Anonymous1)
-Test::Unit::ExceptionFailure:
-Born to lose ...
-EGC
+my %guru_checked = (
 
      "examples/patch100132" => <<'EGC',
-Can't call method "run" on an undefined value at lib/Test/Unit/TestRunner.pm line 58.
+...
+Time:  0 wallclock secs ( 0.00 usr +  0.00 sys =  0.00 CPU)
+
+OK (3 tests)
 EGC
 
      "examples/patch100132-1" => <<'EGC',

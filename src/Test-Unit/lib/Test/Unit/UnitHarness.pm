@@ -3,14 +3,15 @@
 package Test::Unit::UnitHarness;
 
 BEGIN {require 5.002;}
-use base qw(Test::Unit::TestListener Test::Unit::Test);
+use base qw(Test::Unit::Listener Test::Unit::Test);
 use Exporter;
 use Config;
 use Carp;
 use FileHandle;
 use constant DEBUG => 0;
 use Test::Unit::TestCase;
-use Test::Unit::InnerClass;
+#use Test::Unit::InnerClass;
+use Class::Inner;
 use Test::Unit::Exception;
 
 use strict;
@@ -72,7 +73,7 @@ sub run {
   for my $line (<$fh>) {
     if( $verbose ){ print $line; }
     if ($line=~/^1\.\.([0-9]+)/) {
-	  # Not supported in TestResult - It's needed!!!
+	  # Not supported in Result - It's needed!!!
       #$result->plan($1);
       $next=1;
       $max=$1;
@@ -149,11 +150,10 @@ sub to_string {
 sub warning {
     my $self = shift;
     my ($message) = @_;
-    return Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<"EOIC", "warning");
-sub run_test {
-    my \$self = shift;
-    \$self->fail('$message');
-EOIC
+	return Class::Inner->new(
+		parent => 'Test::Unit::TestCase',
+		methods => { run_test => sub { (shift)->fail($message) } },
+	    args => ['warning']);
 }
 
 package Test::Unit::UnitHarness::TestCase;

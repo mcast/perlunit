@@ -5,8 +5,12 @@ use strict;
 # adding this fixes the 'Can't locate object method "fail" via package
 # "Test::Unit::Assertion::Boolean"' problem under perl 5.005 - Christian
 use Test::Unit::Assertion;
+use Test::Unit::Failure;
+
 
 use base 'Test::Unit::Assertion';
+
+use overload 'bool' => sub {$ {$_[0]}};
 
 sub new {
     my $class = shift;
@@ -18,7 +22,12 @@ sub new {
 
 sub do_assertion {
     my $self = shift;
-    $self->fail(@_) unless $$self;
+    $$self or $self->fail( $_ ? $_[-1] : "expected TRUE, got FALSE");
+}
+
+sub to_string {
+    my $self = shift;
+    $$self ? 'TRUE' : 'FALSE';
 }
 
 1;

@@ -1,35 +1,25 @@
 package Test::Unit::Exception;
+use Carp;
 use strict;
 use constant DEBUG => 0;
 
-sub new {
-    my $pkg = shift;
-    my $class = ref $pkg || $pkg;
-    my ($message) = @_;
-    
-    $message = '' unless defined($message);
-    $message = "$class:\n$message\n";
+use Error;
+use base 'Error';
 
-    my $i = 0;
-    my $stacktrace = '';
-    my ($pack, $file, $line, $subname, $hasargs, $wantarray);
-    
-    while (($pack, $file, $line, $subname, 
-	    $hasargs, $wantarray) = caller(++$i)) {
-	$stacktrace .= "Level $i: in package '$pack', file '$file', at line '$line', sub '$subname'\n";
-    }
-    
-    bless { _message => $message, _stacktrace => $stacktrace }, $class;
+sub throw_new {
+    my $self = shift;
+    my $class = ref $self;
+    $class->throw(%{$self || {}},@_);
 }
 
 sub stacktrace {
     my $self = shift;
-    return $self->{_stacktrace};
+    warn "Stacktrace is deprecated and no longer works"
 }
 
 sub get_message {
     my $self = shift;
-    return $self->{_message};
+    $self->text;
 }
 
 sub hide_backtrace {
@@ -37,10 +27,32 @@ sub hide_backtrace {
     $self->{_hide_backtrace} = 1;
 }
 
+sub stringify {
+    my $self = shift;
+    my $file = $self->file;
+    my $line = $self->line;
+    my $message = $self->text || 'Died';
+    my $object = $self->object;
+
+    my $str = "$file:$line - ";
+    $str .= $object->to_string() . ' ' if $object && $object->can('to_string');
+    $str .= $message;
+    return $str;
+}
+
 sub to_string {
     my $self = shift;
-    return $self->get_message() if $self->{_hide_backtrace};
-    return $self->get_message() . $self->stacktrace();
+    $self->stringify;
+}
+
+sub failed_test {
+    carp "Test::Unit::Exception::failed_test called";
+    return $_[0]->object;
+}
+
+sub thrown_exception {
+    carp "Test::Unit::Exception::thrown_exception called";
+    return $_[0]->object;
 }
 
 1;
@@ -84,11 +96,11 @@ L<Test::Unit::Assert>
 
 =item *
 
-L<Test::Unit::ExceptionError>
+L<Test::Unit::Error>
 
 =item *
 
-L<Test::Unit::ExceptionFailure>
+L<Test::Unit::Failure>
 
 =back
 

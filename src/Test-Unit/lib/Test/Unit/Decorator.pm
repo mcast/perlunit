@@ -1,4 +1,4 @@
-package Test::Unit::TestDecorator;
+package Test::Unit::Decorator;
 use strict;
 use constant DEBUG => 0;
 
@@ -29,7 +29,7 @@ sub run {
 
 sub to_string {
     my $self = shift;
-	return $self->{_fTest}->to_string();
+    "$self->{_fTest}";
 }
 
 sub get_test {
@@ -43,7 +43,7 @@ __END__
 
 =head1 NAME
 
-Test::Unit::TestDecorator - unit testing framework helper class
+Test::Unit::Decorator - unit testing framework helper class
 
 =head1 SYNOPSIS
 

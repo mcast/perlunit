@@ -4,7 +4,6 @@ use constant DEBUG => 0;
 use base qw(Test::Unit::Test);
 
 use Test::Unit::TestCase;
-use Test::Unit::InnerClass;
 
 use Carp;
 # helper subroutines
@@ -12,28 +11,32 @@ use Carp;
 # determine if a string is the name of a valid package. There is no
 # valid way of finding out if a package is a class.
 
-sub is_not_name_of_a_class {
+sub is_a_class {
     my $name = shift;
     # Check if the package exists already.
     {
         no strict 'refs';
-        return if keys %{"$name\::"};
+        return 1 if keys %{"$name\::"};
     }
     # No? Try 'require'ing it
     eval "require $name";
     warn $@, "\n" if DEBUG;
-    return 1 if $@;
+    return if $@;
+    return 1;
 }
 
 sub is_a_test_case_class {
     my $pkg = shift;
-    return if is_not_name_of_a_class($pkg);
+    is_a_class($pkg) || return;
     return eval {$pkg->isa("Test::Unit::TestCase")};
 }
 
 sub new {
     my $class = shift;
     my $classname = shift || ''; # Avoid a warning
+    eval "require $classname" if $classname;
+    
+    return $classname->suite if eval {$classname->can('suite')};
     
     my $self = {
 	    _Tests => [],
@@ -41,20 +44,25 @@ sub new {
     };
     bless $self, $class;
     warn ref($self) . "::new($classname) called\n" if DEBUG;
-
     $self->build_suite($classname) if $classname;
+    return $self;
+}
+
+sub suite {
+    my $self = shift;
+    croak "Test::Unit::TestSuite::suite is not a class method" unless ref $self;
     return $self;
 }
 
 sub build_suite {
     my $self = shift;
     my $classname = shift;
-    
-    is_not_name_of_a_class($classname) and die "Could not find class $classname";
+
+    is_a_class($classname) || die "Could not find class $classname";
     
     # it is a class, create a suite with its tests
     # ... and that of its ancestors, if they are Test::Unit::TestCase
-    if (!is_a_test_case_class($classname)) {
+    unless (is_a_test_case_class($classname)) {
         $self->add_warning("Class $classname is not a Test::Unit::TestCase");
         return $self;
     }
@@ -103,19 +111,17 @@ sub add_test {
 
 sub count_test_cases {
     my $self = shift;
-    my $count = 0;
-    for my $e (@{$self->tests()}) {
-        $count += $e->count_test_cases();
-    }
+    my $count;
+    $count += $_->count_test_cases for @{$self->tests};
     return $count;
 }
 
 sub run {
     my $self = shift;
     my ($result) = @_;
-    for my $e (@{$self->tests()}) {
+    for my $t (@{$self->tests()}) {
         last if $result->should_stop();
-        $e->run($result);
+        $t->run($result);
     }
 	return $result;
 }

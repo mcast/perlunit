@@ -2,7 +2,7 @@ package fail_example_testsuite_setup;
 use strict;
 use constant DEBUG => 0;
 
-use base qw(Test::Unit::TestSetup);
+use base qw(Test::Unit::Setup);
 
 sub set_up{
 	my $self = shift()->SUPER::set_up(@_);
