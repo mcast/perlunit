@@ -35,7 +35,7 @@ sub stringify {
     my $object = $self->object;
 
     my $str = "$file:$line - ";
-    $str .= $object->to_string if $object && $object->can('to_string');
+    $str .= $object->to_string() . ' ' if $object && $object->can('to_string');
     $str .= $message;
     return $str;
 }
