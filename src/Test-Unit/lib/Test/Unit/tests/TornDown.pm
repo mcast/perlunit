@@ -20,7 +20,7 @@ sub torn_down {
 
 sub run_test {
     my $self = shift;
-    my $e = new Test::Unit::ExceptionError();
+    my $e = new Test::Unit::Error();
     die $e;
 }
 

@@ -20,7 +20,7 @@ use Class::Inner;
 use Error qw/:try/;
 use Test::Unit::Exception;
 use Test::Unit::ExceptionFailure;
-use Test::Unit::ExceptionError;
+use Test::Unit::Error;
 
 # NOTE: 
 # this version number has to be kept in sync 

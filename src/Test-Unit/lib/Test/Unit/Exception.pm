@@ -96,7 +96,7 @@ L<Test::Unit::Assert>
 
 =item *
 
-L<Test::Unit::ExceptionError>
+L<Test::Unit::Error>
 
 =item *
 

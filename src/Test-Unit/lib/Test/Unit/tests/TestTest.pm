@@ -5,7 +5,7 @@ use base qw(Test::Unit::TestCase);
 
 use Test::Unit::tests::TornDown;
 use Test::Unit::tests::WasRun;
-use Test::Unit::ExceptionError;
+use Test::Unit::Error;
 use Test::Unit::ExceptionFailure;
 use Class::Inner;
 use Error qw/:try/;
@@ -64,7 +64,7 @@ sub test_error {
     my $self = shift;
     my $error = $self->make_dummy_testcase
         (sub {
-             Test::Unit::ExceptionError->throw(-object => $self);
+             Test::Unit::Error->throw(-object => $self);
          });
     $self->verify_error($error);
 }
@@ -106,10 +106,10 @@ sub test_run_and_tear_down_fails {
          methods => { tear_down => sub {
                           my $self = shift;
                           $self->SUPER;
-                          throw Test::Unit::ExceptionError -object => $self;
+                          throw Test::Unit::Error -object => $self;
                       },
                       run_test => sub {
-                          throw Test::Unit::ExceptionError -object => $_[0];
+                          throw Test::Unit::Error -object => $_[0];
                       }
                     }
         );
@@ -128,7 +128,7 @@ sub test_setup_fails {
         (parent => 'Test::Unit::TestCase',
          methods => { set_up => sub {
                           my $self = shift;
-                          throw Test::Unit::ExceptionError -object => $self;
+                          throw Test::Unit::Error -object => $self;
                       },
                       run_test => sub {},
                     },
@@ -155,7 +155,7 @@ sub test_tear_down_fails {
     my $self = shift;
     my $fails = Class::Inner->new
         (parent => 'Test::Unit::TestCase',
-         methods => {tear_down => sub { throw Test::Unit::ExceptionError -object => $_[0] },
+         methods => {tear_down => sub { throw Test::Unit::Error -object => $_[0] },
                      run_test  => {}});
     $self->verify_error($fails);
 }
@@ -164,7 +164,7 @@ sub test_tear_down_setup_fails {
     my $self = shift;
     my $fails = Class::Inner->new
         (parent => 'TornDown',
-         methods => { set_up => sub { throw Test::Unit::ExceptionError -object => $_[0] } },
+         methods => { set_up => sub { throw Test::Unit::Error -object => $_[0] } },
         );
     $self->verify_error($fails);
     $self->assert(! $fails->torn_down());

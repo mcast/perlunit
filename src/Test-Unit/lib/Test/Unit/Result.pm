@@ -3,7 +3,7 @@ use strict;
 use constant DEBUG => 0;
 
 use Test::Unit::ExceptionFailure;
-use Test::Unit::ExceptionError;
+use Test::Unit::Error;
 
 use Error qw/:try/;
 
@@ -106,7 +106,7 @@ sub run_protected {
     catch Test::Unit::ExceptionFailure with {
         $self->add_failure($test, shift);
     }
-    catch Test::Unit::ExceptionError with {
+    catch Test::Unit::Error with {
         $self->add_error($test, shift);
     };
 }

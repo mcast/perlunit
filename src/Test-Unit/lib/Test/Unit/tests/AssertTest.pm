@@ -3,7 +3,7 @@ package Test::Unit::tests::AssertTest;
 use Test::Unit::TestCase;
 
 require Test::Unit::ExceptionFailure;
-require Test::Unit::ExceptionError;
+require Test::Unit::Error;
 
 use strict;
 use vars qw/@ISA/;

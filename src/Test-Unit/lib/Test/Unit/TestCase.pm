@@ -6,7 +6,7 @@ use Test::Unit::Test;
 use base qw(Test::Unit::Test);
 
 use Test::Unit::ExceptionFailure; 
-use Test::Unit::ExceptionError; 
+use Test::Unit::Error; 
 use Test::Unit::Result;
 
 use Devel::Symdump;
@@ -51,7 +51,7 @@ sub run_bare {
         $self->run_test();
     }
     catch Error::Simple with {
-        Test::Unit::ExceptionError->make_from_error_simple(shift, $self)->throw;
+        Test::Unit::Error->make_from_error_simple(shift, $self)->throw;
     }
     finally {
         # Only gets called if 'set_up' succeed

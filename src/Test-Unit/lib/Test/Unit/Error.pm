@@ -1,4 +1,4 @@
-package Test::Unit::ExceptionError;
+package Test::Unit::Error;
 use strict;
 use base qw(Test::Unit::Exception);
 
@@ -14,7 +14,7 @@ __END__
 
 =head1 NAME
 
-Test::Unit::ExceptionError - unit testing framework exception class
+Test::Unit::Error - unit testing framework exception class
 
 =head1 SYNOPSIS
 
