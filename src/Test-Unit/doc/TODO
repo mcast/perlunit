@@ -33,11 +33,26 @@ if we can though.
 
 * Nice to have before 1.0
 
-Some of these could be left until after 1.0.
+Some of these could be left until after 1.0.  Adam thinks it makes
+sense to do the first two before the release, however.
 
-However, given that Adam will certainly be aiming to commit some of
-them very soon (today, tomorrow ...), it's probably more hassle than
-it's worth branching off for the release straight away.
+** Tidy up copyrights, credits, and licensing
+
+We currently have copyrights, licenses, and out of date author
+attributions in pretty much every file in the distribution.  This is
+messy, and a pain to maintain.  It would be good to move all the
+copyrights and credits into one or two files (COPYING or LICENSE or
+AUTHORS, say), and then to change the licensing/credit bits and pieces
+in all the other files into something which refers to that one file,
+and also states that none of the files should be distributed
+separately, only as an entire package, thereby preventing the
+copyright-containing file from being disassociated from the others.
+
+** Rethink how the tests are split up between the t/*.t.
+
+Currently we have t/all_tests.t, which is clearly a misnomer, and we
+have some tests for the assertion code being run from that rather than
+from t/assert.t.
 
 ** Test::Unit::Loader working with whole directories.
 
@@ -54,13 +69,9 @@ Adam needs this for work ASAP, and will probably implement it very soon.
 There is already a primitive filtering mechanism in place which is
 controlled by the filter() and filter_method() methods.
 
-** Rethink how the tests are split up between the t/*.t.
-
-Currently we have t/all_tests.t, which is clearly a misnomer, and we
-have some tests for the assertion code being run from that rather than
-from t/assert.t.
-
 * After 1.0
+
+No harm done if they end up being done before 1.0 though, of course.
 
 ** Tests to add
 
