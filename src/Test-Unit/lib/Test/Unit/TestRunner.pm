@@ -2,7 +2,7 @@ package Test::Unit::TestRunner;
 use strict;
 use constant DEBUG => 0;
 
-use base qw(Test::Unit::TestListener); 
+use base qw(Test::Unit::Listener); 
 
 use Test::Unit::TestSuite;
 use Test::Unit::Result;
@@ -240,7 +240,7 @@ L<Test::Unit::TestCase>
 
 =item *
 
-L<Test::Unit::TestListener>
+L<Test::Unit::Listener>
 
 =item *
 

@@ -4,7 +4,7 @@ package Test::Unit::HarnessUnit;
 use strict;
 use constant DEBUG => 0;
 
-use base qw(Test::Unit::TestListener); 
+use base qw(Test::Unit::Listener); 
 
 use Test::Unit::TestSuite;
 use Test::Unit::Result;

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 package Test::Unit::TkTestRunner;
-use base qw(Test::Unit::TestListener);
+use base qw(Test::Unit::Listener);
 use constant COPYRIGHT_NOTICE => <<'END_COPYRIGHT_NOTICE';
 This the PerlUnit Tk Test Runner. 
 Copyright (C) 2000 Christian Lemburg, Brian Ewins,
@@ -12,7 +12,7 @@ See http://c2.com/cgi/wiki?TestingFrameworks
 PerlUnit is free software, redistributable under the
 same terms as Perl.
 
-$Id: TkTestRunner.pm,v 1.11.6.2 2001-09-07 14:16:41 pdcawley Exp $
+$Id: TkTestRunner.pm,v 1.11.6.3 2001-09-07 14:27:31 pdcawley Exp $
 END_COPYRIGHT_NOTICE
 
 use Tk;
@@ -635,7 +635,7 @@ L<Test::Unit::Loader>
 
 =item *
 
-L<Test::Unit::TestListener>
+L<Test::Unit::Listener>
 
 =item *
 
