@@ -12,6 +12,16 @@ require Exporter;
 
 @EXPORT = qw(assert create_suite run_suite add_suite);
 
+# NOTE: 
+# this version number has to be kept in sync 
+# with the number in the distribution file name 
+# (the distribution file is the tarball for CPAN release)
+# because the CPAN module decides to fetch the tarball by
+# looking at the version of this module if you say 
+# "install Test::Unit" in the CPAN shell
+
+$VERSION = '0.13';
+
 # private
 
 my $test_suite = Test::Unit::TestSuite->empty_new("Test::Unit");
