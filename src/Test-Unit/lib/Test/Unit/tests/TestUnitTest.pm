@@ -20,6 +20,8 @@ sub set_up {
     my $self = shift;
     my $filename = $self->{_my_tmpfile};
     die "Please remove $filename, I need it for testing ..." if (-e $filename);
+    open(FH, ">$filename") or die "Could not open $filename: $!";
+    close(FH);
 }
 
 sub tear_down {
@@ -50,7 +52,7 @@ sub test_1 { assert(42 == 42); }
 sub test_2 { assert(23 == 23); }
 create_suite(); 
 open(FH, '>$filename');
-run_suite(\*FH);
+run_suite(undef, \*FH);
 close(FH);
 EOT
     $self->assert(not $@); # exit status
@@ -67,7 +69,46 @@ sub test_1 { assert(23 == 42); }
 sub test_2 { assert(42 == 23); }
 create_suite(); 
 open(FH, '>$filename');
-run_suite(\*FH);
+run_suite(undef, \*FH);
+close(FH);
+EOT
+    # this depends on the die message in Test::Unit::TestRunner
+    $self->assert($@ eq "\nTest was not successful.\n"); # exit status
+    $self->assert(-s $self->{_my_tmpfile}); # visible output
+}
+
+sub test_other_pkg_ok {
+    my $self = shift;
+    my $filename = $self->{_my_tmpfile};
+    eval << "EOT";
+package Foo_Ok;
+use Test::Unit;
+sub test_1 { assert(42 == 42); }
+sub test_2 { assert(23 == 23); }
+package Bar_Ok; 
+use Test::Unit;
+create_suite("Foo_Ok"); 
+open(FH, '>$filename');
+run_suite("Foo_Ok", \*FH);
+close(FH);
+EOT
+    $self->assert(not $@); # exit status
+    $self->assert(-s $self->{_my_tmpfile}); # visible output
+}
+
+sub test_other_pkg_fail {
+    my $self = shift;
+    my $filename = $self->{_my_tmpfile};
+    eval << "EOT";
+package Foo_Fail;
+use Test::Unit;
+sub test_1 { assert(23 == 42); }
+sub test_2 { assert(42 == 23); }
+package Bar_Fail; 
+use Test::Unit;
+create_suite("Foo_Fail"); 
+open(FH, '>$filename');
+run_suite("Foo_Fail", \*FH);
 close(FH);
 EOT
     # this depends on the die message in Test::Unit::TestRunner
