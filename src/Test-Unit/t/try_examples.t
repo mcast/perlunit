@@ -41,6 +41,22 @@ Time:  0 wallclock secs ( 0.01 usr +  0.00 sys =  0.01 CPU)
 OK (3 tests)
 EGC
 
+     "examples/fail_example.pm" => <<'EGC',
+Test was not successful.
+Suite setup
+.F.Suite teardown
+
+Time:  0 wallclock secs ( 0.01 usr +  0.00 sys =  0.01 CPU)
+
+!!!FAILURES!!!
+Test Results:
+Run: 2, Failures: 1, Errors: 0
+
+There was 1 failure:
+1) examples/fail_example.pm:22 - test_fail(fail_example)
+Born to lose ...
+EGC
+
      );
 
 # undef indicates things to skip
@@ -66,7 +82,8 @@ warn "There might be problems with error redirection undef $^O"
 foreach my $e (@examples) {
     if (defined $guru_checked{$e}) {
 	# get program output
-	my $out = `perl -I lib -I examples $e 2>&1`;
+        my $runner = $e =~ /\.pm$/ ? './TestRunner.pl ' : '';
+	my $out = `perl -I lib -I examples $runner$e 2>&1`;
 	foreach ($out, $guru_checked{$e}) {
 	    # mess about with start & end newlines
 	    s/^\n+//;
