@@ -22,7 +22,7 @@ sub new {
 
 sub do_assertion {
     my $self = shift;
-    $$self or $self->fail( @_ ? $_[-1] : "expected TRUE, got FALSE");
+    $$self or $self->fail( @_ ? join('', @_) : "expected TRUE, got FALSE");
 }
 
 sub to_string {
