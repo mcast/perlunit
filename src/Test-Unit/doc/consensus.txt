@@ -50,7 +50,7 @@ Write some stuff Piers! I'm a bit baffled -- mca
 Broken in v0.13, it will take SUPER::test_foo if test_foo is
 an inheritted method in the class being scanned.
 
-Hopefully being fixed by Piers?
+Fixed by Piers.
 
 ** regexps to pull functions called /^test/
 
@@ -89,6 +89,8 @@ one vote against? [PDC]
 
 * Documentation
 
+** Where?
+
 Where should it be kept? At the moment it lives almost entirely in POD
 and mailing list/message board format, and so is inaccessible.
 
@@ -101,6 +103,16 @@ but is probably overkill. Also it doesn't grok MANIFEST files.
 There is a documentation manager on SF. The front door is not too
 friendly and there is no back door to the data inside it.
 
+** API & PerlUnit overview
+
+Current favourite is to point at the JUnit docs.
+
+There is in 'src/api' a set of basic perl modules containing the
+essence of the structure, but they're getting old.
+
+Also, the SF message boards have some knowledge which needs
+distilling.
+
 * Generic tests for users to include
 
 Matthew wrote some. Whether anyone else wants them remains to be seen.
@@ -112,8 +124,18 @@ about that. 8-)  -- mca
 
 * Namespace pollution
 
+** classes used during self-tests
+
 We're going to try to avoid it while generating "inner classes" or
 whatever, for the self-tests.
+
+** keys in the TestCase object hash  [not yet discussed]
+
+T:U::TestCase::new is biting into namespace belonging to classes
+inherited from T:U::TestCase .. currently it only takes _name ... I'm
+wondering whether we should go to '__' prefix in the C tradition for
+"magic things", since the perlunit user shouldn't need to mess with
+this? -- mca
 
 * Test::Unit::tests that need adding
 
@@ -124,3 +146,15 @@ A test that fails with an error like
   die '$lotsofdollars';
 
 and make sure it gets wrapped into an ExceptionError
+
+** checking PerlUnit does the right OOP thing in constructors and isa() checks
+
+Possibly a test that overrides the 'isa' method so Piers' fix to my
+patch
+
+  (back to using $exception->isa(C) instead of UNIVERSAL::isa($exception,C))
+
+can be exercised.
+
+Also Adam has patched some of the PerlUnit constructors to allow
+passing a classname instead of being invoked as a method.
