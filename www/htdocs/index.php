@@ -2,7 +2,7 @@
 // Default Web Page for groups that haven't setup their page yet
 // Please replace this file with your own website
 //
-// $Id: index.php,v 1.2 2001-02-19 23:58:52 mca-gdl Exp $
+// $Id: index.php,v 1.3 2001-02-20 00:07:39 mca-gdl Exp $
 //
 $headers = getallheaders();
 ?>
@@ -57,6 +57,8 @@ $headers = getallheaders();
 <p>Most of the documentation lives in <code>POD</code> format in the
    code, which is very convenient if the package is installed.
    Hopefully it will be available here soon.
+
+<p><small>Last update: $Date: 2001-02-20 00:07:39 $</small>
 
       </CENTER>
     </TD>
