@@ -2,8 +2,8 @@ package Test::Unit::Assert;
 
 
 use strict;
-use constant DEBUG => 0;
 
+use Test::Unit::Debug qw(debug);
 use Test::Unit::Failure;
 use Test::Unit::Error;
 use Test::Unit::Exception;
@@ -16,9 +16,9 @@ use Carp;
 sub assert {
     my $self = shift;
     my $assertion = $self->normalize_assertion(shift);
-    my($asserter,$file,$line) = caller($Error::Depth);
+    my($asserter, $file, $line) = caller($Error::Depth);
     
-    print "Calling $assertion\n" if DEBUG;
+    debug("Calling $assertion\n");
     my @args = @_;
     try { $assertion->do_assertion(@args) }
     catch Test::Unit::Exception with {
@@ -180,7 +180,7 @@ sub assert_not_equals {
     foreach my $type (keys %assert_subs) {
         my $assertion = Test::Unit::Assertion::CodeRef->new($assert_subs{$type});
         no strict 'refs';
-        *{"Test\::Unit\::Assert\::assert_$type"} =
+        *{"Test::Unit::Assert::assert_$type"} =
             sub {
                 local $Error::Depth = $Error::Depth + 1;
                 my $self = shift;
@@ -221,7 +221,7 @@ sub normalize_assertion {
 
 sub fail {
     my $self = shift;
-    print ref($self) . "::fail() called\n" if DEBUG;
+    debug(ref($self) . "::fail() called\n");
     my($asserter,$file,$line) = caller($Error::Depth);
     my $message = join '', @_;
     Test::Unit::Failure->throw(-text => $message,
@@ -232,7 +232,7 @@ sub fail {
 
 sub error {
     my $self = shift;
-    print ref($self) . "::error() called\n" if DEBUG;
+    debug(ref($self) . "::error() called\n");
     my($asserter,$file,$line) = caller($Error::Depth);
     my $message = join '', @_;
     Test::Unit::Error->throw(-text => $message,

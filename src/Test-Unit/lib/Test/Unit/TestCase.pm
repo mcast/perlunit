@@ -1,10 +1,10 @@
 package Test::Unit::TestCase;
 use strict;
-use constant DEBUG => 0;
 
 use Test::Unit::Test;
 use base qw(Test::Unit::Test);
 
+use Test::Unit::Debug qw(debug);
 use Test::Unit::Failure; 
 use Test::Unit::Error; 
 use Test::Unit::Result;
@@ -36,7 +36,7 @@ sub name {
 
 sub run {
     my $self = shift;
-    print ref($self) . "::run() called\n" if DEBUG;
+    debug(ref($self) . "::run() called\n");
     my ($result, $runner) = @_;
     $result ||= create_result();
     $result->run($self, $runner);
@@ -45,7 +45,7 @@ sub run {
 
 sub run_bare {
     my $self = shift;
-    print ref($self) . "::run_bare() called\n" if DEBUG;
+    debug(ref($self) . "::run_bare() called\n");
     $self->set_up();
     try {
         $self->run_test();
@@ -63,7 +63,7 @@ sub run_bare {
 
 sub run_test {
     my $self = shift; 
-    print ref($self) . "::run_test() called\n" if DEBUG;
+    debug(ref($self) . "::run_test() called\n");
     my $method = $self->name();
     if ($self->can($method)) {
         $self->$method();
@@ -83,14 +83,13 @@ sub to_string {
 }
 
 sub make_test_from_coderef {
-    my $self = shift;
-    my $coderef = shift;
+    my ($self, $coderef, @args) = @_;
     die "Need a coderef argument" unless $coderef;
-    return Class::Inner->new(parent => ($self||ref $self),
-                            methods => {run_test => $coderef},
-                            args => [@_]);
+    return Class::Inner->new(parent  => ($self || ref $self),
+                             methods => {run_test => $coderef},
+                             args    => [ @args ]);
 }
-    
+
 
 # Returns a list of the tests run by this class and its superclasses.
 # DO NOT OVERRIDE THIS UNLESS YOU KNOW WHAT YOU ARE DOING!

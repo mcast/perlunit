@@ -1,10 +1,10 @@
 package Test::Unit::Test;
 use strict;
-use constant DEBUG => 0;
-
-use base qw(Test::Unit::Assert);
 
 use Carp;
+use Test::Unit::Debug qw(debug);
+
+use base qw(Test::Unit::Assert);
 
 sub count_test_cases {
     my $self = shift;
@@ -41,9 +41,9 @@ sub filter_method {
     }
 
     my $filtered = $self->{_filter}{$token}{$method};
-    print "filter $method by token $token? ",
+    debug("filter $method by token $token? ",
           $filtered ? 'yes' : 'no',
-	  "\n" if DEBUG;
+	  "\n");
     return $filtered;
 }
 

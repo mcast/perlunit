@@ -1,6 +1,5 @@
 package Test::Unit::Setup;
 use strict;
-use constant DEBUG => 0;
 
 use base qw(Test::Unit::Decorator);
 

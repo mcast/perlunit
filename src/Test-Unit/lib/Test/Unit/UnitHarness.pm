@@ -4,13 +4,14 @@ package Test::Unit::UnitHarness;
 
 BEGIN {require 5.002;}
 use base qw(Test::Unit::Runner Test::Unit::Test Exporter);
+
 use Config;
 use Carp;
-use FileHandle;
-use constant DEBUG => 0;
-use Test::Unit::TestCase;
-#use Test::Unit::InnerClass;
 use Class::Inner;
+use FileHandle;
+
+use Test::Unit::Debug qw(debug);
+use Test::Unit::TestCase;
 use Test::Unit::Exception;
 
 use strict;
@@ -40,7 +41,7 @@ sub new {
         _Names => [],
     };
     bless $self, $class;
-    print ref($self) . "::new($name) called\n" if DEBUG;
+    debug(ref($self) . "::new($name) called\n");
     
     return $self;
 }
@@ -153,7 +154,7 @@ sub warning {
     return Class::Inner->new(
         parent => 'Test::Unit::TestCase',
         methods => { run_test => sub { (shift)->fail($message) } },
-        args => ['warning']
+        args => ['warning'],
     );
 }
 

@@ -1,6 +1,5 @@
 package Test::Unit::TestSuite;
 use strict;
-use constant DEBUG => 0;
 
 =head1 NAME
 
@@ -12,6 +11,7 @@ use base 'Test::Unit::Test';
 
 use Carp;
 
+use Test::Unit::Debug qw(debug);
 use Test::Unit::TestCase;
 use Test::Unit::Loader;
 use Test::Unit::Warning;
@@ -103,7 +103,7 @@ sub empty_new {
     };
     bless $self, $classname;
     
-    print ref($self), "::empty_new($name) called\n" if DEBUG;
+    debug(ref($self), "::empty_new($name) called\n");
     return $self;
 }
 
@@ -123,7 +123,7 @@ the tests from those classes into the newly constructed suite object.
 sub new {
     my $class = shift;
     my $classname = shift || ''; # Avoid a warning
-    print "$class\::new($classname) called\n" if DEBUG;
+    debug("$class\::new($classname) called\n");
 
     my $self = $class->empty_new();
 
@@ -219,7 +219,7 @@ Of course, there are many ways of getting the object too ...
 sub add_test {
     my $self = shift;
     my ($test) = @_;
-    print '+ ', ref($self), "::add_test($test) called\n" if DEBUG;
+    debug('+ ', ref($self), "::add_test($test) called\n");
     $test = Test::Unit::Loader::load_test($test) unless ref $test;
     croak "`$test' could not be interpreted as a Test::Unit::Test object"
         unless eval { $test->isa('Test::Unit::Test') };
@@ -242,7 +242,7 @@ sub run {
 
     for my $t (@{$self->tests()}) {
         if ($runner && $self->filter_test($runner, $t)) {
-            printf "skipping %s\n", $t->name() if DEBUG;
+            debug(sprintf "skipping %s\n", $t->name());
             next;
         }
  

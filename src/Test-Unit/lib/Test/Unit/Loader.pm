@@ -2,9 +2,8 @@ package Test::Unit::Loader;
 
 use strict;
 
-use constant DEBUG => 0;
-
 use FileHandle;
+use Test::Unit::Debug qw(debug);
 use Test::Unit::TestSuite;
 use Test::Unit::TestCase;
 use Test::Unit::UnitHarness;
@@ -16,7 +15,7 @@ sub obj_load { shift; load(@_) }
 # Compiles a target.  Returns the package if successful.
 sub compile {
     my $target = shift;
-    print "Test::Unit::Loader::compile($target) called\n" if DEBUG;
+    debug("Test::Unit::Loader::compile($target) called\n");
 
     if ($target =~ /^\w+(::\w+)*$/) {
         compile_class($target);
@@ -34,33 +33,32 @@ sub compile {
 
 sub compile_class {
     my $classname = shift;
-    print "  Test::Unit::Loader::compile_class($classname) called\n" if DEBUG;
+    debug("  Test::Unit::Loader::compile_class($classname) called\n");
     # Check if the package exists already.
     {
         no strict 'refs';
         if (my @keys = keys %{"$classname\::"}) {
-            print "    package $classname already exists (@keys); not compiling.\n"
-                if DEBUG;
+            debug("    package $classname already exists (@keys); not compiling.\n");
             return;
         }
     }
     # No? Try 'require'ing it
     eval "require $classname";
     die $@ if $@;
-    print "    $classname compiled OK as class name\n" if DEBUG;
+    debug("    $classname compiled OK as class name\n");
 }
 
 sub compile_file {
     my $file = shift;
-    print "  Test::Unit::Loader::compile_file($file) called\n" if DEBUG;
+    debug("  Test::Unit::Loader::compile_file($file) called\n");
     eval qq{require "$file"};
     die $@ if $@;
-    print "    $file compiled OK as filename\n" if DEBUG;
+    debug("    $file compiled OK as filename\n");
 }
 
 sub load {
     my $target = shift;
-    print "Test::Unit::Loader::load($target) called\n" if DEBUG;
+    debug("Test::Unit::Loader::load($target) called\n");
 
     my $suite = load_test($target)
              || load_test_harness_test($target)
@@ -72,9 +70,9 @@ sub load {
 
 sub load_test {
     my $target = shift;
-    print "Test::Unit::Loader::load_test($target) called\n" if DEBUG;
+    debug("Test::Unit::Loader::load_test($target) called\n");
     my $package = compile($target);
-    print "  compile returned $package\n" if DEBUG;
+    debug("  compile returned $package\n");
     return unless $package;
     my $suite = load_test_suite($package) || load_test_case($package);
     die "`$target' was not a valid Test::Unit::Test\n" unless $suite;
@@ -83,18 +81,18 @@ sub load_test {
 
 sub load_test_suite {
     my $package = shift;
-    print "  Test::Unit::Loader::load_test_suite($package) called\n" if DEBUG;
+    debug("  Test::Unit::Loader::load_test_suite($package) called\n");
     if ($package->can("suite")) {
-        print "  $package has a suite() method\n" if DEBUG;
+        debug("  $package has a suite() method\n");
         return $package->suite();
     } 
 }
 
 sub load_test_case {
     my $package = shift;
-    print "  Test::Unit::Loader::load_test_case($package) called\n" if DEBUG;
+    debug("  Test::Unit::Loader::load_test_case($package) called\n");
     if ($package->isa("Test::Unit::TestCase")) {
-        print "  $package isa Test::Unit::TestCase\n" if DEBUG;
+        debug("  $package isa Test::Unit::TestCase\n");
         return Test::Unit::TestSuite->new($package);
     } 
 }

@@ -57,8 +57,9 @@ sub make_dummy_testcase {
     my $sub  = pop;
     my $method_name = shift || 'run_test';
 
-    Class::Inner->new(parent => 'Test::Unit::TestCase',
-                      methods => { $method_name => $sub });
+    Class::Inner->new(parent  => 'Test::Unit::TestCase',
+                      methods => { $method_name => $sub },
+                      args    => [ $method_name ]);
 }
 
 sub test_error {

@@ -1,7 +1,7 @@
 package Test::Unit::Result;
 use strict;
-use constant DEBUG => 0;
 
+use Test::Unit::Debug qw(debug);
 use Test::Unit::Failure;
 use Test::Unit::Error;
 
@@ -27,7 +27,7 @@ sub tell_listeners {
 }
 sub add_error { 
     my $self = shift;
-    print ref($self) . "::add_error() called\n" if DEBUG;
+    debug(ref($self) . "::add_error() called\n");
     my ($test, $exception) = @_;
     push @{$self->errors()}, $exception;
     $self->tell_listeners(add_error => @_);
@@ -35,7 +35,7 @@ sub add_error {
 
 sub add_failure {
     my $self = shift;
-    print ref($self) . "::add_failure() called\n" if DEBUG;
+    debug(ref($self) . "::add_failure() called\n");
     my ($test, $exception) = @_;
     push @{$self->failures()}, $exception;
     $self->tell_listeners(add_failure => @_);
@@ -43,14 +43,14 @@ sub add_failure {
 
 sub add_pass {
     my $self = shift;
-    print ref($self) . "::add_pass() called\n" if DEBUG;
+    debug(ref($self) . "::add_pass() called\n");
     my ($test) = @_;
     $self->tell_listeners(add_pass => @_);
 }
 
 sub add_listener {
     my $self = shift;
-    print ref($self) . "::add_listener() called\n" if DEBUG;
+    debug(ref($self) . "::add_listener() called\n");
     my ($listener) = @_;
     push @{$self->listeners()}, $listener;
 }
@@ -89,7 +89,7 @@ sub failures {
 sub run {
     my $self = shift;
     my ($test) = @_;
-    printf "%s::run(%s) called\n", ref($self), $test->name() if DEBUG;
+    debug(sprintf "%s::run(%s) called\n", ref($self), $test->name());
     $self->start_test($test);
     $self->run_protected($test, sub {
                              $test->run_bare() ? $self->add_pass($test) :
@@ -150,7 +150,7 @@ sub was_successful {
 sub to_string {
     my $self = shift;
     my $class = ref($self);
-    print $class . "::to_string() called\n" if DEBUG;
+    debug($class . "::to_string() called\n");
 }
 
 1;

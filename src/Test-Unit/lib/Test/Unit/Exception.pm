@@ -1,9 +1,10 @@
 package Test::Unit::Exception;
-use Carp;
-use strict;
-use constant DEBUG => 0;
 
+use strict;
+
+use Carp;
 use Error;
+
 use base 'Error';
 
 sub throw_new {

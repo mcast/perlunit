@@ -2,7 +2,6 @@ package Test::Unit::HarnessUnit;
 # this is a test runner which outputs in the same
 # format that Test::Harness expects. 
 use strict;
-use constant DEBUG => 0;
 
 use base qw(Test::Unit::Runner); 
 
