@@ -2,6 +2,10 @@
 The procedure should be:
 -------------------------------------------------
 
+Prerequisites: 
+Make sure all the tests run OK.
+Make sure all the examples run OK.
+
 1. Commit new files in src/Test-Unit
 2. Changes (section for release at the top)
 3. Makefile.PL (set new $VERSION, which is used by make tardist)
