@@ -68,7 +68,7 @@ sub run_test {
     if ($self->can($method)) {
         $self->$method();
     } else {
-        $self->fail("Method $method not found");
+        $self->fail("Method `$method' not found");
     }
 }
 
