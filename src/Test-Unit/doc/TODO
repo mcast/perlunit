@@ -38,7 +38,7 @@ copyright-containing file from being disassociated from the others.
 
 * Document stuff better
 
-** @TESTS isn't documented.
+** @TESTS isn't documented/tested.
 
 * Nice to have before 1.0
 
