@@ -1,6 +1,10 @@
-package Test::Unit::Assert::CodeRef;
+package Test::Unit::Assertion::CodeRef;
+
+use strict;
+use base qw/Test::Unit::Assertion/;
 
 require Test::Unit::ExceptionFailure;
+
 use Carp;
 
 use B::Deparse;
@@ -16,11 +20,13 @@ sub new {
     bless \$code => $class;
 }
 
-sub do_assert {
+sub do_assertion {
     my $self = shift;
-    die Test::Unit::ExceptionFailure->new("$self\->('". join("', '", @_). "') failed.")
-        unless $$self->(@_);
-                                     
+    my $possible_object = shift;
+    $possible_object->$$self(@_) ||
+        $self->fail("$possible_object\->{$self}(" .
+                    join (", ", @_) .
+                    ") failed" . ($@ ? "with error $@." : "."));
 }
 
 sub to_string {

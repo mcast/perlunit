@@ -4,20 +4,40 @@ use constant DEBUG => 0;
 
 sub assert {
     my $self = shift;
-    print ref($self) . "::assert() called\n" if DEBUG;
-    my ($condition, $message) = @_;
-    $self->fail($message) unless $condition;
+    my $assertion = $self->normalize_assertion(shift);
+    print "Calling $assertion\n" if DEBUG;
+    $assertion->do_assertion(@_) ||
+        $self->fail("$assertion failed\n");
 }
 
-sub coderef_assert {
-    my $self               = shift;
-    my($coderef, @args) = @_;
-    die unless ref $coderef;
-    if (ref($coderef) eq 'CODE') {
-        require Test::Unit::Assert::CodeRef;
-        $coderef = Test::Unit::Assert::CodeRef->new($coderef);
+sub normalize_assertion {
+    my $self      = shift;
+    my $assertion = shift;
+    if (!ref($assertion)) {
+        require Test::Unit::Assertion::Boolean;
+        return Test::Unit::Assertion::Boolean->new($assertion);
     }
-    $coderef->do_assert(@args) || $self->fail("$coderef failed.");
+    elsif (eval {$assertion->isa('Regexp')}) {
+        require Test::Unit::Assertion::Regexp;
+        return Test::Unit::Assertion::Regexp->new($assertion);
+    }
+    elsif (eval {$assertion->isa('UNIVERSAL')}) {
+        # It's an object already.
+        die ref($assertion), "is not an exception class\n"
+            unless $assertion->can('do_assertion');
+        return $assertion;
+    }
+    elsif (ref($assertion) eq 'CODE') {
+        require Test::Unit::Assertion::CodeRef;
+        return Test::Unit::Assertion::CodeRef->new($assertion);
+    }
+#     elsif (ref($assertion) eq 'SCALAR') {
+#         require Test::Unit::Assertion::Scalar;
+#         return Test::Unit::Assertion::Scalar->new($assertion);
+#     }
+    else {
+        die "Don't know how to normalize $assertion\n";
+    }
 }
 
 sub fail {

@@ -42,6 +42,8 @@ sub verify_success {
 
 sub test_case_to_string {
     my $self = shift;
+    $self->assert(qr"test_case_to_string\(Test::Unit::tests::TestTest\)",
+                  $self->to_string);
     $self->assert($self->to_string() eq "test_case_to_string(Test::Unit::tests::TestTest)");
 }
 
@@ -214,6 +216,7 @@ sub test_assert_on_matching_regex {
 sub run_test {
     my $self = shift;
     $self->assert("foo" =~ /foo/, "Should have matched!");
+    $self->assert(qr/foo/, "foo");
 }
 EOIC
     my $result = $matching_regex->run();
@@ -229,6 +232,7 @@ sub test_assert_on_failing_regex {
 sub run_test {
     my $self = shift;
     $self->assert(scalar("foo" =~ /bar/), "Should not have matched!");
+    $self->assert(qr/bar/, "foo");
 }
 EOIC
     my $result = $matching_regex->run();
