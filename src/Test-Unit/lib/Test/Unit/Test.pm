@@ -6,7 +6,7 @@ use base qw(Test::Unit::Assert);
 
 use vars '$VERSION';
 
-$VERSION = '0.2';
+$VERSION = '0.20';
 
 use Carp;
 

@@ -4,6 +4,7 @@ use constant DEBUG => 0;
 
 use base qw(Test::Unit::Runner); 
 
+use Test::Unit::Test;
 use Test::Unit::TestSuite;
 use Test::Unit::Loader;
 use Test::Unit::Result;
@@ -165,7 +166,10 @@ sub start {
         if ($args[$i] eq "-wait") {
             $wait = 1;
         } elsif ($args[$i] eq "-v") {
-            print "Test::Unit Version 0.1 experimental, copyright Christian Lemburg, Brian Ewins, J.E. Fritz, Cayte Lindner, Zhon Johansen, 2000\n";
+            print <<EOF;
+Test::Unit Version $Test::Unit::Test::VERSION
+(c) 2000 Christian Lemburg, Brian Ewins, J.E. Fritz, Cayte Lindner, Zhon Johansen
+EOF
         } else {
             $test_case = $args[$i];
         }
