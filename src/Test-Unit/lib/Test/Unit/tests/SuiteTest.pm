@@ -33,6 +33,7 @@ sub suite {
     $suite->add_test(Test::Unit::tests::SuiteTest->new("test_inherited_tests"));
     $suite->add_test(Test::Unit::tests::SuiteTest->new("test_inherited_inherited_tests"));
     $suite->add_test(Test::Unit::tests::SuiteTest->new("test_shadowed_tests"));
+    $suite->add_test(Test::Unit::tests::SuiteTest->new("test_complex_inheritance"));
     return $suite;
 }
 
@@ -44,6 +45,30 @@ sub test_inherited_tests {
     $suite->run($self->result());
     $self->assert($self->result()->was_successful());
     $self->assert(2 == $self->result()->run_count());
+}
+
+sub test_complex_inheritance {
+    my $self = shift;
+    eval q{
+        package Test::Unit::tests::_SuperClass;
+        use base qw(Test::Unit::TestCase);
+        sub test_case {
+            my $self = shift;
+            $self->assert($self->override_this_method );
+        }
+        sub override_this_method { 0 ; }
+        
+        package Test::Unit::tests::_SubClass;
+        use base qw(Test::Unit::tests::_SuperClass);
+        sub override_this_method { 1 ; }
+    };
+    die $@ if $@;
+    my $suite = Test::Unit::TestSuite->new("Test::Unit::tests::_SubClass");
+    my $result = $self->result;
+    $suite->run($result);
+    
+    $self->assert($result->was_successful());
+    $self->assert($result->run_count == 1);
 }
 
 sub test_inherited_inherited_tests {
@@ -97,4 +122,7 @@ sub test_shadowed_tests {
     $self->assert(1 == $self->result()->run_count());
 }
 
+
+
 1;
+

@@ -7,6 +7,8 @@ use base qw(Test::Unit::Test);
 use Test::Unit::ExceptionFailure; 
 use Test::Unit::ExceptionError; 
 
+use vars '@ISA';
+
 sub new {
     my $class = shift;
     my ($name) = @_;
@@ -56,16 +58,13 @@ sub run_bare {
 }
 
 sub run_test {
-    my $self = shift;
+    my $self = shift; 
     print ref($self) . "::run_test() called\n" if DEBUG;
-    my $class = ref($self);
     my $method = $self->name();
-    no strict 'refs';
-    print "Should now call $class\:\:$method\n" if DEBUG;
-    if ($class->can($method)) {
-	&{$class . "::" .$method}($self);
+    if ($self->can($method)) {
+        $self->$method();
     } else {
-	$self->fail("Method $method not found");
+        $self->fail("Method $method not found");
     }
 }
 
@@ -79,6 +78,25 @@ sub to_string {
     my $self = shift;
     my $class = ref($self);
     return $self->name() . "(" . $class . ")";
+}
+
+# Returns a list of the tests run by this class and its superclasses.
+# DO NOT OVERRIDE THIS UNLESS YOU KNOW WHAT YOU ARE DOING!
+sub list_tests {
+    my $class = ref($_[0]) || $_[0];
+    my @tests;
+    no strict 'refs';
+    if (defined(@{"$class\::TESTS"})) {
+        push @tests, @{"$class\::TESTS"};
+    }
+    else {
+        push @tests, grep { /^test/ && $class->can($_) }
+            keys %{"$class\::"};
+    }
+    push @tests, map {$_->can('list_tests') ? $_->list_tests : ()}
+        @{"$class\::ISA"};
+    my %tests = map {$_ => ''} @tests if @tests;
+    return keys %tests;
 }
 
 1;

@@ -6,90 +6,70 @@ use base qw(Test::Unit::Test);
 use Test::Unit::TestCase;
 use Test::Unit::InnerClass;
 
+use Carp;
 # helper subroutines
 
-# determine if a string is the name of a class
+# determine if a string is the name of a valid package. There is no
+# valid way of finding out if a package is a class.
 
 sub is_not_name_of_a_class {
-    # assume it is a class if we can load it
-    # don't know any better, if you do, please tell me
     my $name = shift;
-    return 1 if $name =~ /\s+/; # can't be an classname?
+    # Check if the package exists already.
+    {
+        no strict 'refs';
+        return if keys %{"$name\::"};
+    }
+    # No? Try 'require'ing it
     eval "require $name";
-    print $@ if DEBUG;
+    warn $@, "\n" if DEBUG;
     return 1 if $@;
 }
 
 sub is_a_test_case_class {
     my $pkg = shift;
-    return 0 if is_not_name_of_a_class($pkg);
-    no strict 'refs';
-    if ("$pkg"->isa("Test::Unit::TestCase")) {
-	return 1;
-    }
-    return 0;
+    return if is_not_name_of_a_class($pkg);
+    return eval {$pkg->isa("Test::Unit::TestCase")};
 }
-
-# get list of all parent classes of a class
-
-sub flatten_inheritance_tree {
-    # finally a place to put my scheme heritage to work
-    my ($pkg, %seen) = @_;
-    my @parents;
-    return if $seen{$pkg};
-    $seen{$pkg}++;	
-    no strict 'refs';
-    for my $p (@{$pkg . "::ISA"}) {
-	push @parents, $p;
-	push @parents, flatten_inheritance_tree($p, %seen);
-    }
-    return @parents;
-}
-
-# class and object methods
 
 sub new {
     my $class = shift;
-    my ($classname) = @_;
+    my $classname = shift || ''; # Avoid a warning
     
-    my @_Tests = ();
     my $self = {
-	_Tests => \@_Tests,
-	_Name => $classname,
-	_Names => [],
+	    _Tests => [],
+	    _Name => $classname,
     };
     bless $self, $class;
-    print ref($self) . "::new($classname) called\n" if DEBUG;
+    warn ref($self) . "::new($classname) called\n" if DEBUG;
+
+    $self->build_suite($classname) if $classname;
+    return $self;
+}
+
+sub build_suite {
+    my $self = shift;
+    my $classname = shift;
     
-    if (is_not_name_of_a_class($classname)) {
-	die "Could not find class $classname";
-    } else {
-	# it is a class, create a suite with its tests
-	# ... and that of its ancestors, if they are Test::Unit::TestCase
-	no strict 'refs';
-	if (not is_a_test_case_class($classname)) {
-	    my $message = "Class " . $classname . 
-		" is not a Test::Unit::TestCase";
-	    $self->add_test($self->warning($message));
-	    return $self;
-	}
-	my @packages_to_search = ($classname, 
-				  flatten_inheritance_tree($classname));
-	for my $pkg (@packages_to_search) {
-	    next unless is_a_test_case_class($pkg);
-	    my @candidates = grep /^test/, keys %{$pkg . "::"};
-	    for my $c (@candidates) {
-		if (defined(&{$pkg . "::" . $c})) {
-		    my $method = $pkg . "::" . $c;
-		    $self->add_test_method($method, $self->names());
-		}
-	    }
-	}
-	if (not @{$self->tests()}) {
-	    $self->add_test($self->warning("No tests found in $classname"));
-	}
+    is_not_name_of_a_class($classname) and die "Could not find class $classname";
+    
+    # it is a class, create a suite with its tests
+    # ... and that of its ancestors, if they are Test::Unit::TestCase
+    if (!is_a_test_case_class($classname)) {
+        $self->add_warning("Class $classname is not a Test::Unit::TestCase");
+        return $self;
     }
 
+    foreach my $method ($classname->list_tests) {
+        if ( my $a_class_instance = $classname->new($method) ) {
+            push @{$self->tests}, $a_class_instance;
+        }
+        else {
+            $self->add_warning("build_suite: Couldn't create a $classname object");
+        }
+    }
+
+    $self->add_warning("No tests found in $classname")
+        unless @{$self->tests};
     return $self;
 }
 
@@ -97,54 +77,35 @@ sub empty_new {
     my $class = shift;
     my ($name) = @_;
     
-    my @_Tests = ();
-    my $self = {
-	_Tests => \@_Tests,
-	_Name => $name,
-	_Names => [],
-    };
-    bless $self, $class;
-
+    my $self = $class->new;
+    $self->name($name);
     print ref($self), "::empty_new($name) called\n" if DEBUG;
     return $self;
 }
 
 sub name {
     my $self = shift;
+    $self->{_Name} = shift if @_;
     return $self->{_Name};
 }
 
 sub names {
     my $self = shift;
-    return $self->{_Names};
+    my @test_list = @{$self->tests};
+    return [ map {$_->name} @test_list ] if @test_list;
 }
 
 sub add_test {
     my $self = shift;
     my ($test) = @_;
-    push @{$self->tests()}, $test;
+    push @{$self->tests}, $test;
 }
 
-sub add_test_method {
-    my $self = shift;
-    my ($test_method, $names) = @_;
-    my ($class, $method) = ($test_method =~ m/^(.*)::(.*)$/);
-    return if grep /^\Q$method\E$/, @{$names}; 
-    no strict 'refs';
-    push @{$self->names()}, $method;
-    my $a_test_case_sub_class_instance = "$class"->new($method);
-    unless ($a_test_case_sub_class_instance) {
-	$self->add_test($self->warning("add_test_method: Could not call $class"."::"."new()"));
-	return;
-    }
-    push @{$self->tests()}, $a_test_case_sub_class_instance;
-}
- 
 sub count_test_cases {
     my $self = shift;
     my $count = 0;
     for my $e (@{$self->tests()}) {
-	$count += $e->count_test_cases();
+        $count += $e->count_test_cases();
     }
     return $count;
 }
@@ -153,8 +114,8 @@ sub run {
     my $self = shift;
     my ($result) = @_;
     for my $e (@{$self->tests()}) {
-	last if $result->should_stop();
-	$e->run($result);
+        last if $result->should_stop();
+        $e->run($result);
     }
 	return $result;
 }
@@ -180,15 +141,32 @@ sub to_string {
     return $self->name();
 }
 
+sub add_warning {
+    my $self = shift;
+    $self->add_test($self->warning(join '', @_));
+}
+
 sub warning {
     my $self = shift;
     my ($message) = @_;
-    return Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<"EOIC", "warning");
-sub run_test {
-    my \$self = shift;
-    \$self->fail('$message');
+    Test::Unit::TestSuite::_warning->new($message);
 }
-EOIC
+
+package Test::Unit::TestSuite::_warning;
+
+use strict;
+use base 'Test::Unit::TestCase';
+
+sub run_test {
+    my $self = shift;
+    $self->fail($self->{_message});
+}
+
+sub new {
+    my $class = shift;
+    my $self = $class->SUPER::new('warning');
+    $self->{_message} = shift;
+    return $self;
 }
 
 1;
