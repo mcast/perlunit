@@ -12,7 +12,7 @@ require Exporter;
 
 @EXPORT = qw(assert create_suite run_suite add_suite);
 
-$VERSION = '0.10';
+$VERSION = '0.11';
 
 # private
 
@@ -115,8 +115,8 @@ __END__
 
     # define tests
 
-    sub test_foo { assert(foo() == 23); }	
-    sub test_bar { assert(bar() == 42); }
+    sub test_foo { assert(foo() == 23, "Your message here"); }	
+    sub test_bar { assert(bar() == 42, "I will be printed if this fails"); }
 
     # set_up and tear_down are used to
     # prepare and release resources need for testing
