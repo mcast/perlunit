@@ -124,7 +124,7 @@ sub print_failures {
         chomp(my $f_to_str = $f);
         $self->_print("\n") if $i++;
         $self->_print("$i) $f_to_str\n");
-        $self->_print("\nOutput was:\n", $f->object->output(), "\n")
+        $self->_print("\nOutput was:\n", $f->object->output())
           if $f->object->output();
     }
 }
