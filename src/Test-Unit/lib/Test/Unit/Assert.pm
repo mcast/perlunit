@@ -13,7 +13,9 @@ sub fail {
     my $self = shift;
     print ref($self) . "::fail() called\n" if DEBUG;
     my ($message) = @_;
-    die Test::Unit::ExceptionFailure->new($message);
+    my $ex = Test::Unit::ExceptionFailure->new($message);
+    $ex->hide_backtrace() unless $self->get_backtrace_on_fail();
+    die $ex;
 }
 
 1;
@@ -52,6 +54,9 @@ __END__
 
     Thanks go to the other PerlUnit framework people: 
     Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
+
+    Thanks for patches go to:
+    Matthew Astley.
 
 =head1 SEE ALSO
 

@@ -1,5 +1,12 @@
 Revision history for Perl extension Test::Unit.
 
+0.12    - added patch by Matthew Astley (method to quell backtrace on 
+          failed tests, see Test::Unit::TestCase).
+
+0.11
+	- fixed bugs in self tests that caused failed tests under HPUX
+	  and Solaris
+
 0.1
 	- much revised and extended due to PerlUnit effort 
 	  (see http://sourceforge.net/project?group_id=2653)

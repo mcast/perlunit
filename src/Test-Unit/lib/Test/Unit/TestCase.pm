@@ -23,6 +23,16 @@ sub create_result {
     return Test::Unit::TestResult->new();
 }
 
+sub quell_backtrace {
+    my $self = shift;
+    $self->{_no_backtrace_on_fail} = 1;
+}
+
+sub get_backtrace_on_fail {
+    my $self = shift;
+    return $self->{_no_backtrace_on_fail} ? 0 : 1;
+}
+
 sub name {
     my $self = shift;
     return $self->{_name};
@@ -165,6 +175,10 @@ __END__
     as the entry point to get a test to run or it will extract the
     suite automatically.
 
+    If you do not like the rather verbose backtrace that appears
+    when a test fails, you can use the quell_backtrace() method.
+    You will get any message provided, but not the backtrace.
+
 =head1 AUTHOR
 
     Framework JUnit authored by Kent Beck and Erich Gamma.
@@ -179,6 +193,9 @@ __END__
 
     Thanks go to the other PerlUnit framework people: 
     Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
+
+    Thanks for patches go to:
+    Matthew Astley.
 
 =head1 SEE ALSO
 

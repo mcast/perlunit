@@ -39,16 +39,16 @@ PREREQUISITES
 INSTALLATION
     Just perform the usual incantation:
 
-    gunzip Test-Unit-0.1.tar.gz
-    tar -xvf Test-Unit-0.1.tar 
-    cd Test-Unit-0.1
+    gunzip Test-Unit-0.12.tar.gz
+    tar -xvf Test-Unit-0.12.tar 
+    cd Test-Unit-0.12
     perl Makefile.PL
     make
     make test
     make install
 
 AUTHOR
-    Copyright (c) 2000 Christian Lemburg, <lemburg@acm.org>.
+    Copyright (c) 2000, 2001 Christian Lemburg, <lemburg@acm.org>.
 
     All rights reserved. This program is free software; you can
     redistribute it and/or modify it under the same terms as
@@ -56,6 +56,9 @@ AUTHOR
 
     Thanks go to the other PerlUnit framework people: 
     Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
+
+    Thanks for patches go to:
+    Matthew Astley.
 
 SEE ALSO
     - Test::Unit::TestCase (included in this install)

@@ -31,8 +31,14 @@ sub get_message {
     return $self->{_message};
 }
 
+sub hide_backtrace {
+    my $self = shift;
+    $self->{_hide_backtrace} = 1;
+}
+
 sub to_string {
     my $self = shift;
+    return $self->get_message() if $self->{_hide_backtrace};
     return $self->get_message() . $self->stacktrace();
 }
 
@@ -63,6 +69,9 @@ __END__
 
     Thanks go to the other PerlUnit framework people: 
     Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
+
+    Thanks for patches go to:
+    Matthew Astley.
 
 =head1 SEE ALSO
 

@@ -172,7 +172,7 @@ __END__
 
 =head1 AUTHOR
 
-    Copyright (c) 2000 Christian Lemburg, <lemburg@acm.org>.
+    Copyright (c) 2000, 2001 Christian Lemburg, <lemburg@acm.org>.
 
     All rights reserved. This program is free software; you can
     redistribute it and/or modify it under the same terms as
@@ -180,6 +180,9 @@ __END__
 
     Thanks go to the other PerlUnit framework people: 
     Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
+
+    Thanks for patches go to:
+    Matthew Astley.
 
 =head1 SEE ALSO
 
