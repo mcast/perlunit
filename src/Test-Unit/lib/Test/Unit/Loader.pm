@@ -1,8 +1,10 @@
 package Test::Unit::Loader;
+
 use strict;
-use FileHandle;
+
 use constant DEBUG => 0;
 
+use FileHandle;
 use Test::Unit::TestSuite;
 use Test::Unit::TestCase;
 use Test::Unit::UnitHarness;
@@ -24,7 +26,7 @@ sub load {
         $suite = try_test_suite($target) || try_test_case($target);
     }
     elsif ($target =~ /\.pm$/ 
-             && eval "require \"$target\""
+             && eval qq{require "$target"}
              && ! $@) {
         print "$target compiled OK as filename\n" if DEBUG;
         #In this case I need to figure out what the class
@@ -71,10 +73,9 @@ sub try_test_suite {
 sub try_test_harness {
     my $test_case = shift;
     if (-r $test_case) {
-        my $fh = new FileHandle;
-        $fh->open($test_case) or return;
-        my $first = <$fh>;
-        $fh->close or return;
+        open(FH, $test_case) or return;
+        my $first = <FH>;
+        close(FH) or return;
         return Test::Unit::UnitHarness->new($test_case);
     }
 }
@@ -94,15 +95,17 @@ sub try_test_dir {
 # loaded from. Somehow I feel this information is in perl
 # somwhere but if it is I dont know where...
 sub get_package_name_from_file {
-    my $test_case = shift;
-    my $fh = new FileHandle;
-    my $filename;
+    my $filename = shift;
     my $real_path = $INC{$filename};
-    $fh->open($real_path) or die "Can't find $filename in @INC: $!";
-    while (defined($_ = <$fh>)) {
-        /^\s*package\s+([\w:]+)/ && return $1;
+    die "Can't find $filename in @INC: $!"
+      unless $real_path && open(FH, $real_path);
+    while (<FH>) {
+        if (/^\s*package\s+([\w:]+)/) {
+            close(FH);
+            return $1;
+        }
     }
-    die "Got a $test_case but can't find a package";
+    die "Can't find a package in $filename";
 }
 
 1;
