@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2000 Brian Ewins
 #
-# $Id: TkTestRunner.pm,v 1.5 2000-02-24 14:48:52 ba22a Exp $
+# $Id: TkTestRunner.pm,v 1.6 2000-02-24 15:08:57 ba22a Exp $
 #
 
 
@@ -292,6 +292,7 @@ sub run_suite {
 	}
 	if ($suite) {
 	  $self->{'runner'}=1;
+	  $self->{'planned'}=$suite->count_test_cases();
 	  $self->{'result'}=$self->create_test_result();
 	  $self->{'result'}->add_listener($self);
 	  $self->show_info("Running...");
