@@ -33,6 +33,24 @@ sub test_assert_equals {
     $self->assert_equals($o, $o);
 }
 
+sub test_assert_matches {
+    my $self = shift;
+    $self->assert_matches(qr/ob/i, 'fooBar');
+    $self->check_errors(
+        'arg 1 to assert_matches() must be a regexp'
+            => [ __LINE__, sub { shift->assert_matches(1, 2) } ]
+    );
+}
+    
+sub test_assert_does_not_match {
+    my $self = shift;
+    $self->assert_does_not_match(qr/ob/, 'fooBar');
+    $self->check_errors(
+        'arg 1 to assert_does_not_match() must be a regexp'
+            => [ __LINE__, sub { shift->assert_does_not_match(1, 2) } ]
+    );
+}
+    
 sub test_assert_equals_null {
     my $self = shift;
     $self->assert_equals(undef, undef);
@@ -48,16 +66,16 @@ sub test_assert_equals_null {
 sub test_ok_boolean {
     my $self = shift;
     $self->ok(1);
-    $self->check_failures('Expected ok(0) to fail'
+    $self->check_failures('expected TRUE, got FALSE'
                               => [ __LINE__, sub { shift->ok(0) } ]);
 }
 
 sub test_ok_bad_args {
     my $self = shift;
     $self->check_errors(
-        'Expected ok() to fail'
+        'ok() called with wrong number of args'
             => [ __LINE__, sub { shift->ok()           } ],
-        'Expected ok(1, 2, 3, 4) to fail'
+        'ok() called with wrong number of args'
             => [ __LINE__, sub { shift->ok(1, 2, 3, 4) } ],
     );
 }
@@ -76,33 +94,33 @@ sub test_ok_not_equals {
     my $self = shift;
     my $adder = sub { 2+2 };
     my %checks = (
-        q{0, 1}         => [ 0,      1       ], 
-        q{1, 0}         => [ 1,      0       ], 
-        q{2, 3}         => [ 2,      3       ], 
-        q{-57, -57.001} => [ -57,    -57.001 ], 
-        q{'foo', 'bar'} => [ 'foo',  'bar'   ], 
-        q{'foo', ''}    => [ 'foo',  ''      ], 
-        q{'', 'foo'}    => [ '',     'foo'   ], 
-        q{'', 'foo'}    => [ '',     'foo'   ], 
-        q{sub {2+2}, 5} => [ $adder, 5       ], 
-        q{'foo', qr/x/} => [ 'foo',  qr/x/   ], 
+        # interface is ok(GOT, EXPECTED);
+        q{expected 1, got 0}                => [ 0,      1       ], 
+        q{expected 0, got 1}                => [ 1,      0       ], 
+        q{expected 3, got 2}                => [ 2,      3       ], 
+        q{expected -57.001, got -57}        => [ -57,    -57.001 ], 
+        q{expected 'bar', got 'foo'}        => [ 'foo',  'bar'   ], 
+        q{expected '', got 'foo'}           => [ 'foo',  ''      ], 
+        q{expected 'foo', got ''}           => [ '',     'foo'   ], 
+        q{expected 5, got 4}                => [ $adder, 5       ], 
+        q{'foo' did not match /(?-xism:x)/} => [ 'foo',  qr/x/   ], 
     );
     my %tests = ();
-    while (my ($targs, $args) = each %checks) {
-        my $message = "ok($targs) should fail";
-	$tests{$message}
+    while (my ($expected, $args) = each %checks) {
+	$tests{$expected}
           = [ __LINE__, sub { shift->ok(@$args) } ];
-        $message =~ s/(\) should fail)/, 'comment'$1/;
-	$tests{$message}
-          = [ __LINE__, sub { shift->ok(@$args, "comment: $message") } ];
+	$tests{'failure comment'}
+          = [ __LINE__, sub { shift->ok(@$args, 'failure comment') } ];
     }
     $self->check_failures(%tests);
 }
 
 sub test_fail {
     my $self = shift;
-    $self->check_failures('Expected fail() to fail'
-                            => [ __LINE__, sub { shift->fail() } ]);
+    $self->check_failures(
+        ''                => [ __LINE__, sub { shift->fail() } ],
+        'failure message' => [ __LINE__, sub { shift->fail('failure message') } ],
+    );
 }
 
 sub test_succeed_assert_null {
@@ -122,27 +140,49 @@ sub test_fail_assert_null {
 
 sub test_success_assert_not_equals {
     my $self = shift;
-    $self->assert_not_equals(1,0);
-    $self->assert_not_equals(0,1);
-    $self->assert_not_equals(0,1E10);
-    $self->assert_not_equals(1E10,0);
-    $self->assert_not_equals(1,2);
+    $self->assert_not_equals(1, 0);
+    $self->assert_not_equals(0, 1);
+    $self->assert_not_equals(0, 1E10);
+    $self->assert_not_equals(1E10, 0);
+    $self->assert_not_equals(1, 2);
     $self->assert_not_equals('string', 1);
-    $self->assert_not_equals(1,'string');
-    $self->assert_not_equals('string',0);
+    $self->assert_not_equals(1, 'string');
+    $self->assert_not_equals('string', 0);
     # $self->assert_not_equals(0,'string'); # Numeric comparison done here.. 
+    # $self->assert_not_equals(0, '');      # Numeric comparison done here.. 
+    $self->assert_not_equals('', 0);
+    $self->assert_not_equals(undef, 0);
+    $self->assert_not_equals(0, undef);
+    # $self->assert_not_equals(0, ''); FIXME
+    $self->assert_not_equals(undef, '');
+    $self->assert_not_equals('', undef);
 }
 
 sub test_fail_assert_not_equals {
     my $self = shift;
+    my %pairs = (
+        # Some of these are debatable, but at least including the tests
+        # will alert us if any of the outcomes change.
+        "0 and 0 should differ"      => [ 0,        0        ],
+        "0 and 0 should differ"      => [ 0,        '0'      ],
+        "0 and 0 should differ"      => [ '0',      0        ],
+        "0 and 0 should differ"      => [ '0',      '0'      ],
+        "1 and 1 should differ"      => [ 1,        1        ],
+        "1 and 1 should differ"      => [ 1,        '1'      ],
+        "1 and 1 should differ"      => [ '1',      1        ],
+        "1 and 1 should differ"      => [ '1',      '1'      ],
+        "0 and  should differ"       => [ 0,        ''       ], # Numeric comparison
+        "0 and string should differ" => [ 0,        'string' ], # Numeric comparison
+        "'' and '' should differ"    => [ '',       ''       ],
+        "both args were undefined"   => [ undef,    undef    ],
+    );
     my %tests = ();
-    foreach my $pair ([1, 1], [0, 0], [undef, undef],[0, 'string'],
-                      ['string', 'string'], ['10', 10], [10, '10']) {
-        my ($a, $b) = @$pair;
-        $_ ||= 'undef' foreach $a, $b;
-	my $code = "assert_not_equals($a, $b)";
-        $tests{"$code should fail"}
+    while (my ($expected, $pair) = each %pairs) {
+        $tests{$expected}
           = [ __LINE__, sub { shift->assert_not_equals(@$pair) } ];
+        $tests{"$expected with comment"}
+          = [ __LINE__, sub { shift->assert_not_equals(@$pair,
+                                                       "$expected with comment") } ];
     }
     $self->check_failures(%tests);
 }
@@ -150,8 +190,10 @@ sub test_fail_assert_not_equals {
 sub test_fail_assert_not_null {
     my $self = shift;
     $self->check_failures(
-        'assert_not_null(undef) should fail'
-          => [ __LINE__, sub { shift->assert_not_null(undef) } ]
+        '<undef> unexpected'
+          => [ __LINE__, sub { shift->assert_not_null(undef) } ],
+        'Weirdness'
+          => [ __LINE__, sub { shift->assert_not_null(undef, 'Weirdness') } ]
     );
 }
 
@@ -177,7 +219,12 @@ sub check_errors {
 sub check_exceptions {
     my $self = shift;
     my ($exception_class, %tests) = @_;
-    while (my ($message, $test_components) = each %tests) {
+    my ($asserter, $file, $line)
+      = caller($Error::Depth + 1); # EVIL hack!  Assumes check_exceptions
+                                   # always called via check_{failures,errors}.
+                                   # My brain hurts too much right now to think
+                                   # of a better way. 
+    while (my ($expected, $test_components) = each %tests) {
         my ($test_code_line, $test) = @$test_components;
 	my $exception;
 	try {
@@ -189,9 +236,35 @@ sub check_exceptions {
 	otherwise {
 	    $exception = 0;
 	};
-	$exception || throw Test::Unit::Failure -text => $message, -object => $self;
-        $self->check_file_and_line($exception, $test_code_line);
+
+        try {
+            $self->check_exception($exception_class, $expected, $exception);
+            $self->check_file_and_line($exception, $test_code_line);
+        }
+        catch Test::Unit::Failure with {
+            my $failure = shift;
+            $failure->throw_new(
+                -package => $asserter,
+                -file    => $file,
+                -line    => $line,
+                -object  => $self
+            );
+        }
     }
+}
+sub check_exception {
+    my $self = shift;
+    my ($exception_class, $expected, $exception) = @_;
+    Test::Unit::Failure->throw(
+        -text => "Didn't get $exception_class `$expected'",
+        -object => $self,
+    ) unless $exception;
+
+    my $got = $exception->text();
+    Test::Unit::Failure->throw(
+        -text => "Expected $exception_class `$expected', got `$got'",
+        -object => $self,
+    ) unless $got eq $expected;
 }
 
 sub check_file_and_line {
@@ -216,25 +289,37 @@ sub check_file_and_line {
 
 # Key = assert_method
 # Value = [[@arg_list],undef/expected exception]
-my %test_hash =
-(
- assert_equals => {success => [
-                           {args => [0,'foo'],      name => "0 == 'foo'"},
-                           {args => [1,'1.0'],      name => "1 == '1.0'"},
-                           {args => ['1.0', 1],     name => "'1.0' == 1"},
-                           {args => ['foo', 'foo'], name => 'foo eq foo'},
-                           {args => ['0e0', 0],     name => '0E0 == 0'  },
-                           {args => [0, 'foo'],     name => "0 == 'foo'"},
-                              ],
-                   'Test::Unit::Failure' =>
-                              [
-                           {args => [1,'foo'],      name => "1 != 'foo'"    },
-                           {args => ['foo', 0],     name => "'foo' ne 0"    },
-                           {args => ['foo', 1],     name => "'foo' ne 1"    },
-                           {args => [0,1],          name => "0 != 1"        },
-                           {args => ['foo', 'bar'], name => "'foo' ne 'bar'"},
-                              ],
-                  },
+# FIXME: These should probably be merged with the tests for assert_not_equals()
+# somehow, since the failures aren't currently tested for the correct message
+# via check_exception(), or originating file/line via check_file_and_line().
+my %test_hash = (
+    assert_equals => {
+        success => [
+            { args => [0,'foo'],      name => "0 == 'foo'" },
+            { args => [1,'1.0'],      name => "1 == '1.0'" },
+            { args => ['1.0', 1],     name => "'1.0' == 1" },
+            { args => ['foo', 'foo'], name => 'foo eq foo' },
+            { args => ['0e0', 0],     name => '0E0 == 0'   },
+            { args => [0, 'foo'],     name => "0 == 'foo'" },
+            { args => [undef, undef], name => "both undef" },
+            { args => [0, 0],         name => "0 == 0"     },
+            { args => [0, 0.0],       name => "0 == 0.0"   },
+            { args => [0.0, 0],       name => "0.0 == 0"   },
+            { args => [0.0, 0.0],     name => "0.0 == 0.0" },
+            { args => ['', ''],       name => "'' == ''"   },
+        ],
+        'Test::Unit::Failure' => [
+            { args => [1,'foo'],      name => "1 != 'foo'"     },
+            { args => ['foo', 0],     name => "'foo' ne 0"     },
+            { args => ['foo', 1],     name => "'foo' ne 1"     },
+            { args => [0,1],          name => "0 != 1"         },
+            { args => ['foo', 'bar'], name => "'foo' ne 'bar'" },
+            { args => ['foo', undef], name => "'foo' ne undef" },
+            { args => [undef, 'foo'], name => "undef ne 'foo'" },
+            # { args => [0, ''],        name => "0 ne ''"        }, # numeric compare
+            
+        ],
+    },
 );
 
 sub suite {

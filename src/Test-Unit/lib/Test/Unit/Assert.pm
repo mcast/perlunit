@@ -42,7 +42,10 @@ sub assert_equals {
     my($asserter, $file, $line) = caller($Error::Depth);
     my @args = @_;
     try {
-        if (is_numeric($args[0])) {
+        if (defined($args[0]) xor defined($args[1])) {
+            $self->fail('one arg was not defined');
+        }
+        elsif (is_numeric($args[0])) {
             $self->assert_num_equals(@args);
         }
         elsif (eval {ref($args[0]) && $args[0]->isa('UNIVERSAL')}) {
@@ -76,8 +79,9 @@ sub ok { # To make porting from Test easier
     }
     elsif (@args >= 2 && @args <= 3) {
 	if (ref($args[0]) eq 'CODE') {
-	    my $code = shift @args;
-	    $self->assert_equals($code->(), @args);
+	    my $code     = shift @args;
+            my $expected = shift @args;
+	    $self->assert_equals($expected, $code->(), @args);
 	}
 	elsif (eval {$args[1]->isa('Regexp')}) {
 	    my $got = shift @args;
@@ -100,7 +104,15 @@ sub assert_not_equals {
     my($asserter,$file,$line) = caller($Error::Depth);
     my @args = @_;
     try {
-        if (is_numeric($args[0])) {
+        if (! defined($args[0]) && ! defined($args[1])) {
+            my $first  = shift @args;
+            my $second = shift @args;
+            $self->fail(@args ? join('', @args) : 'both args were undefined');
+        }
+        elsif (defined($args[0]) xor defined($args[1])) {
+            # succeed
+        }
+        elsif (is_numeric($args[0])) {
             $self->assert_num_not_equals(@args);
         }
         elsif (eval {ref($args[0]) && $args[0]->isa('UNIVERSAL')}) {
@@ -129,9 +141,9 @@ sub assert_not_equals {
     my %assert_subs =
         (
          str_equals => sub {
+             local $^W;
              my $str1 = shift;
              my $str2 = shift;
-             local $^W;
              $str1 eq $str2 or
                  Test::Unit::Failure->throw
                          (-text => @_ ? join('',@_) :
@@ -156,13 +168,37 @@ sub assert_not_equals {
                             "expected $num1, got $num2");
          },
          num_not_equals => sub {
+             local $^W;
              my $num1 = shift;
              my $num2 = shift;
-             local $^W;
              $num1 != $num2 or
                  Test::Unit::Failure->throw
                          (-text => @_ ? join('', @_) :
                           "$num1 and $num2 should differ");
+         },
+         matches => sub {
+             my $regexp = shift;
+             eval { $regexp->isa('Regexp') } or
+                 Test::Unit::Error->throw(
+                     -text => "arg 1 to assert_matches() must be a regexp"
+                 );
+             my $string = shift;
+             $string =~ $regexp or
+                 Test::Unit::Failure->throw
+                         (-text => @_ ? join('', @_) :
+                          "$string didn't match /$regexp/");
+         },
+         does_not_match => sub {
+             my $regexp = shift;
+             eval { $regexp->isa('Regexp') } or
+                 Test::Unit::Error->throw(
+                     -text => "arg 1 to assert_does_not_match() must be a regexp"
+                 );
+             my $string = shift;
+             $string !~ $regexp or
+                 Test::Unit::Failure->throw
+                         (-text => @_ ? join('', @_) :
+                          "$string matched /$regexp/");
          },
          null       => sub {
              my $arg = shift;
@@ -344,6 +380,12 @@ Force numeric comparison with these two.
 =item assert_str_not_equals
 
 Force string comparison
+
+=item assert_matches(qr/PATTERN/, STRING [, MESSAGE])
+
+=item assert_does_not_match(qr/PATTERN/, STRING [, MESSAGE])
+
+Assert that STRING does or does not match the PATTERN regex.
 
 =item assert_null(ARG [, MESSAGE])
 
