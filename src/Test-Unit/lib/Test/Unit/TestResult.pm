@@ -27,7 +27,7 @@ sub add_error {
     print ref($self) . "::add_error() called\n" if DEBUG;
     my ($test, $exception) = @_;
     push @{$self->errors()}, Test::Unit::TestFailure->new($test, $exception);
-    for my $e (@{$self->clone_listeners()}) {
+    for my $e (@{$self->listeners()}) {
 	$e->add_error($test, $exception);
     }
 }
@@ -37,7 +37,7 @@ sub add_failure {
     print ref($self) . "::add_failure() called\n" if DEBUG;
     my ($test, $exception) = @_;
     push @{$self->failures()}, Test::Unit::TestFailure->new($test, $exception);
-    for my $e (@{$self->clone_listeners()}) {
+    for my $e (@{$self->listeners()}) {
 	$e->add_failure($test, $exception);
     }
 }
@@ -63,16 +63,10 @@ sub listeners {
     return $self->{_Listeners};
 }
  
-sub clone_listeners {
-    my $self = shift;
-    my @clone = @{$self->{_Listeners}};
-    return \@clone;
-}
- 
 sub end_test {
     my $self = shift;
     my ($test) = @_;
-    for my $e (@{$self->clone_listeners()}) {
+    for my $e (@{$self->listeners()}) {
 	$e->end_test($test);
     }
 }
@@ -120,6 +114,10 @@ sub run {
         # been recorded when you get the end event with a
         # matching tag... (nb tests may nest, they're not consecutive
         # events) ... but isnt this easier? - Brian. 
+
+	# yes, but it also adds to the public API 
+	# others have to implement  - Christian
+
         $self->add_pass($test);
 	}
     $self->end_test($test);
@@ -147,7 +145,7 @@ sub start_test {
     my $self = shift;
     my ($test) = @_;
     $self->run_count_inc();
-    for my $e (@{$self->clone_listeners()}) {
+    for my $e (@{$self->listeners()}) {
 	$e->start_test($test);
     }
 }
