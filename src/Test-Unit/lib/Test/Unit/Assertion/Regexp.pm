@@ -14,7 +14,7 @@ sub do_assertion {
     my $self = shift;
     my $target = shift;
     $target =~ $$self ||
-        $self->fail("$target did not match /$$self/");
+        $self->fail("'$target' did not match /$$self/");
 }
 
 1;
