@@ -76,7 +76,7 @@ use vars qw($VERSION);
 # this module if you say "install Test::Unit" in the CPAN
 # shell.  "make tardist" should do this automatically.
 
-$VERSION = '0.22';
+$VERSION = '0.23';
 
 1;
 __END__
