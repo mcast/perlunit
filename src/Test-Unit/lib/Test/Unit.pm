@@ -28,7 +28,8 @@ testing.
 
 =head1 AUTHOR
 
-Copyright (c) 2000, 2001 the PerlUnit Development Team.
+Copyright (c) 2000, 2001 the PerlUnit Development Team
+(see the F<AUTHORS> file included in this distribution).
 
 All rights reserved. This program is free software; you can
 redistribute it and/or modify it under the same terms as Perl itself.
