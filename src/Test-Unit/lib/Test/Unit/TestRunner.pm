@@ -104,8 +104,8 @@ sub print_errors {
         chomp(my $e_to_str = $e);
         $i++;
         $self->_print("$i) $e_to_str\n");
-        $self->_print("output was:\n", $e->object->output())
-          if $e->object->output();
+        $self->_print("\nAnnotations:\n", $e->object->annotations())
+          if $e->object->annotations();
     }
 }
 
