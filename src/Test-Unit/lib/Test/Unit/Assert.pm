@@ -66,6 +66,8 @@ sub assert_equals {
     }
 }
 
+*ok = \&assert_equals;
+
 sub assert_not_equals {
     my $self = shift;
     my($asserter,$file,$line) = caller($Error::Depth);
@@ -120,7 +122,7 @@ sub assert_not_equals {
          num_equals => sub {
              local $^W; $_[0] == $_[1] or
                  Test::Unit::Failure->throw
-                         (-text => "expected $_[0], got $_[1]");
+                         (-text => "expected '$_[0]', got '$_[1]'");
          },
          num_not_equals => sub {
              my $num1 = shift;
@@ -169,10 +171,9 @@ sub normalize_assertion {
     }
     elsif (eval {$assertion->isa('UNIVERSAL')}) {
         # It's an object already.
-
+        require Test::Unit::Assertion::Boolean;
         return $assertion->can('do_assertion') ? $assertion :
             Test::Unit::Assertion::Boolean->new($assertion);
-        
     }
     elsif (ref($assertion) eq 'CODE') {
         require Test::Unit::Assertion::CodeRef;
