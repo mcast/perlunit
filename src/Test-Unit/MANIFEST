@@ -21,6 +21,7 @@ lib/Test/Unit/Assert.pm
 lib/Test/Unit/Assertion.pm
 lib/Test/Unit/Assertion/Boolean.pm
 lib/Test/Unit/Assertion/CodeRef.pm
+lib/Test/Unit/Assertion/Exception.pm
 lib/Test/Unit/Assertion/Regexp.pm
 lib/Test/Unit/Debug.pm
 lib/Test/Unit/Decorator.pm

@@ -1,12 +1,11 @@
 package AssertTest;
 
+use strict;
+
 use Test::Unit::TestCase;
 
-require Test::Unit::Failure;
-require Test::Unit::Error;
-
-use strict;
-use vars qw/@ISA/;
+use Test::Unit::Failure;
+use Test::Unit::Error;
 
 use Error qw/:try/;
 use Class::Inner;
@@ -31,6 +30,56 @@ sub test_assert_equals {
     my $self = shift;
     my $o = TestObject->new();
     $self->assert_equals($o, $o);
+}
+
+sub test_assert {
+    my $self = shift;
+    $self->assert(1);
+    $self->assert(1, 'should be true');
+    $self->assert(qr/foo/, 'foobar');
+    $self->assert(qr/foo/, 'foobar', 'should match /foo/');
+    my $coderef = sub {
+        $_[0] eq $_[1] or $self->fail("$_[0] ne $_[1]");
+    };
+    $self->assert($coderef, 'a', 'a');
+    $self->check_failures(
+        'expected TRUE, got FALSE' => [ __LINE__, sub { shift->assert(0)   } ],
+        'expected TRUE, got FALSE' => [ __LINE__, sub { shift->assert('')  } ],
+
+        'bang'  => [ __LINE__, sub { shift->assert(0, 'bang')              } ],
+        'bang'  => [ __LINE__, sub { shift->assert('', 'bang')             } ],
+        "'qux' did not match /(?-xism:foo)/"
+                => [ __LINE__, sub { shift->assert(qr/foo/, 'qux')         } ],
+        'bang'  => [ __LINE__, sub { shift->assert(qr/foo/, 'qux', 'bang') } ],
+        'a ne b'=> [ __LINE__, sub { shift->assert($coderef, 'a', 'b')     } ],
+    );
+}
+
+sub test_multi_assert {
+    my $self = shift;
+    my $assertion = sub {
+        $_[0] =~ /1/
+          or Test::Unit::Failure->throw(-text => "first arg missing 1");
+        $_[1] eq 'cluck'
+          or Test::Unit::Failure->throw(-text => "what? no chickens!?");
+    };
+
+    $self->multi_assert(
+        $assertion,
+        [ 1, 'cluck' ],
+        [ 'el1te', 'cluck' ],
+    );
+
+    $self->check_failures(
+        'first arg missing 1'
+          => [ __LINE__, sub { shift->multi_assert($assertion, [ 2, 'cluck' ])
+                             } ],
+        'what? no chickens!?'
+          => [ __LINE__, sub { shift->multi_assert($assertion, [ 1, 'cluck' ],
+                                                               [ 1, 'moo'   ])
+                             } ],
+    );
+
 }
 
 sub test_assert_matches {
@@ -62,6 +111,28 @@ sub test_assert_equals_null {
 #      eval { $self->assert_equals(undef, TestObject->new()) };
 #      $self->fail unless assertion_has_failed($@);
 #  }
+
+@AssertTest::Exception::ISA = 'Error';
+sub test_assert_raises {
+    my $self = shift;
+    $self->assert_raises(
+        'AssertTest::Exception',
+        sub { AssertTest::Exception->throw(-text => 'boom'); }
+    );
+    $self->assert_str_equals('boom', AssertTest::Exception->prior->{-text});
+    $self->check_failures(
+        'No AssertTest::Exception was raised'
+          => [
+              __LINE__ + 1,
+              sub { shift->assert_raises('AssertTest::Exception', sub {}) }
+             ],
+        'zxc'
+          => [
+              __LINE__ + 1,
+              sub { shift->assert_raises('AssertTest::Exception', sub {}, 'zxc') }
+             ],
+    );
+}    
 
 sub test_ok_boolean {
     my $self = shift;
@@ -236,6 +307,9 @@ sub check_exceptions {
 	catch $exception_class with {
 	    $exception = shift;
 	}
+	catch Error::Simple with {
+	    $exception = shift;
+	}
 	otherwise {
 	    $exception = 0;
 	};
@@ -255,6 +329,7 @@ sub check_exceptions {
         }
     }
 }
+
 sub check_exception {
     my $self = shift;
     my ($exception_class, $expected, $exception) = @_;
@@ -284,7 +359,7 @@ sub check_file_and_line {
     if ($exception->line() != $test_code_line) {
         throw Test::Unit::Failure(
             -text   => "failure's line() should have returned "
-                       . "$test_code_line, not " . $exception->file(),
+                       . "$test_code_line, not " . $exception->line(),
             -object => $self,
         );
     }

@@ -4,11 +4,12 @@ use strict;
 use base qw/Test::Unit::Assertion/;
 
 use Carp;
+use Test::Unit::Debug qw(debug);
 
 my $deparser;
 
 sub new {
-    my $class       = shift;
+    my $class = shift;
     my $code = shift;
     croak "$class\::new needs a CODEREF" unless ref($code) eq 'CODE';
     bless \$code => $class;
@@ -17,17 +18,19 @@ sub new {
 sub do_assertion {
     my $self = shift;
     my $possible_object = $_[0];
-    if (eval {$possible_object->isa('UNIVERSAL')}) {
-        # It's an object!
-        $possible_object->$$self(@_[1..$#_]) ||
-            $self->fail("$possible_object\->{$self}(" .
-                        join (", ", map {defined($_) ? $_ : '<undef>'} @_) .
-                        ") failed" . ($@ ? " with error $@." : "."));
+    debug("Called do_assertion(" . ($possible_object || 'undef') . ")\n");
+    if (ref($possible_object) and
+        ref($possible_object) ne 'Regexp' and
+        eval { $possible_object->isa('UNIVERSAL') })
+    {
+        debug("  [$possible_object] isa [" . ref($possible_object) . "]\n");
+        $possible_object->$$self(@_[1..$#_]);
     }
     else {
-        $$self->(@_) ||
-            $self->fail("{$self}->(" . join(', ', map {defined($_) ? $_ : '<undef>'} @_) .
-                        ") failed" . ($@ ? " with error $@." : "."));
+        debug("  asserting [$self]"
+              . (@_ ? " on args " . join(', ', map { $_ || '<undef>' } @_) : '')
+              . "\n");
+        $$self->(@_);
     }
 }
 
@@ -58,7 +61,9 @@ Test::Unit::Assertion::CodeRef - A delayed evaluation assertion using a Coderef
 
     my $assert_eq =
       Test::Unit::Assertion::CodeRef->new(sub {
-        $_[0] eq $_[1] || die "Expected '$_[0]', got '$_[1]'\n"
+        $_[0] eq $_[1]
+          or Test::Unit::Failure->throw(-text =>
+                                          "Expected '$_[0]', got '$_[1]'\n");
       });
 
     $assert_eq->do_assertion('foo', 'bar');
@@ -67,7 +72,7 @@ Although this is how you'd use Test::Unit::Assertion::CodeRef
 directly, it is more usually used indirectly via
 Test::Unit::Test::assert, which instantiates a
 Test::Unit::Assertion::CodeRef when passed a Coderef as its first
-argument. 
+argument.
 
 =head1 IMPLEMENTS
 
@@ -81,13 +86,15 @@ This class is used by the framework to allow us to do assertions in a
 'functional' manner. It is typically used generated automagically in
 code like:
 
-    $self->assert(sub {$_[0] == $_[1] || die "Expected $_[0], got $_[1]"},
-                  1, 2); 
+    $self->assert(sub {
+                    $_[0] == $_[1]
+                      or $self->fail("Expected $_[0], got $_[1]");
+                  }, 1, 2); 
 
 (Note that if Damian Conway's Perl6 RFC for currying ever comes to
 pass then we'll be able to do this as:
 
-    $self->assert(^1 == ^2 || die "Expected ^1, got ^2", 1, 2)
+    $self->assert(^1 == ^2 || $self->fail("Expected ^1, got ^2"), 1, 2)
 
 which will be nice...)
 

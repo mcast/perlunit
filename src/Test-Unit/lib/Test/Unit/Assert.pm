@@ -16,17 +16,53 @@ use Carp;
 sub assert {
     my $self = shift;
     my $assertion = $self->normalize_assertion(shift);
-    my($asserter, $file, $line) = caller($Error::Depth);
-    
-    debug("Calling $assertion\n");
+    $self->do_assertion($assertion, (caller($Error::Depth))[0 .. 2], @_);
+}
+
+sub assert_raises {
+    my $self = shift;
+    require Test::Unit::Assertion::Exception;
+    my $assertion = Test::Unit::Assertion::Exception->new(shift);
+    my ($asserter, $file, $line) = caller($Error::Depth);
+    my $exception =
+      $self->do_assertion($assertion, (caller($Error::Depth))[0 .. 2], @_);
+}
+
+sub do_assertion {
+    my $self      = shift;
+    my $assertion = shift;
+    my $asserter  = shift;
+    my $file      = shift;
+    my $line      = shift;
+    debug("Asserting [$assertion] from $asserter in $file line $line\n");
     my @args = @_;
     try { $assertion->do_assertion(@args) }
     catch Test::Unit::Exception with {
         my $e = shift;
+        debug("  Caught $e, rethrowing from $asserter, $file line $line\n");
         $e->throw_new(-package => $asserter,
                       -file    => $file,
                       -line    => $line,
                       -object  => $self);
+    }
+}
+
+sub multi_assert {
+    my $self = shift;
+    my ($assertion, @argsets) = @_;
+    my ($asserter, $file, $line) = caller($Error::Depth);
+    foreach my $argset (@argsets) {
+        try {
+            $self->assert($assertion, @$argset);
+        }
+        catch Test::Unit::Exception with {
+            my $e = shift;
+            debug("  Caught $e, rethrowing from $asserter, $file line $line\n");
+            $e->throw_new(-package => $asserter,
+                          -file    => $file,
+                          -line    => $line,
+                          -object  => $self);
+        }
     }
 }
 
@@ -314,8 +350,10 @@ Test::Unit::Assert - unit testing framework assertion class
 
     # or, for functional style coderef tests:
 
-    $self->assert(sub {$_[0] == $_[1] || die "Expected $_[0], got $_[1]"},
-                  1, 2); 
+    $self->assert(sub {
+                      $_[0] == $_[1]
+                        or $self->fail("Expected $_[0], got $_[1]");
+                  }, 1, 2); 
 
     # or, for old style regular expression comparisons:
 
@@ -396,23 +434,32 @@ Assert that ARG is defined or not defined.
 =item assert(BOOLEAN [, MESSAGE]) 
 
 Checks if the BOOLEAN expression returns a true value that is neither
-a CODE ref nor a REGEXP. Note that MESSAGE is almost non optional in
+a CODE ref nor a REGEXP.  Note that MESSAGE is almost non optional in
 this case, otherwise all the assertion has to go on is the truth or
 otherwise of the boolean.
 
 =item assert(qr/PATTERN/, ACTUAL [, MESSAGE])
 
-Matches ACTUAL against the PATTERN regex. If you omit MESSAGE, you
+Matches ACTUAL against the PATTERN regex.  If you omit MESSAGE, you
 should get a sensible error message.
 
 =item assert(CODEREF, @ARGS)
 
-Calls CODEREF->(@ARGS). Assertion fails if this returns false (or
+Calls CODEREF->(@ARGS).  Assertion fails if this returns false (or
 throws Test::Unit::Failure)
+
+=item assert_raises(EXCEPTION_CLASS, CODEREF [, MESSAGE])
+
+Calls CODEREF->().  Assertion fails unless an exception of class
+EXCEPTION_CLASS is raised.
+
+=item multi_assert(ASSERTION, @ARGSETS)
+
+Calls $self->assert(ASSERTION, @$ARGSET) for each $ARGSET in @ARGSETS.
 
 =item ok(@ARGS)
 
-Simulates the behaviour of the L<Test|Test> module.  Deprecated.
+Simulates the behaviour of the L<Test|Test> module.  B<Deprecated.>
 
 =back
 
