@@ -137,32 +137,43 @@ __END__
 
 =head1 NAME
 
-    Test::Unit::HarnessUnit - unit testing framework helper class
+Test::Unit::HarnessUnit - unit testing framework helper class
 
 =head1 SYNOPSIS
 
-    # this class is not intended to be used directly 
+This class is not intended to be used directly 
 
 =head1 DESCRIPTION
 
-    This is a test runner which outputs in the same format that 
-    Test::Harness expects. 
+This is a test runner which outputs in the same format that
+Test::Harness expects.
 
 =head1 AUTHOR
 
-    Copyright (c) 2000 Brian Ewins.
+Copyright (c) 2000 Brian Ewins.
 
-    All rights reserved. This program is free software; you can
-    redistribute it and/or modify it under the same terms as
-    Perl itself.
+All rights reserved. This program is free software; you can
+redistribute it and/or modify it under the same terms as Perl itself.
 
-    Thanks go to the other PerlUnit framework people: 
-    Christian Lemburg, Cayte Lindner, J.E. Fritz, Zhon Johansen.
+Thanks go to the other PerlUnit framework people: 
+Christian Lemburg, Cayte Lindner, J.E. Fritz, Zhon Johansen.
 
 =head1 SEE ALSO
 
-    - Test::Unit::UnitHarness
-    - Test::Unit::TestRunner
-    - Test::Unit::TkTestRunner
+=over 4
+
+=item *
+
+L<Test::Unit::UnitHarness>
+
+=item *
+
+L<Test::Unit::TestRunner>
+
+=item *
+
+L<Test::Unit::TkTestRunner>
+
+=back
 
 =cut

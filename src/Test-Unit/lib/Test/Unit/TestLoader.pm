@@ -116,34 +116,45 @@ __END__
 
 =head1 NAME
 
-    Test::Unit::TestLoader - unit testing framework helper class
+Test::Unit::TestLoader - unit testing framework helper class
 
 =head1 SYNOPSIS
 
-    # this class is not intended to be used directly 
+This class is not intended to be used directly 
 
 =head1 DESCRIPTION
 
-    This class is used by the framework to load testcase classes
-    into the runtime environment. It handles testcase class names 
-    (that is, classes inheriting from Test::Unit::TestCase), 
-    Test::Harness style test files, and directory names.
-    
+This class is used by the framework to load testcase classes into the
+runtime environment. It handles testcase class names (that is, classes
+inheriting from Test::Unit::TestCase), Test::Harness style test files,
+and directory names.
+
 =head1 AUTHOR
 
-    Copyright (c) 2000 Brian Ewins.
+Copyright (c) 2000 Brian Ewins.
 
-    All rights reserved. This program is free software; you can
-    redistribute it and/or modify it under the same terms as
-    Perl itself.
+All rights reserved. This program is free software; you can
+redistribute it and/or modify it under the same terms as Perl itself.
 
-    Thanks go to the other PerlUnit framework people: 
-    Christian Lemburg, Cayte Lindner, J.E. Fritz, Zhon Johansen.
+Thanks go to the other PerlUnit framework people: 
+Christian Lemburg, Cayte Lindner, J.E. Fritz, Zhon Johansen.
 
 =head1 SEE ALSO
 
-    - Test::Unit::TestCase
-    - Test::Unit::UnitHarness
-    - Test::Unit::TkTestRunner
+=over 4
+
+=item *
+
+L<Test::Unit::TestCase>
+
+=item *
+
+L<Test::Unit::UnitHarness>
+
+=item *
+
+L<Test::Unit::TkTestRunner>
+
+=back
 
 =cut

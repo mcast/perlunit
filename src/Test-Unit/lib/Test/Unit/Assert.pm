@@ -35,7 +35,7 @@ __END__
 
 =head1 NAME
 
-    Test::Unit::Assert - unit testing framework assertion class
+Test::Unit::Assert - unit testing framework assertion class
 
 =head1 SYNOPSIS
 
@@ -44,9 +44,9 @@ __END__
     # Test::Unit::TestCase
 
     use Test::Unit::TestCase;
-   
+
     # more code here ...
-    
+
     $self->assert($your_condition_here, $your_optional_message_here);
 
     # NOTE: if you want to use regexes in comparisons, do it like this:
@@ -55,45 +55,57 @@ __END__
 
 =head1 DESCRIPTION
 
-    This class is used by the framework to assert boolean conditions
-    that determine the result of a given test. The optional message
-    will be displayed if the condition fails. Normally, it is not
-    used directly, but you get the functionality by subclassing from 
-    Test::Unit::TestCase.
+This class is used by the framework to assert boolean conditions that
+determine the result of a given test. The optional message will be
+displayed if the condition fails. Normally, it is not used directly,
+but you get the functionality by subclassing from
+Test::Unit::TestCase.
 
-    There is one problem with assert(): the arguments to assert() are
-    evaluated in list context, e.g. making a failing regex "pull" the
-    message into the place of the first argument. Since this is ususally
-    just plain wrong, please use scalar() to force the regex comparison
-    to yield a useful boolean value. I currently do not see a way around
-    this, since function prototypes don't work for object methods, and
-    any other tricks (counting argument number, and complaining if there
-    is only one argument and it looks like a string, etc.) don't appeal
-    to me. Thanks to Matthew Astley for noting this effect. 
+There is one problem with C<assert()>: the arguments to C<assert()>
+are evaluated in list context, e.g. making a failing regex "pull" the
+message into the place of the first argument. Since this is ususally
+just plain wrong, please use C<scalar()> to force the regex comparison
+to yield a useful boolean value. I currently do not see a way around
+this, since function prototypes don't work for object methods, and any
+other tricks (counting argument number, and complaining if there is
+only one argument and it looks like a string, etc.) don't appeal to
+me. Thanks to Matthew Astley for noting this effect.
 
-    The procedural interface to this framework, Test::Unit, does not have
-    this problem, as it exports a "normal" assert() function, and that can
-    and does use a function prototype to correct the problem.
+The procedural interface to this framework, Test::Unit, does not have
+this problem, as it exports a "normal" C<assert()> function, and that
+can and does use a function prototype to correct the problem.
 
 
 =head1 AUTHOR
 
-    Copyright (c) 2000 Christian Lemburg, <lemburg@acm.org>.
+Copyright (c) 2000 Christian Lemburg, E<lt>lemburg@acm.orgE<gt>.
 
-    All rights reserved. This program is free software; you can
-    redistribute it and/or modify it under the same terms as
-    Perl itself.
+All rights reserved. This program is free software; you can
+redistribute it and/or modify it under the same terms as Perl itself.
 
-    Thanks go to the other PerlUnit framework people: 
-    Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
+Thanks go to the other PerlUnit framework people: 
+Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
 
-    Thanks for patches go to:
-    Matthew Astley, David Esposito.
+Thanks for patches go to:
+Matthew Astley, David Esposito.
 
 =head1 SEE ALSO
 
-    - Test::Unit::TestCase
-    - Test::Unit::Exception
-    - The framework self-testing suite (Test::Unit::tests::AllTests)
+=over 4
+
+=item *
+
+L<Test::Unit::TestCase>
+
+=item *
+
+L<Test::Unit::Exception>
+
+=item *
+
+The framework self-testing suite
+(L<Test::Unit::tests::AllTests|Test::Unit::tests::AllTests>)
+
+=back
 
 =cut

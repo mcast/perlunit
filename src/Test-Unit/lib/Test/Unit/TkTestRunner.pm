@@ -12,7 +12,7 @@ See http://c2.com/cgi/wiki?TestingFrameworks
 PerlUnit is free software, redistributable under the
 same terms as Perl.
 
-$Id: TkTestRunner.pm,v 1.10 2001-02-17 15:15:03 clemburg Exp $
+$Id: TkTestRunner.pm,v 1.11 2001-02-20 21:31:05 mca-gdl Exp $
 END_COPYRIGHT_NOTICE
 
 use Tk;
@@ -592,7 +592,7 @@ __END__
 
 =head1 NAME
 
-    Test::Unit::TkTestRunner - unit testing framework helper class
+Test::Unit::TkTestRunner - unit testing framework helper class
 
 =head1 SYNOPSIS
 
@@ -601,40 +601,63 @@ __END__
 
 =head1 DESCRIPTION
 
-    This class is the test runner for the GUI style use
-    of the testing framework.
+This class is the test runner for the GUI style use of the testing
+framework.
 
-    It is used by simple command line tools like the TkTestRunner.pl 
-    script provided.
+It is used by simple command line tools like the F<TkTestRunner.pl>
+script provided.
 
-    The class needs as arguments the names of the classes
-    encapsulating the tests to be run.
-    
+The class needs as arguments the names of the classes encapsulating
+the tests to be run.
+
 =head1 AUTHOR
 
-    Framework JUnit authored by Kent Beck and Erich Gamma.
+Framework JUnit authored by Kent Beck and Erich Gamma.
 
-    Copyright (c) 2000 Brian Ewins.
+Copyright (c) 2000 Brian Ewins.
 
-    All rights reserved. This program is free software; you can
-    redistribute it and/or modify it under the same terms as
-    Perl itself.
+All rights reserved. This program is free software; you can
+redistribute it and/or modify it under the same terms as Perl itself.
 
-    Thanks go to the other PerlUnit framework people: 
-    Christian Lemburg, Cayte Lindner, J.E. Fritz, Zhon Johansen.
+Thanks go to the other PerlUnit framework people: 
+Christian Lemburg, Cayte Lindner, J.E. Fritz, Zhon Johansen.
 
-    Thanks for patches go to:
-    David Esposito.
+Thanks for patches go to:
+David Esposito.
 
 =head1 SEE ALSO
 
-    - Test::Unit::TestLoader
-    - Test::Unit::TestListener
-    - Test::Unit::TestResult
-    - Test::Unit::TestRunner
-    - Test::Unit::TestCase
-    - Test::Unit::TestSuite
-    - For further examples, take a look at the framework self test 
-      collection (Test::Unit::tests::AllTests).
+=over 4
+
+=item *
+
+L<Test::Unit::TestLoader>
+
+=item *
+
+L<Test::Unit::TestListener>
+
+=item *
+
+L<Test::Unit::TestResult>
+
+=item *
+
+L<Test::Unit::TestRunner>
+
+=item *
+
+L<Test::Unit::TestCase>
+
+=item *
+
+L<Test::Unit::TestSuite>
+
+=item *
+
+For further examples, take a look at the framework self test
+collection (Test::Unit::tests::AllTests).
+
+=back
 
 =cut

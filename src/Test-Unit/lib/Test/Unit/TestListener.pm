@@ -38,42 +38,52 @@ __END__
 
 =head1 NAME
 
-    Test::Unit::TestListener - unit testing framework abstract base class
+Test::Unit::TestListener - unit testing framework abstract base class
 
 =head1 SYNOPSIS
 
-    # this class is not intended to be used directly 
+This class is not intended to be used directly 
 
 =head1 DESCRIPTION
 
-    This class is used by the framework to define the interface
-    of a test listener. It is an abstract base class implemented by 
-    the test runners.
+This class is used by the framework to define the interface of a test
+listener. It is an abstract base class implemented by the test
+runners.
 
-    Due to the nature of the Perl OO implementation, this class
-    is not really needed, but rather serves as documentation
-    of the interface.
+Due to the nature of the Perl OO implementation, this class is not
+really needed, but rather serves as documentation of the interface.
 
-    Each of the add_ methods gets two arguments: 'test' and
-    'exception'.  The test is a Test::Unit::Test and the exception
-    is a Test::Unit::Exception.  Typically you want to display
-    test->name() and keep the rest as details.
+Each of the add_ methods gets two arguments: C<test> and C<exception>.
+The test is a Test::Unit::Test and the exception is a
+Test::Unit::Exception. Typically you want to display
+C<test-E<gt>name()> and keep the rest as details.
 
 =head1 AUTHOR
 
-    Copyright (c) 2000 Brian Ewins, Christian Lemburg, <lemburg@acm.org>.
+Copyright (c) 2000 Brian Ewins, Christian Lemburg, E<lt>lemburg@acm.orgE<gt>.
 
-    All rights reserved. This program is free software; you can
-    redistribute it and/or modify it under the same terms as
-    Perl itself.
+All rights reserved. This program is free software; you can
+redistribute it and/or modify it under the same terms as Perl itself.
 
-    Thanks go to the other PerlUnit framework people: 
-    Cayte Lindner, J.E. Fritz, Zhon Johansen.
+Thanks go to the other PerlUnit framework people: 
+Cayte Lindner, J.E. Fritz, Zhon Johansen.
 
 =head1 SEE ALSO
 
-    - Test::Unit::Exception
-    - Test::Unit::TestRunner
-    - Test::Unit::TkTestRunner
+=over 4
+
+=item *
+
+L<Test::Unit::Exception>
+
+=item *
+
+L<Test::Unit::TestRunner>
+
+=item *
+
+L<Test::Unit::TkTestRunner>
+
+=back
 
 =cut

@@ -88,19 +88,19 @@ __END__
 
 =head1 NAME
 
-    Test::Unit::TestCase - unit testing framework base class
+Test::Unit::TestCase - unit testing framework base class
 
 =head1 SYNOPSIS
 
     package FooBar;
     use base qw(Test::Unit::TestCase);
-    
+
     sub new {
         my $self = shift()->SUPER::new(@_);
         # your state for fixture here
         return $self;
     }
-  
+
     sub set_up {
         # provide fixture
     }
@@ -116,18 +116,33 @@ __END__
 
 =head1 DESCRIPTION
 
-    (Taken from the JUnit TestCase class documentation)
+(Taken from the JUnit TestCase class documentation)
 
-    A test case defines the "fixture" (resources need for testing)
-    to run multiple tests. To define a test case:
+A test case defines the "fixture" (resources need for testing) to run
+multiple tests. To define a test case:
 
-    1) implement a subclass of TestCase 
-    2) define instance variables that store the state of the fixture 
-    3) initialize the fixture state by overriding set_up() 
-    4) clean-up after a test by overriding tear_down().
+=over 4
 
-    Each test runs in its own fixture so there can be no side
-    effects among test runs. Here is an example:
+=item 1
+
+implement a subclass of TestCase
+
+=item 2
+
+define instance variables that store the state of the fixture
+
+=item 3
+
+initialize the fixture state by overriding C<set_up()>
+
+=item 4
+
+clean-up after a test by overriding C<tear_down()>.
+
+=back
+
+Each test runs in its own fixture so there can be no side
+effects among test runs. Here is an example:
 
       package MathTest;
       use base qw(Test::Unit::TestCase);
@@ -138,61 +153,74 @@ __END__
 	  $self->{value_2} = 0;
 	  return $self;
       }
-      
+
       sub set_up {
 	  my $self = shift;
 	  $self->{value_1} = 2;
 	  $self->{value_2} = 3;
       }
-      
-    For each test implement a method which interacts with the
-    fixture.  Verify the expected results with assertions specified
-    by calling $self->assert() with a boolean value.
+
+For each test implement a method which interacts with the fixture.
+Verify the expected results with assertions specified by calling
+C<$self-E<gt>assert()> with a boolean value.
 
       sub test_add {
 	  my $self = shift;
 	  my $result = $self->{value_1} + $self->{value_2};
 	  $self->assert($result == 5);
       }
-      
-    Once the methods are defined you can run them. The normal way to
-    do this uses reflection to implement run_test. It dynamically
-    finds and invokes a method. For this the name of the test case
-    has to correspond to the test method to be run. The tests to be
-    run can be collected into a TestSuite. The framework provides
-    different test runners, which can run a test suite and collect
-    the results. A test runner either expects a method suite()
-    as the entry point to get a test to run or it will extract the
-    suite automatically.
 
-    If you do not like the rather verbose backtrace that appears
-    when a test fails, you can use the quell_backtrace() method.
-    You will get any message provided, but not the backtrace.
+Once the methods are defined you can run them. The normal way to do
+this uses reflection to implement C<run_test>. It dynamically finds
+and invokes a method. For this the name of the test case has to
+correspond to the test method to be run. The tests to be run can be
+collected into a TestSuite. The framework provides different test
+runners, which can run a test suite and collect the results. A test
+runner either expects a method C<suite()> as the entry point to get a
+test to run or it will extract the suite automatically.
+
+If you do not like the rather verbose backtrace that appears when a
+test fails, you can use the C<quell_backtrace()> method. You will get
+any message provided, but not the backtrace.
 
 =head1 AUTHOR
 
-    Framework JUnit authored by Kent Beck and Erich Gamma.
+Framework JUnit authored by Kent Beck and Erich Gamma.
 
-    Ported from Java to Perl by Christian Lemburg.
+Ported from Java to Perl by Christian Lemburg.
 
-    Copyright (c) 2000 Christian Lemburg, <lemburg@acm.org>.
+Copyright (c) 2000 Christian Lemburg, E<lt>lemburg@acm.orgE<gt>.
 
-    All rights reserved. This program is free software; you can
-    redistribute it and/or modify it under the same terms as
-    Perl itself.
+All rights reserved. This program is free software; you can
+redistribute it and/or modify it under the same terms as Perl itself.
 
-    Thanks go to the other PerlUnit framework people: 
-    Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
+Thanks go to the other PerlUnit framework people: 
+Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
 
-    Thanks for patches go to:
-    Matthew Astley.
+Thanks for patches go to:
+Matthew Astley.
 
 =head1 SEE ALSO
 
-    - Test::Unit::TestSuite
-    - Test::Unit::TestRunner
-    - Test::Unit::TkTestRunner
-    - For further examples, take a look at the framework self test 
-      collection (Test::Unit::tests::AllTests).
+=over 4
+
+=item *
+
+L<Test::Unit::TestSuite>
+
+=item *
+
+L<Test::Unit::TestRunner>
+
+=item *
+
+L<Test::Unit::TkTestRunner>
+
+=item *
+
+For further examples, take a look at the framework self test
+collection (Test::Unit::tests::AllTests).
+
+=back
 
 =cut

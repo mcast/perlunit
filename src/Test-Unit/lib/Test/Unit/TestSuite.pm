@@ -197,7 +197,7 @@ __END__
 
 =head1 NAME
 
-    Test::Unit::TestSuite - unit testing framework base class
+Test::Unit::TestSuite - unit testing framework base class
 
 =head1 SYNOPSIS
 
@@ -226,33 +226,44 @@ __END__
 
 =head1 DESCRIPTION
 
-    This class is normally not used directly, but it can be used
-    for creating your own custom built aggregate suites.
+This class is normally not used directly, but it can be used for
+creating your own custom built aggregate suites.
 
-    Normally, this class just provides the functionality of 
-    auto-building a test suite by extracting methods with a name
-    prefix of "test" from a given package to the test runners.
+Normally, this class just provides the functionality of auto-building
+a test suite by extracting methods with a name prefix of C<test> from
+a given package to the test runners.
 
 =head1 AUTHOR
 
-    Framework JUnit authored by Kent Beck and Erich Gamma.
+Framework JUnit authored by Kent Beck and Erich Gamma.
 
-    Ported from Java to Perl by Christian Lemburg.
+Ported from Java to Perl by Christian Lemburg.
 
-    Copyright (c) 2000 Christian Lemburg, <lemburg@acm.org>.
+Copyright (c) 2000 Christian Lemburg, E<lt>lemburg@acm.orgE<gt>.
 
-    All rights reserved. This program is free software; you can
-    redistribute it and/or modify it under the same terms as
-    Perl itself.
+All rights reserved. This program is free software; you can
+redistribute it and/or modify it under the same terms as Perl itself.
 
-    Thanks go to the other PerlUnit framework people: 
-    Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
+Thanks go to the other PerlUnit framework people: 
+Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
 
 =head1 SEE ALSO
 
-    - Test::Unit::TestRunner
-    - Test::Unit::TkTestRunner
-    - For further examples, take a look at the framework self test 
-      collection (Test::Unit::tests::AllTests).
+=over 4
+
+=item *
+
+L<Test::Unit::TestRunner>
+
+=item *
+
+L<Test::Unit::TkTestRunner>
+
+=item *
+
+For further examples, take a look at the framework self test
+collection (Test::Unit::tests::AllTests).
+
+=back
 
 =cut
