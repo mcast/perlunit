@@ -187,7 +187,7 @@ sub test_was_not_successful {
 
 sub test_was_run {
     my $self = shift;
-    my $test = WasRun->new("");
+    my $test = WasRun->new("WasRun");
     $test->run();
     $self->assert($test->was_run());
 }
