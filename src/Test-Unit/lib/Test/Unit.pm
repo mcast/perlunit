@@ -6,6 +6,12 @@ use vars qw($VERSION @ISA @EXPORT $SIGNPOST $test_suite);
 use Test::Unit::TestSuite;
 use Test::Unit::TestRunner;
 
+require Exporter;
+
+@ISA = qw(Exporter);
+
+@EXPORT = qw(assert create_suite run_suite);
+
 if (defined($SIGNPOST)) {
     # highlander principle
     goto END_OF_THIS_MODULE;
@@ -14,12 +20,6 @@ if (defined($SIGNPOST)) {
     $test_suite = Test::Unit::TestSuite->empty_new("Scripting API");
 }
     
-require Exporter;
-
-@ISA = qw(Exporter);
-
-@EXPORT = qw(assert create_suite run_suite);
-
 $VERSION = '0.10';
 
 sub assert {
@@ -73,7 +73,8 @@ EOIC
 }
 
 sub run_suite {
-    my $test_runner = Test::Unit::TestRunner->new();
+    my ($filehandle) = @_;
+    my $test_runner = Test::Unit::TestRunner->new($filehandle);
     $test_runner->do_run($test_suite);
 }
 
