@@ -45,17 +45,51 @@ sub test_assert_equals_null {
 #      $self->fail unless assertion_has_failed($@);
 #  }
 
+sub test_ok_boolean {
+    my $self = shift;
+    $self->ok(1);
+    $self->check_failures('Expected ok(0) to fail' => sub { shift->ok(0) });
+}
+
+sub test_ok_bad_args {
+    my $self = shift;
+    $self->check_failures(
+	'Expected ok() to fail'        => sub { shift->ok()        },
+	'Expected ok(1, 2, 3) to fail' => sub { shift->ok(1, 2, 3) },
+    );
+}
+
+sub test_ok_equals {
+    my $self = shift;
+    $self->ok(2, 2);
+    $self->ok(0, 0);
+    $self->ok(1.34, 1.34);
+    $self->ok('foo', 'foo');
+    $self->ok('', '');
+    $self->ok(sub {2+2}, 4);
+    $self->ok('fixed', qr/x/);
+}
+
+sub test_ok_not_equals {
+    my $self = shift;
+    my $adder = sub { 2+2 };
+    $self->check_failures(
+        q{ok(0, 1) should fail}         => sub { shift->ok(0, 1)         },
+        q{ok(1, 0) should fail}         => sub { shift->ok(1, 0)         },
+        q{ok(2, 3) should fail}         => sub { shift->ok(2, 3)         },
+        q{ok(-57, -57.001) should fail} => sub { shift->ok(-57, -57.001) },
+        q{ok('foo', 'bar') should fail} => sub { shift->ok('foo', 'bar') },
+        q{ok('foo', '') should fail}    => sub { shift->ok('foo', '')    },
+        q{ok('', 'foo') should fail}    => sub { shift->ok('', 'foo')    },
+        q{ok('', 'foo') should fail}    => sub { shift->ok('', 'foo')    },
+        q{ok(sub {2+2}, 5) should fail} => sub { shift->ok($adder, 5)    },
+        q{ok('foo', qr/x/) should fail} => sub { shift->ok('foo', qr/x/) },
+    );
+}
 
 sub test_fail {
     my $self = shift;
-    my $got_fail;
-    try { $self->fail }
-    catch Test::Unit::Failure with {
-        $got_fail = 1
-    }
-    otherwise { $got_fail = 0 };
-    $got_fail ||
-        throw Test::Unit::Failure -text => 'Expected to fail', -object => $self;
+    $self->check_failures('Expected fail() to fail' => sub { shift->fail() });
 }
 
 sub test_succeed_assert_null {
@@ -65,23 +99,10 @@ sub test_succeed_assert_null {
 
 sub test_fail_assert_null {
     my $self = shift;
-    my $got_fail;
-    try { $self->assert_null('Defined') }
-    catch Test::Unit::Failure with {
-        my $e = shift;
-        $self->assert_equals('Defined is defined', $e->text);
-        $got_fail++;
-    };
-    try { $self->assert_null('Defined', 'Weirdness'); }
-    catch Test::Unit::Failure with {
-        my $e = shift;
-        $self->assert_equals('Weirdness', $e->text);
-        $got_fail++;
-    };
-    
-    ($got_fail == 2) ||
-        throw Test::Unit::Failure -text => "Expected failure",
-            -object => $self;
+    $self->check_failures(
+        'Defined is defined' => sub { shift->assert_null('Defined') },
+        'Weirdness'          => sub { shift->assert_null('Defined', 'Weirdness') },
+    );
 }
 
 sub test_success_assert_not_equals {
@@ -99,31 +120,23 @@ sub test_success_assert_not_equals {
 
 sub test_fail_assert_not_equals {
     my $self = shift;
-    foreach my $pair ([1,1], [0,0], [undef,undef],[0,'string'],
-                   ['string', 'string'], ['10', 10], [10, '10']) {
-        my $got_fail = 0;
-        try { $self->assert_not_equals(@$pair) }
-        catch Test::Unit::Failure with { $got_fail = 1 }
-        otherwise { $got_fail = 0 };
-        $got_fail ||
-            throw Test::Unit::Failure
-                -text => "assert_not_equals($$pair[0], $$pair[1]) should fail.",
-                -object => $self;
+    my %tests = ();
+    foreach my $pair ([1, 1], [0, 0], [undef, undef],[0, 'string'],
+                      ['string', 'string'], ['10', 10], [10, '10']) {
+        my ($a, $b) = @$pair;
+        $_ ||= 'undef' foreach $a, $b;
+	my $code = "assert_not_equals($a, $b)";
+        $tests{"$code should fail"} = sub { shift->assert_not_equals(@$pair) };
     }
+    $self->check_failures(%tests);
 }
 
 sub test_fail_assert_not_null {
     my $self = shift;
-    my $got_fail;
-    try { $self->assert_not_null(undef) }
-    catch Test::Unit::Failure with {
-        my $e = shift;
-        $self->assert_equals('<undef> unexpected', $e->text);
-        $got_fail = 1
-    }
-    otherwise { $got_fail = 0 };
-    $got_fail ||
-        throw Test::Unit::Failure -text => "Expected failure...", -object => $self;
+    $self->check_failures(
+        'assert_not_null(undef) should fail'
+            => sub { shift->assert_not_null(undef) }
+    );
 }
 
 sub test_succeed_assert_not_null {
@@ -133,6 +146,19 @@ sub test_succeed_assert_not_null {
     $self->assert_not_null('undef');
     $self->assert_not_null(0);
     $self->assert_not_null(10);
+}
+
+sub check_failures {
+    my $self = shift;
+    my %tests = @_;
+    while (my ($message, $test) = each %tests) {
+	my $got_fail = 0;
+	try { $self->$test() }
+	catch Test::Unit::Failure with {
+	    $got_fail++;
+	};
+	$got_fail || throw Test::Unit::Failure -text => $message, -object => $self;
+    }
 }
 
 # Key = assert_method

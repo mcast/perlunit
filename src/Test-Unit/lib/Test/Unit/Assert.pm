@@ -74,8 +74,9 @@ sub ok { # To make porting from Test easier
 	$self->assert($args[0]); # boolean assertion
     }
     elsif (@args == 2) {
-	if (ref $args[0] eq 'CODE') {
-	    $self->assert(@args);
+	if (ref($args[0]) eq 'CODE') {
+	    my $code = shift @args;
+	    $self->assert_equals($code->(), @args);
 	}
 	elsif (eval {$args[1]->isa('Regexp')}) {
 	    $self->assert($args[1], $args[0]);
@@ -86,7 +87,7 @@ sub ok { # To make porting from Test easier
 	}
     }
     else {
-	# TODO: throw error
+	$self->fail('ok() called with wrong number of args');
     }
 }
 
