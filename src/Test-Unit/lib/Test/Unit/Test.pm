@@ -33,6 +33,26 @@ sub to_string {
     return $self->name();
 }
 
+sub filter_method {
+    my $self = shift;
+    my ($token, $method) = @_;
+
+    # Convert hash of arrayrefs from filter() into internally cached hash
+    # of hashrefs for faster lookup.
+    if (! exists $self->{_filter}{$token}) {
+        my @methods = @{ $self->filter->{$token} || [] };
+        $self->{_filter}{$token} = { map { $_ => 1 } @methods };
+    }
+
+    my $filtered = $self->{_filter}{$token}{$method};
+    print "filter $method by token $token? ",
+          $filtered ? 'yes' : 'no',
+	  "\n";
+    return $filtered;
+}
+
+sub filter { {} }
+
 1;
 __END__
 

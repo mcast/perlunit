@@ -3,7 +3,7 @@
 package Test::Unit::UnitHarness;
 
 BEGIN {require 5.002;}
-use base qw(Test::Unit::Listener Test::Unit::Test);
+use base qw(Test::Unit::Runner Test::Unit::Test);
 use Exporter;
 use Config;
 use Carp;

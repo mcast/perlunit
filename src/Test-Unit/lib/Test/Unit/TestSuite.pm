@@ -118,14 +118,31 @@ sub count_test_cases {
 
 sub run {
     my $self = shift;
-    my ($result) = @_;
+    my ($result, $runner) = @_;
     for my $t (@{$self->tests()}) {
+        if ($runner && $self->filter_test($runner, $t)) {
+            printf "skipping %s\n", $t->name() if DEBUG;
+            next;
+        }
+ 
         last if $result->should_stop();
         $t->run($result);
     }
-	return $result;
+    return $result;
 }
     
+sub filter_test {
+    my $self = shift;
+    my ($runner, $test) = @_;
+    my @filter_tokens = $runner->filter();
+
+    foreach my $token (@filter_tokens) {
+        return 1 if $test->filter_method($token, $test->name());
+    }
+
+    return 0;
+}
+
 sub test_at {
     my $self = shift;
     my ($index) = @_;

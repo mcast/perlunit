@@ -37,9 +37,9 @@ sub name {
 sub run {
     my $self = shift;
     print ref($self) . "::run() called\n" if DEBUG;
-    my ($result) = @_;
+    my ($result, $runner) = @_;
     $result ||= create_result();
-    $result->run($self);
+    $result->run($self, $runner);
     return $result;
 }
 

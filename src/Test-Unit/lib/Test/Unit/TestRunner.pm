@@ -2,7 +2,7 @@ package Test::Unit::TestRunner;
 use strict;
 use constant DEBUG => 0;
 
-use base qw(Test::Unit::Listener); 
+use base qw(Test::Unit::Runner); 
 
 use Test::Unit::TestSuite;
 use Test::Unit::Loader;
@@ -55,7 +55,7 @@ sub do_run {
     my $result = $self->create_test_result();
     $result->add_listener($self);
     my $start_time = new Benchmark();
-    $suite->run($result);
+    $suite->run($result, $self);
     my $end_time = new Benchmark();
     my $run_time = timediff($end_time, $start_time);
     $self->_print("\n", "Time: ", timestr($run_time), "\n");

@@ -4,7 +4,7 @@ package Test::Unit::HarnessUnit;
 use strict;
 use constant DEBUG => 0;
 
-use base qw(Test::Unit::Listener); 
+use base qw(Test::Unit::Runner); 
 
 use Test::Unit::TestSuite;
 use Test::Unit::Result;
@@ -78,7 +78,7 @@ sub do_run {
     my ($suite) = @_;
     my $result  = $self->create_test_result();
     $result->add_listener($self);
-    $suite->run($result);
+    $suite->run($result, $self);
 }
 
 sub main {
