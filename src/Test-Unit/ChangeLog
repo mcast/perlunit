@@ -1,5 +1,8 @@
 2001-09-07  Piers Cawley  <pdcawley@iterative-software.com>
 
+	* lib/Test/Unit/TestCase.pm
+	(run_bare): Made sure it returns true if it doesn't throw an exception.
+
 	* lib/Test/Unit/tests/AssertTest.pm
 	(test_fail_assert_not_equals): 
 	(test_success_assert_not_equals): Added tests for assert_not_equals.
