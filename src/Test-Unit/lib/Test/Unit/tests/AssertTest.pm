@@ -147,7 +147,7 @@ my %test_hash =
                            {args => ['0e0', 0],     name => '0E0 == 0'  },
                            {args => [0, 'foo'],     name => "0 == 'foo'"},
                               ],
-                   Test::Unit::Failure =>
+                   'Test::Unit::Failure' =>
                               [
                            {args => [1,'foo'],      name => "1 != 'foo'"    },
                            {args => ['foo', 0],     name => "'foo' ne 0"    },
