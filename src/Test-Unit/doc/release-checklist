@@ -35,7 +35,7 @@ Foo, Foo::Bar, and Foo::Baz. Now, something changes in Foo::Bar, and
 Foo::Bar gets a new version number. The module author happily uploads
 Foo-0.23.tar.gz to CPAN.
 
-Now, will the CPAN module use Foo-0.23.tar.gz to upgrad package Foo if you
+Now, will the CPAN module use Foo-0.23.tar.gz to upgrade package Foo if you
 tell it "install Foo"? No. CPAN will look at the version number for Foo,
 determine it has not changed compared to the locally installed version,
 and do nothing. You have to tell it "install Foo::Bar" to get the new
