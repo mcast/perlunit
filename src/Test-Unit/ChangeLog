@@ -1,4 +1,28 @@
-2002-06-14  adamspiers  <adamspiers@juno.london.guideguide.com>
+2002-06-20  Adam Spiers  <perlunit@adamspiers.org>
+
+	* lib/Test/Unit/TestCase.pm: document new filtering via coderefs
+
+	* MANIFEST, lib/Test/Unit/Test.pm, lib/Test/Unit/TestSuite.pm, t/tlib/AllTests.pm, t/tlib/FilteredSuite.pm:
+	- remove ALL filtering hack, and instead allow filtering via coderefs:
+
+	    sub filter {{
+	      foo_tests  => sub {
+	        my $method = shift;
+	        return $method =~ /foo/;
+	      },
+	      everything => sub { 1 },
+
+	      # method lists still work
+	      another_token => [ qw/test_method1 test_method2/ ],
+	    }}
+
+	- add tests for filtering mechanism
+
+2002-06-14  Adam Spiers  <perlunit@adamspiers.org>
+
+	* lib/Test/Unit.pm: version 0.24
+	
+	* ChangeLog: new stuff for 0.24
 
 	* MANIFEST:
 	'make manifest' revealed more missing files, though none of them crucial
@@ -11,7 +35,7 @@
 
 	* MANIFEST: argh!  0.23's MANIFEST was missing several crucial files.
 
-2002-06-13  adamspiers  <perlunit@adamspiers.org>
+2002-06-13  Adam Spiers  <perlunit@adamspiers.org>
 
 	* lib/Test/Unit/Runner/Terminal.pm: forgot to update the pod
 
@@ -41,11 +65,11 @@
 
 	* lib/Test/Unit/Procedural.pm: remove spurious 'use' line
 
-2002-06-12  adamspiers  <perlunit@adamspiers.org>
+2002-06-12  Adam Spiers  <perlunit@adamspiers.org>
 
 	* lib/Test/Unit/Debug.pm: allow debugging to a file with debug_to_file
 
-2002-06-10  adamspiers  <perlunit@adamspiers.org>
+2002-06-10  Adam Spiers  <perlunit@adamspiers.org>
 
 	* lib/Test/Unit/Runner/Terminal.pm:
 	use \e[4A\r instead of \e[4F, which not all terminals support
@@ -72,7 +96,7 @@
 	* lib/Test/Unit/Listener.pm:
 	pseudo-document the parameters for the listener interface
 
-2002-05-23  adamspiers  <perlunit@adamspiers.org>
+2002-05-23  Adam Spiers  <perlunit@adamspiers.org>
 
 	* doc/TODO, lib/Test/Unit/TestCase.pm:
 	(poorly) document @TESTS and the filtering mechanism
