@@ -66,8 +66,11 @@ sub test_assert_equals_null {
 sub test_ok_boolean {
     my $self = shift;
     $self->ok(1);
-    $self->check_failures('expected TRUE, got FALSE'
-                              => [ __LINE__, sub { shift->ok(0) } ]);
+    $self->check_failures(
+        'expected TRUE, got FALSE' => [ __LINE__, sub { shift->ok(0)     } ],
+        'expected TRUE, got FALSE' => [ __LINE__, sub { shift->ok('')    } ],
+        'expected TRUE, got FALSE' => [ __LINE__, sub { shift->ok(undef) } ],
+    );
 }
 
 sub test_ok_bad_args {
@@ -83,7 +86,7 @@ sub test_ok_bad_args {
 sub test_ok_equals {
     my $self = shift;
     foreach my $args ([0, 0], [2, 2], [1.34, 1.34], 
-		      ['foo', 'foo'], ['', ''], 
+		      ['foo', 'foo'], ['', ''], [undef, undef],
 		      [sub {2+2}, 4], ['fixed', qr/x/]) {
 	$self->ok(@$args);
 	$self->ok(@$args, 'comment');
