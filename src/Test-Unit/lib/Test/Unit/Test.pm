@@ -35,6 +35,7 @@ sub filter_method {
     my ($token) = @_;
 
     my $filtered = $self->filter->{$token};
+    return unless $filtered;
 
     if (ref $filtered eq 'ARRAY') {
         return grep $self->name eq $_, @$filtered;

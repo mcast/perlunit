@@ -61,6 +61,7 @@ sub test_filter_via_both {
     $self->{runner}->filter(
         'token_filtering_via_method_list',
         'token_filtering_via_sub',
+        'nonexistent_token', # this has to be allowed
     );
 
     $self->assert($self->{runner}->start('FilteredSuite'),
