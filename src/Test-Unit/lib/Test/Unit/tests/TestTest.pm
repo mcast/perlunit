@@ -6,7 +6,7 @@ use base qw(Test::Unit::TestCase);
 use Test::Unit::tests::TornDown;
 use Test::Unit::tests::WasRun;
 use Test::Unit::Error;
-use Test::Unit::ExceptionFailure;
+use Test::Unit::Failure;
 use Class::Inner;
 use Error qw/:try/;
 
@@ -90,7 +90,7 @@ sub test_failure_exception {
     try {
         $self->fail;
     }
-    catch Test::Unit::ExceptionFailure with {
+    catch Test::Unit::Failure with {
         1;
     }
     otherwise {

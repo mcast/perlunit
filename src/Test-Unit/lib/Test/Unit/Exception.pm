@@ -100,7 +100,7 @@ L<Test::Unit::Error>
 
 =item *
 
-L<Test::Unit::ExceptionFailure>
+L<Test::Unit::Failure>
 
 =back
 

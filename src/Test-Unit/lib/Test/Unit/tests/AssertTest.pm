@@ -2,7 +2,7 @@ package Test::Unit::tests::AssertTest;
 
 use Test::Unit::TestCase;
 
-require Test::Unit::ExceptionFailure;
+require Test::Unit::Failure;
 require Test::Unit::Error;
 
 use strict;
@@ -24,7 +24,7 @@ use vars qw/@ISA/;
 
 sub assertion_has_failed {
     my $error = shift;
-    return eval {ref($error) && $error->isa('Test::Unit::ExceptionFailure')};
+    return eval {ref($error) && $error->isa('Test::Unit::Failure')};
 }
 
 
@@ -52,20 +52,20 @@ sub test_fail {
     my $self = shift;
     my $got_fail;
     try { $self->fail }
-    catch Test::Unit::ExceptionFailure with { $got_fail = 1 }
+    catch Test::Unit::Failure with { $got_fail = 1 }
     otherwise { $got_fail = 0 };
     $got_fail ||
-        throw Test::Unit::ExceptionFailure -text => 'Expected to fail', -object => $self;
+        throw Test::Unit::Failure -text => 'Expected to fail', -object => $self;
 }
 
 sub test_fail_assert_not_null {
     my $self = shift;
     my $got_fail;
     try { $self->assert_not_null(undef) }
-    catch Test::Unit::ExceptionFailure with { $got_fail = 1 }
+    catch Test::Unit::Failure with { $got_fail = 1 }
     otherwise { $got_fail = 0 };
     $got_fail ||
-        throw Test::Unit::ExceptionFailure -text => "Expected failure...", -object => $self;
+        throw Test::Unit::Failure -text => "Expected failure...", -object => $self;
 }
 
 sub test_succeed_assert_not_null {
@@ -89,7 +89,7 @@ my %test_hash =
                            {args => ['0e0', 0],     name => '0E0 == 0'  },
                            {args => [0, 'foo'],     name => "0 == 'foo'"},
                               ],
-                   Test::Unit::ExceptionFailure =>
+                   Test::Unit::Failure =>
                               [
                            {args => [1,'foo'],      name => "1 != 'foo'"    },
                            {args => ['foo', 0],     name => "'foo' ne 0"    },
@@ -139,7 +139,7 @@ sub make_tests_from_matrix {
                          }
                          catch $outcome with {
                               1;
-                         } or Test::Unit::ExceptionFailure->throw(-text => $spec->{name},
+                         } or Test::Unit::Failure->throw(-text => $spec->{name},
                                                                   -object => $self);
                      }, $spec->{name});
             }

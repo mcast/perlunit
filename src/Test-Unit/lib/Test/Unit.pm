@@ -19,7 +19,7 @@ use Class::Inner;
 # Exception handling
 use Error qw/:try/;
 use Test::Unit::Exception;
-use Test::Unit::ExceptionFailure;
+use Test::Unit::Failure;
 use Test::Unit::Error;
 
 # NOTE: 

@@ -2,7 +2,7 @@ package Test::Unit::Assertion;
 
 use strict;
 
-require Test::Unit::ExceptionFailure;
+require Test::Unit::Failure;
 use Carp;
 
 use overload '""' => 'to_string';
@@ -11,7 +11,7 @@ sub fail {
     my $self = shift;
     my($asserter,$file,$line) = caller(2); # We're always called from
                                            # within an Assertion...
-    Test::Unit::ExceptionFailure->throw(-object => $self,
+    Test::Unit::Failure->throw(-object => $self,
                                         -file => $file,
                                         -line => $line,
                                         -text => join '', @_);
@@ -60,7 +60,7 @@ with an object as its first argument then it does:
 
 This means that C<do_assertion> should return true if the assertion
 succeeds and false if it doesn't. Or, you can fail by throwing a
-Test::Unit::ExceptionFailure object, which will get caught further up
+Test::Unit::Failure object, which will get caught further up
 the stack and used to produce a sensible error report. Generally it's
 good practice for do_assertion to die with a meaningful error on
 assertion failure rather than just returning false.

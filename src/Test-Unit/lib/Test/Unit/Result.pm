@@ -2,7 +2,7 @@ package Test::Unit::Result;
 use strict;
 use constant DEBUG => 0;
 
-use Test::Unit::ExceptionFailure;
+use Test::Unit::Failure;
 use Test::Unit::Error;
 
 use Error qw/:try/;
@@ -103,7 +103,7 @@ sub run_protected {
     try {
         &$closure();
     }
-    catch Test::Unit::ExceptionFailure with {
+    catch Test::Unit::Failure with {
         $self->add_failure($test, shift);
     }
     catch Test::Unit::Error with {

@@ -4,7 +4,7 @@ package Test::Unit::Assert;
 use strict;
 use constant DEBUG => 0;
 
-require Test::Unit::ExceptionFailure;
+require Test::Unit::Failure;
 require Test::Unit::Exception;
 
 use Test::Unit::Assertion::CodeRef;
@@ -122,7 +122,7 @@ sub fail {
     print ref($self) . "::fail() called\n" if DEBUG;
     my($asserter,$file,$line) = caller($Error::Depth);
     my $message = join '', @_;
-    Test::Unit::ExceptionFailure->throw(-text => $message,
+    Test::Unit::Failure->throw(-text => $message,
                                         -object => $self,
                                         -file => $file,
                                         -line => $line);

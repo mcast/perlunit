@@ -5,7 +5,7 @@ use constant DEBUG => 0;
 use Test::Unit::Test;
 use base qw(Test::Unit::Test);
 
-use Test::Unit::ExceptionFailure; 
+use Test::Unit::Failure; 
 use Test::Unit::Error; 
 use Test::Unit::Result;
 
