@@ -8,18 +8,16 @@ Make sure all the examples run OK.
 
 1. Commit new files in src/Test-Unit
 2. Changes (section for release at the top)
-3. Makefile.PL (set new $VERSION, which is used by make tardist)
-4. lib/Test/Unit.pm - put in the same $VERSION that is in Makefile.PL
-   (for explanation why see below)
-5. README (Version numbers on installation commands .. surely we
+3. lib/Test/Unit.pm - put in the new $VERSION for the distribution
+4. README (Version numbers on installation commands .. surely we
    could put something generic in here? - Sure, and you also can just
    do a simple regex replace in your favorite editor)
-6. MANIFEST if files are to be added to the tarball
-7. cvs rtag -r HEAD REL_0_14 releasemodule
+5. MANIFEST if files are to be added to the tarball
+6. cvs rtag -r HEAD REL_0_14 releasemodule
    (with the $VERSION number from above)
-8. make clean ; perl Makefile.PL ; make tardist
-9. upload to incoming as per Sourceforge docs
-10. notify lemburg@acm.org for upload to CPAN
+7. make clean ; perl Makefile.PL ; make tardist
+8. upload to incoming as per Sourceforge docs
+9. notify lemburg@acm.org for upload to CPAN
 
 Cheers,
 
