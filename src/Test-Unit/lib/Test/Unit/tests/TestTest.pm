@@ -208,4 +208,34 @@ EOIC
     $self->assert($result->was_successful());
 }
 
+sub test_assert_on_matching_regex {
+    my $self = shift;
+    my $matching_regex = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<'EOIC', "matching_regex"); 
+sub run_test {
+    my $self = shift;
+    $self->assert("foo" =~ /foo/, "Should have matched!");
+}
+EOIC
+    my $result = $matching_regex->run();
+    $self->assert($result->run_count() == 1);
+    $self->assert($result->failure_count() == 0);
+    $self->assert($result->error_count() == 0);
+    $self->assert($result->was_successful());
+}
+
+sub test_assert_on_failing_regex {
+    my $self = shift;
+    my $matching_regex = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", <<'EOIC', "failing_regex"); 
+sub run_test {
+    my $self = shift;
+    $self->assert(scalar("foo" =~ /bar/), "Should not have matched!");
+}
+EOIC
+    my $result = $matching_regex->run();
+    $self->assert($result->run_count() == 1);
+    $self->assert($result->failure_count() == 1);
+    $self->assert($result->error_count() == 0);
+    $self->assert(not $result->was_successful());
+}
+
 1;
