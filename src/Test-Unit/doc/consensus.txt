@@ -173,12 +173,21 @@ the best practice. See the discussion in Damian Conway's Object Oriented Perl.
    -- pdc
 
 * TODO lists
+
 ** Matthew
+
 *** Consider removing examples/tester* (uses old Test::SuiteWrapper)
+
 *** Make Debian package
+
 *** Find a neat way to run unit-tested programs without the suite
+
 It's convenient for medium sized projects to stick the test subs in
 the classes they test, but then you have a run-time dependence on perlunit.
+
+** Unclaimed
+
+Fix problem with broken base.pms.
 
 * Tests to add
 
