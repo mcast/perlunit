@@ -45,7 +45,7 @@ sub set_up {
 
 sub suite {
     my $class = shift;
-    my $suite = Test::Unit::TestSuite->new("Suite Tests");
+    my $suite = Test::Unit::TestSuite->empty_new("Suite Tests");
     $suite->add_test(Test::Unit::tests::SuiteTest->new("test_no_test_case_class"));
     $suite->add_test(Test::Unit::tests::SuiteTest->new("test_no_test_cases"));
     $suite->add_test(Test::Unit::tests::SuiteTest->new("test_one_test_case"));
