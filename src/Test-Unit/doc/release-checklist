@@ -7,17 +7,13 @@ Make sure all the tests run OK.
 Make sure all the examples run OK.
 
 1. Commit new files in src/Test-Unit
-2. Changes (section for release at the top)
-3. lib/Test/Unit.pm - put in the new $VERSION for the distribution
-4. README (Version numbers on installation commands .. surely we
-   could put something generic in here? - Sure, and you also can just
-   do a simple regex replace in your favorite editor)
-5. MANIFEST if files are to be added to the tarball
-6. cvs rtag -r HEAD REL_0_14 releasemodule
+2. lib/Test/Unit.pm - put in the new $VERSION for the distribution
+3. MANIFEST if files are to be added to the tarball
+4. cvs rtag -r HEAD REL_0_14 releasemodule
    (with the $VERSION number from above)
-7. make clean ; perl Makefile.PL ; make tardist
-8. upload to incoming as per Sourceforge docs
-9. notify lemburg@acm.org for upload to CPAN
+5. make clean ; perl Makefile.PL ; make tardist
+6. upload to incoming as per Sourceforge docs
+7. notify lemburg@acm.org for upload to CPAN
 
 Cheers,
 

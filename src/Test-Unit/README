@@ -41,11 +41,11 @@ PREREQUISITES
 
 INSTALLATION
     Once you have installed the prerequisites, just perform the usual
-    incantation:
+    incantation (replacing 'x.yy' with the current version):
 
-    gunzip Test-Unit-0.14.tar.gz
-    tar -xvf Test-Unit-0.14.tar 
-    cd Test-Unit-0.14
+    gunzip Test-Unit-x.yy.tar.gz
+    tar -xvf Test-Unit-x.yy.tar 
+    cd Test-Unit-x.yy
     perl Makefile.PL
     make
     make test
