@@ -8,83 +8,139 @@ use FileHandle;
 use Test::Unit::TestSuite;
 use Test::Unit::TestCase;
 use Test::Unit::UnitHarness;
+use Test::Unit::Warning;
 
 # should really do something in here about a local @INC.
 sub obj_load { shift; load(@_) }
+
+# Compiles a target.  Returns the package if successful.
+sub compile {
+    my $target = shift;
+    print "Test::Unit::Loader::compile($target) called\n" if DEBUG;
+
+    if ($target =~ /^\w+(::\w+)*$/) {
+        compile_class($target);
+        return $target;
+    }
+    elsif ($target =~ /\.pm$/) {
+        compile_file($target);
+        # In this case I need to figure out what the class was I just loaded!
+        return get_package_name_from_file($target);        
+    }
+    else {
+        return undef;
+    }
+}
+
+sub compile_class {
+    my $classname = shift;
+    print "  Test::Unit::Loader::compile_class($classname) called\n" if DEBUG;
+    # Check if the package exists already.
+    {
+        no strict 'refs';
+        if (my @keys = keys %{"$classname\::"}) {
+            print "    package $classname already exists (@keys); not compiling.\n"
+                if DEBUG;
+            return;
+        }
+    }
+    # No? Try 'require'ing it
+    eval "require $classname";
+    die $@ if $@;
+    print "    $classname compiled OK as class name\n" if DEBUG;
+}
+
+sub compile_file {
+    my $file = shift;
+    print "  Test::Unit::Loader::compile_file($file) called\n" if DEBUG;
+    eval qq{require "$file"};
+    die $@ if $@;
+    print "    $file compiled OK as filename\n" if DEBUG;
+}
 
 sub load {
     my $target = shift;
     print "Test::Unit::Loader::load($target) called\n" if DEBUG;
 
-    my $suite;
-    # Is it a test class?
-    if ($target =~ /^[\w:]+$/ 
-        && eval "require $target"
-        && ! $@) {
-        # first up: is this a real test case?
-        print "$target compiled OK as test class\n" if DEBUG;
-        $suite = try_test_suite($target) || try_test_case($target);
-    }
-    elsif ($target =~ /\.pm$/ 
-             && eval qq{require "$target"}
-             && ! $@) {
-        print "$target compiled OK as filename\n" if DEBUG;
-        #In this case I need to figure out what the class
-        #was I just loaded!
-        my $package = get_package_name_from_file($target);        
-        $suite = try_test_suite($package) || try_test_case($package);
-    }
-    else {
-        die $@;
-    }
+    my $suite = load_test($target)
+             || load_test_harness_test($target)
+             || load_test_dir($target);
     return $suite if $suite;
-    
-    for my $file ("$target",
-                  "$target.t",
-                  "t/$target",
-                  "t/$target.t" ) {
-        # try it out as a test::harness type test.
-        $suite = try_test_harness($file);
-        return $suite if $suite;
-    }
-    # one last shot: is it a _directory_?
-    $suite = try_test_dir($target);
-    return $suite if $suite;
-    die "(This error is expected) Suite class " . $target . " not found: $@";
-    
+
+    die "Couldn't load $target in any of the supported ways";
 }
 
-sub try_test_case {
-    my $package = shift;
-    if ($package->isa("Test::Unit::TestCase")) {
-        print "$package isa Test::Unit::TestCase\n" if DEBUG;
-        return Test::Unit::TestSuite->new($package);
-    } 
+sub load_test {
+    my $target = shift;
+    print "Test::Unit::Loader::load_test($target) called\n" if DEBUG;
+    my $package = compile($target);
+    print "  compile returned $package\n" if DEBUG;
+    return unless $package;
+    my $suite = load_test_suite($package) || load_test_case($package);
+    
+    return $suite;
 }
 
-sub try_test_suite {
+sub load_test_suite {
     my $package = shift;
+    print "  Test::Unit::Loader::load_test_suite($package) called\n" if DEBUG;
     if ($package->can("suite")) {
-        print "$package has a suite() method\n" if DEBUG;
+        print "  $package has a suite() method\n" if DEBUG;
         return $package->suite();
     } 
 }
 
-sub try_test_harness {
-    my $test_case = shift;
-    if (-r $test_case) {
-        open(FH, $test_case) or return;
-        my $first = <FH>;
-        close(FH) or return;
-        return Test::Unit::UnitHarness->new($test_case);
-    }
+sub load_test_case {
+    my $package = shift;
+    print "  Test::Unit::Loader::load_test_case($package) called\n" if DEBUG;
+    if ($package->isa("Test::Unit::TestCase")) {
+        print "  $package isa Test::Unit::TestCase\n" if DEBUG;
+        return Test::Unit::TestSuite->new($package);
+    } 
 }
 
-sub try_test_dir {
-    my $test_case = shift;
-    if (-d $test_case) {
+sub extract_testcases {
+    my $classname = shift;
+
+    my @testcases = ();
+
+    foreach my $method ($classname->list_tests()) {
+        if ( my $a_class_instance = $classname->new($method) ) {
+            push @testcases, $a_class_instance;
+        }
+        else {
+            push @testcases, Test::Unit::Warning->new(
+                "extract_testcases: Couldn't create a $classname object"
+            );
+        }
+    }
+
+    push @testcases, Test::Unit::Warning->new("No tests found in $classname")
+        unless @testcases;
+
+    return @testcases;
+}
+
+sub load_test_harness_test {
+    my $target = shift;
+
+    foreach my $file ("$target", "$target.t", "t/$target", "t/$target.t" ) {
+        if (-r $file) {
+            # are the next 3 lines really necessary?
+            open(FH, $file) or next;
+            my $first = <FH>;
+            close(FH) or next;
+            return Test::Unit::UnitHarness->new($file);
+        }
+    }
+    return undef;
+}
+
+sub load_test_dir {
+    my $test_dir = shift;
+    if (-d $test_dir) {
         die "This is a test directory. I haven't implemented that.\n";
-        return Test::Unit::UnitHarness::new_dir($test_case);
+        return Test::Unit::UnitHarness::new_dir($test_dir);
     }
 }
 

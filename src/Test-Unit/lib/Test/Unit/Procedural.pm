@@ -1,15 +1,13 @@
 package Test::Unit::Procedural;
 
 use strict;
-use vars qw($VERSION @ISA @EXPORT);
 
 use Test::Unit::TestSuite;
 use Test::Unit::TestRunner;
 
-require Exporter;
+use base 'Exporter';
 
-@ISA = qw(Exporter);
-
+use vars qw(@EXPORT);
 @EXPORT = qw(assert create_suite run_suite add_suite);
 
 # Helper classes
@@ -21,16 +19,6 @@ use Error qw/:try/;
 use Test::Unit::Exception;
 use Test::Unit::Failure;
 use Test::Unit::Error;
-
-# NOTE: 
-# this version number has to be kept in sync 
-# with the number in the distribution file name 
-# (the distribution file is the tarball for CPAN release)
-# because the CPAN module decides to fetch the tarball by
-# looking at the version of this module if you say 
-# "install Test::Unit" in the CPAN shell
-
-$VERSION = '0.14';
 
 # private
 
@@ -145,19 +133,21 @@ Test::Unit::Procedural - Procedural style unit testing interface
 
 =head1 DESCRIPTION
 
-Test::Unit::Procedural is the procedural style interface to a sophisticated unit
-testing framework for Perl that is derived from the JUnit testing
-framework for Java by Kent Beck and Erich Gamma. While this framework
-is originally intended to support unit testing in an object-oriented
-development paradigm (with support for inheritance of tests etc.),
-Test::Unit::Procedural is intended to provide a simpler interface to the framework
-that is more suitable for use in a scripting style environment.
-Therefore, Test::Unit::Procedural does not provide much support for an
-object-oriented approach to unit testing - if you want that, please
-have a look at L<Test::Unit::TestCase>.
+Test::Unit::Procedural is the procedural style interface to a
+sophisticated unit testing framework for Perl that is derived from the
+JUnit testing framework for Java by Kent Beck and Erich Gamma.  While
+this framework is originally intended to support unit testing in an
+object-oriented development paradigm (with support for inheritance of
+tests etc.), Test::Unit::Procedural is intended to provide a simpler
+interface to the framework that is more suitable for use in a
+scripting style environment.  Therefore, Test::Unit::Procedural does
+not provide much support for an object-oriented approach to unit
+testing - if you want that, please have a look at
+L<Test::Unit::TestCase>.
 
 You test a given unit (a script, a module, whatever) by using
-Test::Unit::Procedural, which exports the following routines into your namespace:
+Test::Unit::Procedural, which exports the following routines into your
+namespace:
 
 =over 4
 

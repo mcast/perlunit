@@ -1,8 +1,9 @@
 package AllTests;
 
-use Test::Unit::TestRunner;
 use Test::Unit::TestSuite;
 use SuiteTest;
+use InheritedSuite::Simple;
+use InheritedSuite::TestNames;
 
 sub new {
     my $class = shift;
@@ -12,10 +13,24 @@ sub new {
 sub suite {
     my $class = shift;
     my $suite = Test::Unit::TestSuite->empty_new("Framework Tests");
-    $suite->add_test(Test::Unit::TestSuite->new("TestTest"));
-    $suite->add_test(SuiteTest->suite());
-    $suite->add_test(Test::Unit::TestSuite->new("ListenerTest"));
-    $suite->add_test(Test::Unit::TestSuite->new("BadSuitesTest"));
+
+    # We now add the various test cases and suites to this suite
+    # in deliberately different ways, so as to implicitly test
+    # the different interfaces by which one can add/construct tests.
+
+    # Add test cases in 3 different ways.  The first 3 extract all
+    # test_* methods, and the last extracts only 1 method.
+    $suite->add_test(Test::Unit::TestSuite->new('TestTest'));      
+    $suite->add_test('ListenerTest');                             
+    $suite->add_test('BadSuitesTest');
+    $suite->add_test(InheritedSuite::TestNames->new('test_names'));
+
+    # Add test suites in 4 different ways.
+    $suite->add_test(SuiteTest->suite());                          
+    $suite->add_test(InheritedSuite::Simple->new());           
+    $suite->add_test('InheritedSuite::OverrideNew');           
+#    $suite->add_test(Test::Unit::TestSuite->new('InheritedSuite::OverrideNewName'));
+
     return $suite;
 }
 

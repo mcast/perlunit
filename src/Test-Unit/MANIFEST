@@ -16,6 +16,7 @@ examples/patch100132-1
 examples/patch100132-2
 examples/tester.pl
 examples/tester.png
+lib/Test/Unit.pm
 lib/Test/Unit/Assert.pm
 lib/Test/Unit/Assertion.pm
 lib/Test/Unit/Assertion/Boolean.pm
@@ -39,6 +40,7 @@ lib/Test/Unit/TestSuite.pm
 lib/Test/Unit/TkTestRunner.pm
 lib/Test/Unit/Tutorial.pm
 lib/Test/Unit/UnitHarness.pm
+lib/Test/Unit/Warning.pm
 t/all_tests.t
 t/assert.t
 t/try_examples.t
@@ -47,6 +49,10 @@ t/tlib/AllTests.pm
 t/tlib/AssertTest.pm
 t/tlib/InheritedInheritedTestCase.pm
 t/tlib/InheritedTestCase.pm
+t/tlib/InheritedSuite/TestNames.pm
+t/tlib/InheritedSuite/OverrideNew.pm
+t/tlib/InheritedSuite/OverrideNewName.pm
+t/tlib/InheritedSuite/Simple.pm
 t/tlib/ListenerTest.pm
 t/tlib/NoTestCaseClass.pm
 t/tlib/NoTestCases.pm

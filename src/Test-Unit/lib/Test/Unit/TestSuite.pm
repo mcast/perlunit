@@ -1,11 +1,96 @@
 package Test::Unit::TestSuite;
 use strict;
 use constant DEBUG => 0;
-use base qw(Test::Unit::Test);
 
-use Test::Unit::TestCase;
+=head1 NAME
+
+Test::Unit::TestSuite - unit testing framework base class
+
+=cut
+
+use base 'Test::Unit::Test';
 
 use Carp;
+
+use Test::Unit::TestCase;
+use Test::Unit::Loader;
+use Test::Unit::Warning;
+
+=head1 SYNOPSIS
+
+    package MySuite;
+
+    use base qw(Test::Unit::TestSuite);
+
+    sub name { 'My very own test suite' } 
+    sub include_tests { qw(MySuite1 MySuite2 MyTestCase1 ...) }
+
+This is the easiest way of building suites; there are many more.  Read on ...
+
+=head1 DESCRIPTION
+
+This class provides the functionality for building test suites in
+several different ways.
+
+Any module can be a test suite runnable by the framework if it
+provides a C<suite()> method which returns a C<Test::Unit::TestSuite>
+object, e.g.
+
+    use Test::Unit::TestSuite;
+
+    # more code here ...
+
+    sub suite {
+	my $class = shift;
+
+	# Create an empty suite.
+	my $suite = Test::Unit::TestSuite->empty_new("A Test Suite");
+	# Add some tests to it via $suite->add_test() here
+
+	return $suite;
+    }
+
+This is useful if you want your test suite to be contained in the module
+it tests, for example.
+
+Alternatively, you can have "standalone" test suites, which inherit directly
+from C<Test::Unit::TestSuite>, e.g.:
+
+    package MySuite;
+
+    use base qw(Test::Unit::TestSuite);
+
+    sub new {
+        my $class = shift;
+        my $self = $class->SUPER::empty_new();
+        # Build your suite here
+        return $self;
+    }
+
+    sub name { 'My very own test suite' }
+
+or if your C<new()> is going to do nothing more interesting than add
+tests from other suites and testcases via C<add_test()>, you can use the
+C<include_tests()> method as shorthand:
+
+    package MySuite;
+
+    use base qw(Test::Unit::TestSuite);
+
+    sub name { 'My very own test suite' } 
+    sub include_tests { qw(MySuite1 MySuite2 MyTestCase1 ...) }
+
+This is the easiest way of building suites.
+
+=head1 CONSTRUCTORS
+
+=head2 empty_new ([NAME])
+
+    my $suite = Test::Unit::TestSuite->empty_new('my suite name');
+
+Creates a fresh suite with no tests.
+
+=cut
 
 sub empty_new {
     my $this = shift;
@@ -22,20 +107,56 @@ sub empty_new {
     return $self;
 }
 
+=head2 new ([ CLASSNAME | TEST ])
+
+If a test suite is provided as the argument, it merely returns that
+suite.  If a test case is provided, it extracts all test case methods
+from the test case (see L<Test::Unit::TestCase/list_tests>) into a new
+test suite.
+
+If the class this method is being run in has an C<include_tests> method
+which returns an array of class names, it will also automatically add
+the tests from those classes into the newly constructed suite object.
+
+=cut
+
 sub new {
     my $class = shift;
-    my $testcase_class = shift || ''; # Avoid a warning
-    warn ref($class) . "::new($testcase_class) called\n" if DEBUG;
+    my $classname = shift || ''; # Avoid a warning
+    print "$class\::new($classname) called\n" if DEBUG;
 
     my $self = $class->empty_new();
 
-    if ($testcase_class) {
-        # We're extracting test methods from a testcase
-        $self->extract_testcases($testcase_class);
+    if ($classname) {
+        Test::Unit::Loader::compile_class($classname);
+        if (eval { $classname->isa('Test::Unit::TestCase') }) {
+            my @testcases = Test::Unit::Loader::extract_testcases($classname);
+            foreach my $testcase (@testcases) {
+                $self->add_test($testcase);
+            }
+        }
+        elsif (eval { $classname->can('suite') }) {
+            return $classname->suite();
+        }
+        else {
+            my $error = "Class $classname was not a test case or test suite.\n";
+            #$self->add_warning($error);
+            die $error;
+        }
+    }
+
+    if ($self->can('include_tests')) {
+        foreach my $test ($self->include_tests()) {
+            $self->add_test($test);
+        }
     }
 
     return $self;
 }
+
+=head1 METHODS
+
+=cut
 
 sub suite {
     my $class = shift;
@@ -43,34 +164,11 @@ sub suite {
     $class->new(@_);
 }
 
-sub extract_testcases {
-    my $self = shift;
-    my $classname = shift;
+=head2 name()
 
-    is_a_class($classname) or die "Could not find class $classname";
-    
-    # it is a class, create a suite with its tests
-    # ... and that of its ancestors, if they are Test::Unit::TestCase
-    unless (is_a_test_case_class($classname)) {
-        $self->add_warning("Class $classname is not a Test::Unit::TestCase");
-        return $self;
-    }
+Returns the suite's human-readable name.
 
-    my $added = 0;
-    foreach my $method ($classname->list_tests()) {
-        if ( my $a_class_instance = $classname->new($method) ) {
-            $self->add_test($a_class_instance);
-            $added++;
-        }
-        else {
-            $self->add_warning("extract_testcases: Couldn't create a $classname object");
-        }
-    }
-
-    $self->add_warning("No tests found in $classname") unless $added;
-
-    return $self;
-}
+=cut
 
 sub name {
     my $self = shift;
@@ -78,15 +176,53 @@ sub name {
     return $self->{_Name};
 }
 
+=head2 names()
+
+Returns an arrayref of the names of all tests in the suite.
+
+=cut
+
 sub names {
     my $self = shift;
     my @test_list = @{$self->tests};
     return [ map {$_->name} @test_list ] if @test_list;
 }
 
+=head2 add_test (TEST_CLASSNAME | TEST_OBJECT)
+
+You can add a test object to a suite with this method, by passing
+either its classname, or the object itself as the argument.
+
+Of course, there are many ways of getting the object too ...
+
+    # Get and add an existing suite.
+    $suite->add_test('MySuite1');
+
+    # This is exactly equivalent:
+    $suite->add_test(Test::Unit::TestSuite->new('MySuite1'));
+
+    # So is this, provided MySuite1 inherits from Test::Unit::TestSuite.
+    use MySuite1;
+    $suite->add_test(MySuite1->new());
+
+    # Extract yet another suite by way of suite() method and add it to
+    # $suite.
+    use MySuite2;
+    $suite->add_test(MySuite2->suite());
+    
+    # Extract test case methods from MyModule::TestCase into a
+    # new suite and add it to $suite.
+    $suite->add_test(Test::Unit::TestSuite->new('MyModule::TestCase'));
+
+=cut
+
 sub add_test {
     my $self = shift;
     my ($test) = @_;
+    print '+ ', ref($self), "::add_test($test) called\n" if DEBUG;
+    $test = Test::Unit::Loader::load_test($test) unless ref $test;
+    croak "`$test' could not be interpreted as a Test::Unit::Test object"
+        unless eval { $test->isa('Test::Unit::Test') };
     push @{$self->tests}, $test;
 }
 
@@ -151,98 +287,12 @@ sub to_string {
 
 sub add_warning {
     my $self = shift;
-    $self->add_test($self->warning(join '', @_));
-}
-
-sub warning {
-    my $self = shift;
-    my ($message) = @_;
-    Test::Unit::TestSuite::_warning->new($message);
-}
-
-# helper subroutines
-
-# determine if a string is the name of a valid package. There is no
-# valid way of finding out if a package is a class.
-
-sub is_a_class {
-    my $name = shift;
-    # Check if the package exists already.
-    {
-        no strict 'refs';
-        return 1 if keys %{"$name\::"};
-    }
-    # No? Try 'require'ing it
-    eval "require $name";
-    warn $@, "\n" if DEBUG;
-    return $@ ? 0 : 1;
-}
-
-sub is_a_test_case_class {
-    my $pkg = shift;
-    is_a_class($pkg) || return;
-    return eval {$pkg->isa("Test::Unit::TestCase")};
-}
-
-
-package Test::Unit::TestSuite::_warning;
-
-use strict;
-use base 'Test::Unit::TestCase';
-
-sub run_test {
-    my $self = shift;
-    $self->fail($self->{_message});
-}
-
-sub new {
-    my $class = shift;
-    my $self = $class->SUPER::new('warning');
-    $self->{_message} = shift;
-    return $self;
+    $self->add_test(Test::Unit::Warning->new(join '', @_));
 }
 
 1;
 __END__
 
-
-=head1 NAME
-
-Test::Unit::TestSuite - unit testing framework base class
-
-=head1 SYNOPSIS
-
-    use Test::Unit::TestSuite;
-
-    # more code here ...
-
-    sub suite {
-	my $class = shift;
-
-	# create an empty suite
-	my $suite = Test::Unit::TestSuite->empty_new("A Test Suite");
-	
-	# get and add an existing suite
-	$suite->add_test(Test::Unit::TestSuite->new("MyModule::Suite_1"));
-
-	# extract suite by way of suite method and add
-	$suite->add_test(MyModule::Suite_2->suite());
-	
-	# get and add another existing suite
-	$suite->add_test(Test::Unit::TestSuite->new("MyModule::TestCase_2"));
-
-	# return the suite built
-	return $suite;
-    }
-
-=head1 DESCRIPTION
-
-This class is normally not used directly, but it can be used for
-creating your own custom built aggregate suites.
-
-Normally, this class just provides the functionality of auto-building
-a test suite by extracting methods with a name prefix of C<test> from
-a given package to the test runners.
 
 =head1 AUTHOR
 

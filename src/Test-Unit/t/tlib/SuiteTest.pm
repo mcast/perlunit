@@ -116,11 +116,10 @@ sub test_inherited_inherited_tests {
 
 sub test_no_test_case_class {
     my $self = shift;
-    my $t = Test::Unit::TestSuite->new("NoTestCaseClass");
-    $t->run($self->result());
-    $self->basic_assertion(success => 0, runs => 1);
-    $self->assert(1 == $self->result()->run_count()); # warning test
-    $self->assert(not $self->result()->was_successful());
+    eval {
+      my $suite = Test::Unit::TestSuite->new("NoTestCaseClass");
+    };
+    $self->assert_str_equals("Class NoTestCaseClass was not a test case or test suite.\n", "$@");
 }
 
 sub test_no_test_cases {
