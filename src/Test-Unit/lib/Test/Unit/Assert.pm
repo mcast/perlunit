@@ -296,8 +296,8 @@ sub _format_stack {
     my @vals = @{$Stack[-1]{vals}}[0,1];
     
     my @vars = ();
-    ($vars[0] = $var) =~ s/\$FOO/     \$got/;
-    ($vars[1] = $var) =~ s/\$FOO/\$expected/;
+    ($vars[0] = $var) =~ s/\$FOO/  \$a/;
+    ($vars[1] = $var) =~ s/\$FOO/  \$b/;
 
     my $out = "Structures begin differing at:\n";
     foreach my $idx (0..$#vals) {

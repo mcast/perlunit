@@ -320,10 +320,10 @@ sub test_assert_deep_equals {
     );
 
     my $differ = sub {
-        my ($got, $expected) = @_;
+        my ($a, $b) = @_;
         qr/^Structures\ begin\ differing\ at: $ \n
-           \s* \$got .* = .* $got      .* $ \n
-           \$expected .* = .* $expected/mx;
+           \s* \$a .* = .* $a      .* $ \n
+           \s* \$b .* = .* $b/mx;
     };
 
     my @pairs = (
