@@ -37,7 +37,7 @@ sub compile_class {
     # Check if the package exists already.
     {
         no strict 'refs';
-        if (my @keys = keys %{"$classname\::"}) {
+        if (my @keys = grep { ! /::$/ } keys %{"$classname\::"}) {
             debug("    package $classname already exists (@keys); not compiling.\n");
             return;
         }
