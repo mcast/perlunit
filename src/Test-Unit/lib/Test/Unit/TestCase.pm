@@ -16,17 +16,17 @@ sub new {
     my $class = shift;
     my ($name) = @_;
     bless {
-        _name        => $name,
-        _annotations => '',
+        __PACKAGE__ . '_name'        => $name,
+        __PACKAGE__ . '_annotations' => '',
     }, $class;
 }
 
 sub annotate {
     my $self = shift;
-    $self->{_annotations} .= join '', @_;
+    $self->{__PACKAGE__ . '_annotations'} .= join '', @_;
 }
   
-sub annotations { $_[0]->{_annotations} }
+sub annotations { $_[0]->{__PACKAGE__ . '_annotations'} }
 
 sub count_test_cases {
     my $self = shift;
@@ -40,7 +40,7 @@ sub create_result {
 
 sub name {
     my $self = shift;
-    return $self->{_name};
+    return $self->{__PACKAGE__ . '_name'};
 }
 
 sub run {

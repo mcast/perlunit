@@ -2,6 +2,7 @@ package Test::Unit::Test;
 use strict;
 
 use Carp;
+
 use Test::Unit::Debug qw(debug);
 
 use base qw(Test::Unit::Assert);
@@ -35,19 +36,65 @@ sub filter_method {
 
     # Convert hash of arrayrefs from filter() into internally cached hash
     # of hashrefs for faster lookup.
-    if (! exists $self->{_filter}{$token}) {
+    my $private = __PACKAGE__ . '_filter';
+    if (! exists $self->{$private}{$token}) {
         my @methods = @{ $self->filter->{$token} || [] };
-        $self->{_filter}{$token} = { map { $_ => 1 } @methods };
+        $self->{$private}{$token} = { map { $_ => 1 } @methods };
     }
 
-    my $filtered = $self->{_filter}{$token}{$method};
+    my $filtered = $self->{$private}{$token}{$method};
     debug("filter $method by token $token? ",
           $filtered ? 'yes' : 'no',
 	  "\n");
     return $filtered;
 }
 
-sub filter { {} }
+my %filter = ();
+
+sub filter { \%filter }
+
+# use Attribute::Handlers;
+    
+# sub Filter : ATTR(CODE) {
+#     my ($pkg, $symbol, $referent, $attr, $data, $phase) = @_;
+#     print "attr $attr (data $data) on $pkg\::*{$symbol}{NAME}\n";
+# #    return ();
+# }
+
+sub _find_sym { # pinched from Attribute::Handlers
+    my ($pkg, $ref) = @_;
+    my $type = ref($ref);
+    no strict 'refs';
+    warn "type $type\n";
+    while (my ($name, $sym) = each %{$pkg."::"} ) {
+        use Data::Dumper;
+#        warn Dumper(*$sym);
+        warn "name $name sym $sym (" . (*{$sym}{$type} || '?') . ") matches?\n";
+        return \$sym if *{$sym}{$type} && *{$sym}{$type} == $ref;
+    }
+}
+
+sub MODIFY_CODE_ATTRIBUTES {
+    my ($pkg, $subref, @attrs) = @_;
+    my @bad = ();
+    foreach my $attr (@attrs) {
+        if ($attr =~ /^Filter\((.*)\)$/) {
+            my @tokens = split /\s+|\s*,\s*/, $1;
+            my $sym = _find_sym($pkg, $subref);
+            if ($sym) {
+                push @{ $filter{$_} }, *{$sym}{NAME} foreach @tokens;
+            }
+            else {
+                warn "Couldn't find symbol for $subref in $pkg\n" unless $sym;
+                push @bad, $attr;
+            }
+        }
+        else {
+            push @bad, $attr;
+        }
+    }
+    return @bad;
+}
 
 1;
 __END__
