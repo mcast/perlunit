@@ -15,6 +15,16 @@ usage; after all, many people will check out PerlUnit for the first
 time when they hear 1.0 being announced, and first impressions count
 for a lot.
 
+** $Error::Depth bug
+
+TestRunner.pm isn't reporting the source of failures properly, e.g.
+
+There was 1 failure:
+1) /nfs-home/adams/lib/perl5/site_perl/5.6.0/Test/Unit/Assertion/CodeRef.pm:20
+expected 'foo', got 'bar'
+
+Seems to happen for all the %assert_subs tests only.
+
 ** Rename Test::Unit::HarnessUnit and Test::Unit::UnitHarness
 
 Not sure what to yet, but we want to get these big API changes out of
@@ -141,6 +151,11 @@ about that. 8-)  -- mca
 Current thinking is to keep test-coverage tests away from the executed
 tests, mainly so you can have a script which draws a pretty chart of
 how well your code is tested. Adam has some code for this.
+
+** output STDOUT only if error
+
+Tie STDOUT via IO::Scalar to capture output from calls to print() etc.
+within test cases, and only print output if there's an error.
 
 * Personal TODO lists
 
