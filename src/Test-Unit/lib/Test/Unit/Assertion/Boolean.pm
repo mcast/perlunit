@@ -22,12 +22,12 @@ sub new {
 
 sub do_assertion {
     my $self = shift;
-    $$self or $self->fail( $_ ? $_[-1] : "expected TRUE, got FALSE");
+    $$self or $self->fail( @_ ? $_[-1] : "expected TRUE, got FALSE");
 }
 
 sub to_string {
     my $self = shift;
-    $$self ? 'TRUE' : 'FALSE';
+    ($$self ? 'TRUE' : 'FALSE') . ' boolean assertion';
 }
 
 1;
