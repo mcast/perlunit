@@ -77,7 +77,7 @@ sub load_test {
     print "  compile returned $package\n" if DEBUG;
     return unless $package;
     my $suite = load_test_suite($package) || load_test_case($package);
-    
+    die "`$target' was not a valid Test::Unit::Test\n" unless $suite;
     return $suite;
 }
 
