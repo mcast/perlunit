@@ -2,7 +2,7 @@
 // Default Web Page for groups that haven't setup their page yet
 // Please replace this file with your own website
 //
-// $Id: index.php,v 1.1 2001-02-19 23:20:20 mca-gdl Exp $
+// $Id: index.php,v 1.2 2001-02-19 23:58:52 mca-gdl Exp $
 //
 $headers = getallheaders();
 ?>
@@ -46,9 +46,18 @@ $headers = getallheaders();
   <TR>
     <TD>
       <CENTER><BR>
-      <H1>Welcome to http://<?php print $headers[Host]; ?>/</H1>
-      <P>We're Sorry but this Project hasn't yet uploaded their personal webpage yet.<BR>
-      Please check back soon for updates or visit <A href="http://sourceforge.net/">SourceForge</A></P><BR>
+      <H1>Welcome to http://perlunit.sourceforge.net/</H1>
+
+<P>We've found the Activate Homepages button in the Sourceforge dialog box.
+
+<p>The action is mostly in
+   <a href="http://sourceforge.net/projects/perlunit">the project
+   summary</a>
+
+<p>Most of the documentation lives in <code>POD</code> format in the
+   code, which is very convenient if the package is installed.
+   Hopefully it will be available here soon.
+
       </CENTER>
     </TD>
   </TR>
