@@ -4,22 +4,18 @@
 
 We were wondering how we should go about keeping track of the
 consensuses (sp?) we reached on the perlunit-devel mailing list.
-
 Matthew was all for a cumbersome set of tags so we could grep the list
-for "points".
+for "points".  Christian suggested a simple text file in CVS which we
+modify as appropriate.  This is a compromise - a simple text file
+marked up for use with emacs' "outline-mode".  Most of the active
+developers use emacs.
 
-Christian suggested a simple text file in CVS which we modify as
-appropriate.
+Issues currently being discussed on the list can be kept track of here
+by listing any suggestions made or conclusions which were reached.
+Once it's decided what needs to be done, the details should be moved
+to doc/TODO and someone will get on with implementing them.
 
-This is a compromise - a simple text file marked up for use with
-emacs' "outline-mode". I chose this because I know that at least 2/4
-active developers use emacs. Open to other suggestions of course.
-
-				-- MCA 27/2/2001
-
-I like this idea, but we should agree that all changes to this
-file happen in HEAD rather than any other branch, otherwise we're
-really going to be in trouble  -- Adam Spiers 7/11/2001
+Please only update this file on the main branch!
 
 ** Links back to the mailing list
 
@@ -136,91 +132,6 @@ the best practice. See the discussion in Damian Conway's Object Oriented Perl.
 * TODO lists
 
 Moved to doc/TODO.
-
-* Tests to add
-
-** PerlUnit selftests, Test::Unit::tests
-
-*** die errors that look like variable names  [mca]
-
-A test that fails with an error like
-
-  die '$lotsofdollars';
-
-and make sure it gets wrapped into an ExceptionError
-
-*** doing the right OOP thing in constructors and isa() checks
-
-Possibly a test that overrides the 'isa' method so Piers' fix to my
-patch
-
-  (back to using $exception->isa(C) instead of UNIVERSAL::isa($exception,C))
-
-can be exercised.
-
-Also Adam has patched some of the PerlUnit constructors to allow
-passing a classname instead of being invoked as a method.
-
-*** check for broken Error.pm overloading of exceptions [as]
-
-Older Error.pms don't do boolean overload, so
-
-  eval { ... };
-  if ($@) {
-    ...
-  }
-
-could break.  We should check for that.
-
-** Generic tests for users to include
-
-Matthew wrote some. Whether anyone else wants them remains to be seen.
-
-The potentially useful ones:
-
-*** test_SubsAllNeedTests
-
-Checks all subs in a module are tested. Take the code and put it
-somewhere else.
-
-*** test_PodChecker
-
-Look the sourcecode up in %INC and run it through the Pod::Checker
-(which spits out stuff to STDOUT regardless).
-
-*** test_HaveWarnings
-
-Check $^W .. a bit cheeky. I was actually after a check for
-strictness, after forgetting to use it in some module I broke off, but
-this is either tricky or impossible.
-
-[Impossible I believe. That's kind of the point of lexical scope after all
-   -- pdc]
-
-** Test coverage tests
-
-There was a big thread on this but it's someone else's turn to write
-about that. 8-)  -- mca
-
-Current thinking is to keep test-coverage tests away from the executed
-tests, mainly so you can have a script which draws a pretty chart of
-how well your code is tested. Adam has some code for this.
-
-* Keeping state
-
-It's not nice but we're doing it already, in an untidy way.
-
-Likely uses are 
-
- - backtrace quelledness (this goes away when we bin the backtrace)
- - (some) debug handlers
- - tagging tests (eg. "slow") for selective execution
-
-It should be stored per-run (in the Listener) not per suite or
-testcase.
-
-I think it should be locally modifiable otherwise it's too inflexible.
-
 
 * Packaging
 

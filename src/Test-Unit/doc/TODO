@@ -2,7 +2,10 @@ PerlUnit TODO
 =============
 
 Here's our roadmap.  It should give you an idea of what is planned,
-and in some cases when it's planned for and who's going to do it.
+and in some cases when it's planned for and/or who's going to do it.
+Only update this file on the main branch!
+
+See also doc/consensus.txt.
 
 * Before release 1.0
 
@@ -49,7 +52,7 @@ fixing.  Adam has an old patch for this.
 Or we could always be nasty and stop supporting < 5.6, best to avoid
 if we can though.
 
-* Nice to have
+* Nice to have before 1.0
 
 Some of these could be left until after 1.0.
 
@@ -66,6 +69,10 @@ Refactoring of runner classes to allow storing state in the runner.
 
 This paves the way for choosing which tests to skip in a given run;
 see next item.
+
+We could also use it for controlling debugging levels.
+
+
 
 ** Test filtering
 
@@ -84,9 +91,80 @@ Currently we have t/all_tests.t, which is clearly a misnomer, and we
 have some tests for the assertion code being run from that rather than
 from t/assert.t.
 
+* After 1.0
+
+** Tests to add
+
+*** PerlUnit selftests
+
+**** die errors that look like variable names  [mca]
+
+A test that fails with an error like
+
+  die '$lotsofdollars';
+
+and make sure it gets wrapped into an ExceptionError
+
+**** doing the right OOP thing in constructors and isa() checks
+
+Possibly a test that overrides the 'isa' method so Piers' fix to my
+patch
+
+  (back to using $exception->isa(C) instead of UNIVERSAL::isa($exception,C))
+
+can be exercised.
+
+Also Adam has patched some of the PerlUnit constructors to allow
+passing a classname instead of being invoked as a method.
+
+**** check for broken Error.pm overloading of exceptions [as]
+
+Older Error.pms don't do boolean overload, so
+
+  eval { ... };
+  if ($@) {
+    ...
+  }
+
+could break.  We should check for that.
+
+*** Generic tests for users to include
+
+Matthew wrote some. Whether anyone else wants them remains to be seen.
+
+The potentially useful ones:
+
+**** test_SubsAllNeedTests
+
+Checks all subs in a module are tested. Take the code and put it
+somewhere else.
+
+**** test_PodChecker
+
+Look the sourcecode up in %INC and run it through the Pod::Checker
+(which spits out stuff to STDOUT regardless).
+
+**** test_HaveWarnings
+
+Check $^W .. a bit cheeky. I was actually after a check for
+strictness, after forgetting to use it in some module I broke off, but
+this is either tricky or impossible.
+
+[Impossible I believe. That's kind of the point of lexical scope after all
+   -- pdc]
+
+*** Test coverage tests
+
+There was a big thread on this but it's someone else's turn to write
+about that. 8-)  -- mca
+
+Current thinking is to keep test-coverage tests away from the executed
+tests, mainly so you can have a script which draws a pretty chart of
+how well your code is tested. Adam has some code for this.
+
 * Personal TODO lists
 
-Moved here from consensus.txt.
+Moved here from doc/consensus.txt.
 
 ** Matthew
 
