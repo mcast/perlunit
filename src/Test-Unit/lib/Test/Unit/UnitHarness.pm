@@ -83,13 +83,18 @@ sub run {
 		$this = $1 if $1 > 0;
 		my $testcase=new Test::Unit::TestCase("$test case $this");
 		$result->start_test($testcase);
-		$result->add_failure(new Test::Unit::TestCase("$test case $this"),
-							 new Test::Unit::Exception($message));
+		$result->
+		  add_failure(
+					  Test::Unit::UnitHarness::TestCase
+					  ->new("$test case $this"),
+					  Test::Unit::UnitHarness::Exception
+					  ->new($message));
 		$result->end_test($testcase);
 		$message="";
       } elsif ($line=~/^ok\s*(\d*)/) {
 		$this = $1 if defined $1 and $1 ne "" and $1 > 0;
-		my $testcase=new Test::Unit::TestCase("$test case $this");
+		my $testcase=Test::Unit::UnitHarness::TestCase
+		  ->new("$test case $this");
 		$result->start_test($testcase);
 		$result->add_pass($testcase);
 		$result->end_test($testcase);
@@ -151,6 +156,36 @@ sub run_test {
 EOIC
 }
 
+package Test::Unit::UnitHarness::TestCase;
+use base qw(Test::Unit::TestCase);
+
+sub run_test {
+    my $self = shift;
+    my $class = ref($self);
+    my $method = $self->name();
+	$self->fail("This test is not restartable");
+}
+
+package Test::Unit::UnitHarness::Exception;
+use base qw(Test::Unit::Exception);
+use strict;
+
+sub new {
+    my $class = shift;
+    my ($message) = @_;
+	my $stacktrace = '';
+    
+    $message = '' unless defined($message);
+    $stacktrace = $class . ": Output from external test\n" 
+	  . $message . "\n";
+    
+    bless { stacktrace => $stacktrace }, $class;
+}
+
+sub stacktrace {
+    my $self = shift;
+    return $self->{stacktrace};
+}
 1;
 __END__
 

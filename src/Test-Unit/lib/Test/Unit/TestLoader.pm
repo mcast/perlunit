@@ -8,6 +8,11 @@ use Test::Unit::TestCase;
 use Test::Unit::UnitHarness;
 
 # should really do something in here about a local @INC.
+sub obj_load {
+  my $class=shift;
+  load(@_);
+}
+
 sub load {
   my $test_case=shift;
   my $suite;

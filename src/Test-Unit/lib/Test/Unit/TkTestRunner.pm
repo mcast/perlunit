@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2000 Brian Ewins
 #
-# $Id: TkTestRunner.pm,v 1.4 2000-02-23 21:26:59 ba22a Exp $
+# $Id: TkTestRunner.pm,v 1.5 2000-02-24 14:48:52 ba22a Exp $
 #
 
 
@@ -10,25 +10,345 @@ package Test::Unit::TkTestRunner;
 use base qw(Test::Unit::TestListener);
 use Tk;
 use Tk::BrowseEntry;
+use Tk::FileSelect;
 use Test::Unit::TestResult;
 use Benchmark;
 use strict;
 
-# The pass,fail, error methods are up front here 'cos they're
-# the ones that are callbacks for the test suite. The rest of them
-# are pretty much ignorable.
-# This doesnt resize properly yet, which sucks. The labelled
-# entry boxes are *awful*. I'm going to switch back to the packer 
-# and try to get the layout 'right' using frames.
+# New new new program layout :o) This is getting silly...
+# This time I've read the java.ui.TestRunner code...
+# Normal methods follow...
+sub new {
+  my $self=bless {}, shift;
+  return $self;
+}  
 
-### TestListener methods.
+sub about {
+  my $self=shift;
+  $self->{'frame'}->Dialog(-title=>"About PerlUnit",
+				-text=>"(C) 2000 Christian Lemburg, Brian Ewins",
+				-buttons=>["OK"])->Show();
+}
+
+sub add_error {
+  my $self=shift;
+  $self->{'number_of_errors'}=$self->{'result'}->error_count();
+  $self->append_failure("Error",@_);
+  $self->update();
+}
+
+sub add_failure {
+  my $self=shift;
+  $self->{'number_of_failures'}=$self->{'result'}->failure_count();
+  $self->append_failure("Failure",@_);
+  $self->update();
+}
+
+sub append_failure {
+  my ($self,$kind,$test,$exception)=@_;
+  my $message=$test->name();	#bad juju!!
+  if ($message) {
+	$kind.=":".substr($message,0,100);
+  }
+  $self->{'failure_list'}->insert("end",$message);
+  push @{$self->{'failed_tests'}},$test;
+  push @{$self->{'exceptions'}},$exception;
+}
 
 sub plan{
   my $self=shift;
   $self->{'planned'}=shift;
 }
 
+sub create_punit_menu {
+  my $self=shift;
+  my $main_menu=$self->{'frame'}->Menu(-type=>'menubar');
+  my $menu=$main_menu->Menu(-type=>'normal');
+  $menu->add('command',-label=>'File...',
+			 -command=>sub { 
+			   my $fs=$self->{'frame'}->FileSelect(); 
+			   $self->{'suite_name'}=$fs->Show();
+			 });
+  $menu->add('command',-label=>'About...',
+			 -command=>sub { $self->about() });
+  $menu->add('separator');
+  $menu->add('command',-label=>'Exit',
+			 -command=>sub { $self->{'frame'}->destroy(); });
+  $main_menu->add('cascade',
+			   -label=>'PerlUnit',-menu=>$menu);
+  return $main_menu;
+}
+
+sub create_menus {
+  my $self=shift;
+  $self->{'frame'}->configure(-menu=>$self->create_punit_menu());
+}
+
+sub create_test_result {
+  my $self=shift;
+  return new Test::Unit::TestResult();
+}
+
+sub create_ui {
+  my $self=shift;
+  # Lay the window out....
+  my $mw=$self->{'frame'}=MainWindow->new(-title=>'Run Test Suite',
+										 -width=>200);
+  # I need stretchy labels, Tk doesnt have them
+  my $mklabel=sub {
+	my (@args)=@_;
+	$self->{$args[0]}=$args[2];
+	$mw->Entry(-textvariable=>\$self->{$args[0]},
+			   -justify=>$args[1],
+			   -relief=>'flat',
+			   -state=>'disabled'); 
+  };
+  $self->create_menus();
+  $self->{'suite_label'}=$mw
+	->Label(-text=>'Enter the name of the TestCase:');
+  $self->{'suite_name'}="x";
+  $self->{'suite_field'}=$mw
+	->BrowseEntry(-textvariable=>\$self->{'suite_name'},
+				  -choices=>[]);
+  $self->{'add_text_listener'}=sub { $self->run_suite(); };
+  $self->{'run'}=$mw
+	->Button(-text=>'Run',
+			 -state=>'normal',
+			 -command=>sub { $self->run_suite(); });
+  
+  my $lab1=$mw->Label(-text=>"Runs:");
+  my $lab2=&{$mklabel}('number_of_runs','right',0);
+  my $lab3=$mw->Label(-text=>"Errors:");
+  my $lab4=&{$mklabel}('number_of_errors','right',0);
+  my $lab5=$mw->Label(-text=>"Failures:");
+  my $lab6=&{$mklabel}('number_of_failures','right',0);
+
+  $self->{'progress_bar'}=$mw->ArrayBar(-width=>20,
+										-length=>400,
+										-colors=>['green',
+												 'red',
+												 'grey']);
+  $self->{'failure_label'}=$mw
+	->Label(-text=>'Errors and Failures:',
+			-justify=>'left');
+  $self->{'failure_list'}=$mw
+		  ->Scrolled('Listbox',
+			   -scrollbars=>'e');
+  $self->{'failure_list'}->insert("end","","","","","","");
+  
+  $self->{'quit_button'}=$mw
+	->Button(-text=>'Quit',
+			 -command=>sub { $mw->destroy(); });
+
+  $self->{'rerun_button'}=$mw
+	->Button(-text=>'ReRun',
+			 -state=>'normal',
+			 -command=>sub { $self->rerun(); });
+  $self->{'show_error_button'}=$mw
+	->Button(-text=>'Show...',
+			 -state=>'normal',
+			 -command=>sub { $self->show_error_trace(); });
+
+
+  $self->{'status_line_box'}=
+	&{$mklabel}('status_line','left','Status line');
+  $self->{'status_line_box'}->configure(-relief=>'sunken',
+										-bg=>'grey');
+  
+  # Bindings go here, so objects are already defined.
+  $self->{'failure_list'}->bind('<Double-1>'=>sub {$self->show_error_trace()});
+
+  # all geometry management BELOW this point. Otherwise bindings
+  # wont work.
+  $self->{'suite_label'}
+  ->form(-left=>['%0'],-top=>['%0'],-fill=>'x');
+  $self->{'run'}
+  ->form(-right=>['%100'],
+		 -top=>[$self->{'suite_label'}]);
+  $self->{'suite_field'}	  
+  ->form(-left=>['%0'],
+		 -right=>[$self->{'run'}],
+		 -top=>[$self->{'suite_label'}],-fill=>'x');
+  
+  $lab1->form(-left=>['%0'],-top=>[$self->{'suite_field'},10]);
+  $lab2->form(-left=>[$lab1],-top=>[$self->{'suite_field'},10],-fill=>'x');
+  $lab3->form(-left=>[$lab2],-top=>[$self->{'suite_field'},10]);
+  $lab4->form(-left=>[$lab3],-top=>[$self->{'suite_field'},10],-fill=>'x');
+  $lab5->form(-left=>[$lab4],-top=>[$self->{'suite_field'},10]);
+  $lab6->form(-left=>[$lab5],-top=>[$self->{'suite_field'},10],-fill=>'x');
+
+
+  $self->{'progress_bar'}
+  ->form(-left=>['%0'],-top=>[$lab6,10]);
+  $self->{'failure_label'}
+  ->form(-left=>['%0'],
+		 -top=>[$self->{'progress_bar'},10],
+		 -right=>['%100']);
+  $self->{'failure_list'}
+  ->form(-left=>['%0'],
+		 -top=>[$self->{'failure_label'}],
+		 -right=>['%100'],
+		 -fill=>'both');
+  # this is in a wierd order 'cos Quit keeps trying to resize.
+  $self->{'quit_button'}
+  ->form(-right=>['%100'],
+		 -bottom=>['%100'],
+		 -fill=>'none');
+  $self->{'show_error_button'}
+  ->form(-right=>['%100'],
+		 -bottom=>[$self->{'quit_button'}],
+		 -top=>[$self->{'failure_list'}]);
+  $self->{'rerun_button'}
+  ->form(-right=>[$self->{'show_error_button'}],
+		 -top=>[$self->{'failure_list'}]);
+  
+  $self->{'status_line_box'}
+  ->form(-left=>['%0'],
+		 -right=>[$self->{'quit_button'}],
+		 -bottom=>['%100'],
+		 -top=>[$self->{'show_error_button'}],
+		 -fill=>'x');
+
+  $self->reset();
+  return $mw;
+}
+
+sub end_test {
+  my $self=shift;
+  $self->{'runs'}=$self->{'result'}->run_count();
+  $self->update();
+}
+
+sub get_test {
+  my $self=shift;
+  my $suite=$self->{'loader'}->obj_load(shift);
+  $self->{'status_line'}="";
+  return $suite;
+}
+
+sub is_error_selected {
+  my $self=shift;
+  ($self->{'listbox'}->curselection>=0)?1:0;
+}
+sub load_frame_icon {
+  # not implemented
+}
+
+sub main {
+  my $main=new Test::Unit::TkTestRunner()->start("Test::Unit::TestLoader",@_);
+}
+
+sub rerun {
+  # not implemented and not going to!
+  my $self=shift;
+  my $index=$self->{'failure_list'}->curselection;
+  return if ($index<0);
+  my $test=$self->{'failed_tests'}->[$index];
+  #if (!$test->isa("Test::Unit::TestCase")) {
+	$self->show_status("Could not reload test.");
+  #}
+  # Not sure how to do this...
+}
+
+sub reset {
+  my $self=shift;
+  $self->{'number_of_errors'}=0;
+  $self->{'number_of_failures'}=0;
+  $self->{'number_of_runs'}=0;
+  $self->{'planned'}=0;
+  $self->{'failure_list'}->delete(0,"end");
+  $self->{'exceptions'}=[];
+  $self->{'failed_tests'}=[];
+  $self->{'progress_bar'}->value(0,0,1);
+}
+
+sub run {
+  my $self=shift;
+  $self->run_suite();
+}
+
+sub run_failed {
+  my $self=shift;
+  # not implemented
+}
+
+sub run_suite {
+  my $self=shift;
+  my $suite;
+  if (defined($self->{'runner'})) {
+	$self->{'result'}->stop();
+  } else {
+	$self->add_to_history();
+	$self->{'run'}->configure(-text=>"Stop");
+	$self->show_info("Initializing...");
+	$self->reset();
+	$self->show_info("Load Test Case...");
+	eval {
+	  $suite=$self->get_test($self->{'suite_name'});
+	};
+	if ($@ or !$suite) {
+	  $suite=undef;
+	  $self->show_status("Could not load test!");
+	}
+	if ($suite) {
+	  $self->{'runner'}=1;
+	  $self->{'result'}=$self->create_test_result();
+	  $self->{'result'}->add_listener($self);
+	  $self->show_info("Running...");
+	  $self->{'start_time'}=new Benchmark();
+	  $suite->run($self->{'result'});
+	  if ($self->{'result'}->should_stop()) {
+		$self->show_status("Stopped");
+	  } else {
+		$self->{'finish_time'}=new Benchmark();
+		$self->{'run_time'}=timediff($self->{'finish_time'},
+									 $self->{'start_time'});
+		$self->show_info("Finished: ".timestr($self->{'run_time'},'nop'));
+	  }
+	}
+	$self->{'runner'}=undef;
+	$self->{'result'}=undef;
+	$self->{'run'}->configure(-text=>"Run");
+  }
+}
+
+sub show_error_trace {
+  # pop up a text dialog containing the details.
+  my $self=shift;
+  my $dialog=$self->{'frame'}->DialogBox(-title=>'Details',-buttons=>['OK']);
+  my $text=$dialog->add("Scrolled","ROText", -width=>80, -height=>20)->pack;
+  $text->insert("end",$self->{'exceptions'}
+				->[$self->{'failure_list'}->curselection]
+				->stacktrace());
+  $dialog->Show();
+}
+
+sub show_info {
+  my $self=shift;
+  $self->{'status_line'}=shift;
+  $self->{'status_line_box'}->configure(-bg=>'grey');
+}
+sub show_status {
+  my $self=shift;
+  $self->{'status_line'}=shift;
+  $self->{'status_line_box'}->configure(-bg=>'red');
+}
+sub start {
+  my $self=shift;
+  $self->{'loader'}=shift;
+  my (@args)=@_;
+  my $mw=$self->create_ui();
+  if (@args) {
+	$self->{'suite_name'}=shift @args;
+  }
+  MainLoop;
+}
+
 sub start_test {
+  my $self=shift;
+  my $test=shift;
+  $self->{'number_of_runs'}=$self->{'result'}->run_count();
+  $self->show_info("Running: ".$test->name());
 }
 
 sub add_pass {
@@ -36,138 +356,6 @@ sub add_pass {
   my ($test,$exception)=@_;
   $self->update();
 }
-
-sub add_failure {
-  my $self=shift;
-  $self->add_message(@_);
-  $self->update();
-}
-
-sub add_error {
-  my $self=shift;
-  $self->add_message(@_);
-  $self->update();
-}
-
-sub end_test {
-}
-
-# Normal methods follow...
-sub new {
-  my $self=bless {}, shift;
-  # fill in the test name from the command line if possible.
-  $self->{'testname'}=shift; 
-  map {$self->{$_}=0} 
-  qw(run_count start history_size planned);
-  $self->{'status'}='STOPPPED';
-  $self->{'result'}=new Test::Unit::TestResult();
-  $self->{'history'}=[];
-  # Lay the window out....
-  my $main=MainWindow->new(-title=>'PerlUnit Test Harness');
-  my $history_list=$main->
-    BrowseEntry(-label=>"Test name",
-				-width=>40,
-				-variable=>\$self->{'testname'},
-				-listcmd=> sub {$self->populate_history();});
-  $history_list->form(-left=>['%0'],-top=>['%0']);
-  my $btn_run=$main->Button(-text => "Run",
-		-command => sub {$self->run()}
-	       )
-	->form(-right=>['%100'],-top=>['%0']);
-  my @common_opts=(-width=>12, 
-			 -relief=>'flat',
-			 -justify=>'left');
-  my $prev_widget='%0';
-  my $prev_row=$history_list;
-  foreach my $widget ( 
-					  $main->Label(-text=>'Runs:',@common_opts),
-					  $self->{'runs'}=
-					  $main->Label(-text=> '0' ,@common_opts),
-					  $main->Label(-text=>'Passed:',@common_opts),
-					  $self->{'passes'}=
-					  $main->Label(-text=>'0',@common_opts)
-					 ) {
-	$widget->form(-left=>[$prev_widget],-top=>[$prev_row]);
-	$prev_widget=$widget;
-  }
-  $prev_row=$prev_widget;
-  $prev_widget='%0';  
-  foreach my $widget ( 
-					  $main->Label(-text=>'Failed:',@common_opts),
-					  $self->{'failures'}=
-					  $main->Label(-text=>'0',@common_opts),
-					  $main->Label(-text=>'Errors:',@common_opts),
-					  $self->{'errors'}=
-					  $main->Label(-text=>'0',@common_opts)
-					 ) {
-	$widget->form(-left=>[$prev_widget],-top=>[$prev_row]);
-	$prev_widget=$widget;
-  }
-  my $gauge=$main
-	->ArrayBar(-width=>30,
-			   -length=>400,
-			   -relief=>"sunken",
-			   -variable => [0,0,0],
-			   -colors=> ['green','red','gray55'],
-  			   -borderwidth=>2
-			  )
-	  ->form(-left=>['%0'],-top=>[$prev_widget]);
-  my $listbox=$main
-	->Scrolled('Listbox',
-			   -scrollbars=>'e',
-			   -width=>60,
-			   -height=>15);
-  $listbox->bind('<Double-1>'=>sub {$self->view_details()});
-  $listbox->form(-fill=>'both',-top=>[$gauge]);
-  my $btn_stop=$main
-	->Button(-text => 'Stop',
-			 -command => sub { $self->cancel() }
-			)
-	  ->form(-left=>['%0'],-top=>[$listbox]);
-  my $btn_view=$main
-	->Button(-text => 'View Details',
-			 -command => sub {$self->view_details()}
-			)
-	  ->form(-left=>[$btn_stop],-top=>[$listbox]);
-  my $btn_quit=$main
-	->Button(-text => 'Quit',
-			 -command => [$main => 'destroy']
-			)
-	  ->form(-right=>['%100'],-top=>[$listbox]);
-  my $lab_time=$main
-	->Entry(
-			-text=>\$self->{'elapsed'},
-			-state=>'disabled',
-			-width=>50, 
-			-relief=>'raised')
-	  ->form(-right=>['%100'],-top=>[$btn_quit]);
-  my $lab_status=$main
-	->Entry(
-			-text=>\$self->{'status'},
-			-state=>'disabled',
-			-width=>10, 
-			-relief=>'raised')
-	  ->form(-left=>['%0'],-top=>[$btn_quit]);
-  $self->{'main'}=$main;
-  $self->{'gauge'}=$gauge;
-  $self->{'listbox'}=$listbox;
-  $self->{'history_list'}=$history_list;
-  return $self;
-}  
-
-sub add_message {
-  my $self=shift;
-  my ($test,$exception)=@_;
-  $self->{'listbox'}->insert("end",$test->name());
-  push @{$self->{'detail'}},$exception;
-}
-
-sub clear_messages {
-  my $self=shift;
-  $self->{'listbox'}->delete(0,"end");
-  $self->{'detail'}=[];
-}
-
 
 sub update {
   my $self=shift;
@@ -179,74 +367,31 @@ sub update {
   my $bad=$failures+$errors;
   #$passes=$result->run_count();
   my $todo=($total>$self->{'planned'})?0:$self->{'planned'}-$total;
-  $self->{'runs'}->configure('-text',$self->{'run_count'});
-  $self->{'passes'}->configure('-text',$passes);
-  $self->{'failures'}->configure('-text',$failures);
-  $self->{'errors'}->configure('-text',$errors);
-  $self->{'gauge'}->value($passes,$bad,$todo);
-  $self->{'elapsed'}=timestr(timediff(new Benchmark(),$self->{'start'}),'nop');
+  $self->{'progress_bar'}->value($passes,$bad,$todo);
   # force entry into the event loop.
   # this makes it nearly like its threaded...
   #sleep 1;
-  if ($self->{'status'} eq 'STOPPING') {
-	$self->{'status'}='STOPPED';
-	die "Cancelled"; #fix this later.
+  $self->{'frame'}->update();
+}
+
+sub add_to_history {
+  my $self=shift;
+  my $new_item=$self->{'suite_name'};
+  my $h=$self->{'suite_field'};
+  my $choices=$h->cget('-choices');
+  my @choices=();
+  if (ref($choices)) {
+	@choices=@{$h->cget('-choices')};
+  } elsif ($choices) {
+	# extraordinarily bad - choices is a scalar if theres
+	# only one, and undefined if there are none!
+	@choices=($h->cget('-choices'));
   }
-  $self->{'main'}->update();
-}
-
-sub cancel {
-  my $self=shift;
-  if ($self->{'status'} eq 'RUNNING') {
-	$self->{'status'} = 'STOPPING';
+  @choices=($new_item,grep {$_ ne $new_item} @choices);
+  if (@choices>10) {
+	@choices=@choices[0..9];
   }
-}
-
-sub run {
-  my $self=shift;
-  # if the test just run isn't the one at the top of the list,
-  # then add it.
-  $self->{'history'}=[$self->{'testname'},
-					  grep { defined $_ and $_ ne $self->{'testname'}} 
-					  (@{$self->{'history'}})[0..9]];
-  $self->{'run_count'}++;
-  $self->clear_messages();
-  $self->{'start'}=new Benchmark();
-
-  $self->update();
-  $self->{'suite'}=Test::Unit::TestLoader::load($self->{'testname'});
-  $self->{'result'}=Test::Unit::TestResult->new();
-  $self->{'planned'}=$self->{'suite'}->count_test_cases();
-  $self->{'result'}->add_listener($self);
-  $self->{'start'}=new Benchmark();
-  $self->{'status'}='RUNNING';
-  $self->{'suite'}->run($self->{'result'});
-  $self->{'status'}='STOPPED';
-  $self->update();
-}
-
-sub populate_history {
-  my $self=shift;
-  my $h=$self->{'history_list'};
-  $h->delete(0,$self->{'history_size'});
-  foreach (@{$self->{'history'}}) {
-    $h->insert("end",$_);
-  }
-  $self->{'history_size'}=scalar @{$self->{'history'}};
-}
-
-sub view_details {
-  # pop up a text dialog containing the details.
-  my $self=shift;
-  my $dialog=$self->{'main'}->DialogBox(-title=>'Details',-buttons=>['OK']);
-  #my $frame=$dialog->add();
-  my $text=$dialog->add("Scrolled","ROText", -width=>80, -height=>20)->pack;
-#  $text->insert("end",$self->{'detail'}->[$self->{'listbox'}->curselection]
-#			   ->stacktrace());
-  # again assumption is that Exception is overloaded.
-  $text->insert("end",$self->{'detail'}->[$self->{'listbox'}->curselection]
-			   ->stacktrace());
-  $dialog->Show();
+  $h->configure(-choices=>\@choices);
 }
 
 package Tk::ArrayBar;
@@ -266,59 +411,59 @@ use base qw(Tk::Derived Tk::Canvas);
 Construct Tk::Widget 'ArrayBar';
 
 sub ClassInit {
-    my ($class,$mw) = @_;
-
-    $class->SUPER::ClassInit($mw);
-
-    $mw->bind($class,'<Configure>', ['_layoutRequest',1]);
+  my ($class,$mw) = @_;
+  
+  $class->SUPER::ClassInit($mw);
+  
+  $mw->bind($class,'<Configure>', ['_layoutRequest',1]);
 }
 
 
 sub Populate {
-    my($c,$args) = @_;
-
-    $c->ConfigSpecs(
-	-width    => [PASSIVE => undef, undef, 0],
-	'-length' => [PASSIVE => undef, undef, 0],
-	-padx     => [PASSIVE => 'padX', 'Pad', 0],
-	-pady     => [PASSIVE => 'padY', 'Pad', 0],
-	-colors   => [PASSIVE => undef, undef, undef],
-	-relief	  => [SELF => 'relief', 'Relief', 'sunken'],
-	-value    => [METHOD  => undef, undef, undef],
-	-variable => [PASSIVE  => undef, undef, [0]],
-	-anchor   => [METHOD  => 'anchor', 'Anchor', 'w'],
-	-resolution
-		  => [PASSIVE => undef, undef, 1.0],
-	-highlightthickness
-		  => [SELF => 'highlightThickness','HighlightThickness',0],
-	-troughcolor
-		  => [PASSIVE => 'troughColor', 'Background', 'grey55'],
-    );
-	
-    _layoutRequest($c,1);
-    $c->OnDestroy(['Destroyed' => $c]);
+  my($c,$args) = @_;
+  
+  $c->ConfigSpecs(
+				  -width    => [PASSIVE => undef, undef, 0],
+				  '-length' => [PASSIVE => undef, undef, 0],
+				  -padx     => [PASSIVE => 'padX', 'Pad', 0],
+				  -pady     => [PASSIVE => 'padY', 'Pad', 0],
+				  -colors   => [PASSIVE => undef, undef, undef],
+				  -relief	  => [SELF => 'relief', 'Relief', 'sunken'],
+				  -value    => [METHOD  => undef, undef, undef],
+				  -variable => [PASSIVE  => undef, undef, [0]],
+				  -anchor   => [METHOD  => 'anchor', 'Anchor', 'w'],
+				  -resolution
+				  => [PASSIVE => undef, undef, 1.0],
+				  -highlightthickness
+				  => [SELF => 'highlightThickness','HighlightThickness',0],
+				  -troughcolor
+				  => [PASSIVE => 'troughColor', 'Background', 'grey55'],
+				 );
+  
+  _layoutRequest($c,1);
+  $c->OnDestroy(['Destroyed' => $c]);
 }
 
 sub anchor {
-    my $c = shift;
-    my $var = \$c->{Configure}{'-anchor'};
-    my $old = $$var;
-
-    if(@_) {
+  my $c = shift;
+  my $var = \$c->{Configure}{'-anchor'};
+  my $old = $$var;
+  
+  if(@_) {
 	my $new = shift;
 	croak "bad anchor position \"$new\": must be n, s, w or e"
-		unless $new =~ /^[news]$/;
+	  unless $new =~ /^[news]$/;
 	$$var = $new;
-    }
-
-    $old;
+  }
+  
+  $old;
 }
 
 sub _layoutRequest {
-    my $c = shift;
-    my $why = shift;
-    $c->afterIdle(['_arrange',$c]) unless $c->{'layout_pending'};
-    $c->{'layout_pending'} |= $why;
+  my $c = shift;
+  my $why = shift;
+  $c->afterIdle(['_arrange',$c]) unless $c->{'layout_pending'};
+  $c->{'layout_pending'} |= $why;
 }
 
 sub _arrange {
@@ -341,7 +486,7 @@ sub _arrange {
 	my $bw = $c->cget('-borderwidth');
 	$h = $c->pixels($c->cget('-length')) || 40;
 	$w = $c->pixels($c->cget('-width'))  || 20;
-		
+	
 	($w,$h) = ($h,$w) if $horz;
 	$c->GeometryRequest($w,$h);
 	$c->parent->update;
@@ -359,7 +504,7 @@ sub _arrange {
   # at this point we have the length and width of the
   # bar independent of orientation and padding.
   # blocks and gaps are not used.
-
+  
   # unlike progressbar I need to redraw these each time.
   # actually resizing them might be better...
   my $colors = $c->{Configure}{'-colors'} || ['green','red','grey55'];	
@@ -382,30 +527,30 @@ sub _arrange {
 	my $ud=$horz?$width:$size;
 	my $lr=$horz?$size:$width;
 	$c->{'cover'}->[$index] = 
-		$c->createRectangle($curx,$cury,$curx+$lr-1,$cury+$ud-1,
-							-fill =>  $colors->[$index],
-							-width => 1,
-							-outline => 'black');
+	  $c->createRectangle($curx,$cury,$curx+$lr-1,$cury+$ud-1,
+						  -fill =>  $colors->[$index],
+						  -width => 1,
+						  -outline => 'black');
 	$curx+=$horz?$lr:0;
 	$cury+=$horz?0:$ud;
   }
 }
 
 sub value {
-    my $c = shift;
-    my $val = $c->cget('-variable');
-
-    if(@_) {
-	  $c->configure(-variable=>[@_]);
-	  _layoutRequest($c,2);
-    }
-
+  my $c = shift;
+  my $val = $c->cget('-variable');
+  
+  if(@_) {
+	$c->configure(-variable=>[@_]);
+	_layoutRequest($c,2);
+  }
+  
 }
 
 sub Destroyed
-{
- my $c = shift;   
- my $var = delete $c->{'-variable'};
+  {
+	my $c = shift;   
+	my $var = delete $c->{'-variable'};
  untie $$var if (defined($var) && ref($var))
 }
 
