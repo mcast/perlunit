@@ -6,59 +6,48 @@ use base qw(Test::Unit::Test);
 use Test::Unit::TestCase;
 
 use Carp;
-# helper subroutines
 
-# determine if a string is the name of a valid package. There is no
-# valid way of finding out if a package is a class.
-
-sub is_a_class {
-    my $name = shift;
-    # Check if the package exists already.
-    {
-        no strict 'refs';
-        return 1 if keys %{"$name\::"};
-    }
-    # No? Try 'require'ing it
-    eval "require $name";
-    warn $@, "\n" if DEBUG;
-    return if $@;
-    return 1;
-}
-
-sub is_a_test_case_class {
-    my $pkg = shift;
-    is_a_class($pkg) || return;
-    return eval {$pkg->isa("Test::Unit::TestCase")};
+sub empty_new {
+    my $this = shift;
+    my $classname = ref $this || $this;
+    my $name = shift || '';
+    
+    my $self = {
+        _Tests => [],
+        _Name => $name,
+    };
+    bless $self, $classname;
+    
+    print ref($self), "::empty_new($name) called\n" if DEBUG;
+    return $self;
 }
 
 sub new {
     my $class = shift;
-    my $classname = shift || ''; # Avoid a warning
-    eval "require $classname" if $classname;
-    
-    return $classname->suite if eval {$classname->can('suite')};
-    
-    my $self = {
-	    _Tests => [],
-	    _Name => $classname,
-    };
-    bless $self, $class;
-    warn ref($self) . "::new($classname) called\n" if DEBUG;
-    $self->build_suite($classname) if $classname;
+    my $testcase_class = shift || ''; # Avoid a warning
+    warn ref($class) . "::new($testcase_class) called\n" if DEBUG;
+
+    my $self = $class->empty_new();
+
+    if ($testcase_class) {
+        # We're extracting test methods from a testcase
+        $self->extract_testcases($testcase_class);
+    }
+
     return $self;
 }
 
 sub suite {
-    my $self = shift;
-    croak "Test::Unit::TestSuite::suite is not a class method" unless ref $self;
-    return $self;
+    my $class = shift;
+    croak "suite() is not an instance method" if ref $class;
+    $class->new(@_);
 }
 
-sub build_suite {
+sub extract_testcases {
     my $self = shift;
     my $classname = shift;
 
-    is_a_class($classname) || die "Could not find class $classname";
+    is_a_class($classname) or die "Could not find class $classname";
     
     # it is a class, create a suite with its tests
     # ... and that of its ancestors, if they are Test::Unit::TestCase
@@ -67,33 +56,25 @@ sub build_suite {
         return $self;
     }
 
-    foreach my $method ($classname->list_tests) {
+    my $added = 0;
+    foreach my $method ($classname->list_tests()) {
         if ( my $a_class_instance = $classname->new($method) ) {
             $self->add_test($a_class_instance);
+            $added++;
         }
         else {
-            $self->add_warning("build_suite: Couldn't create a $classname object");
+            $self->add_warning("extract_testcases: Couldn't create a $classname object");
         }
     }
 
-    $self->add_warning("No tests found in $classname")
-        unless @{$self->tests};
-    return $self;
-}
+    $self->add_warning("No tests found in $classname") unless $added;
 
-sub empty_new {
-    my $class = shift;
-    my ($name) = @_;
-    
-    my $self = $class->new;
-    $self->name($name);
-    print ref($self), "::empty_new($name) called\n" if DEBUG;
     return $self;
 }
 
 sub name {
     my $self = shift;
-    $self->{_Name} = shift if @_;
+    croak "Override name() in subclass to set name\n" if @_;
     return $self->{_Name};
 }
 
@@ -119,6 +100,10 @@ sub count_test_cases {
 sub run {
     my $self = shift;
     my ($result, $runner) = @_;
+
+    $self->add_warning("No tests found in " . $self->name())
+        unless @{ $self->tests() };
+
     for my $t (@{$self->tests()}) {
         if ($runner && $self->filter_test($runner, $t)) {
             printf "skipping %s\n", $t->name() if DEBUG;
@@ -174,6 +159,31 @@ sub warning {
     my ($message) = @_;
     Test::Unit::TestSuite::_warning->new($message);
 }
+
+# helper subroutines
+
+# determine if a string is the name of a valid package. There is no
+# valid way of finding out if a package is a class.
+
+sub is_a_class {
+    my $name = shift;
+    # Check if the package exists already.
+    {
+        no strict 'refs';
+        return 1 if keys %{"$name\::"};
+    }
+    # No? Try 'require'ing it
+    eval "require $name";
+    warn $@, "\n" if DEBUG;
+    return $@ ? 0 : 1;
+}
+
+sub is_a_test_case_class {
+    my $pkg = shift;
+    is_a_class($pkg) || return;
+    return eval {$pkg->isa("Test::Unit::TestCase")};
+}
+
 
 package Test::Unit::TestSuite::_warning;
 

@@ -24,13 +24,6 @@ the way before we bump the version number.
 
 Piers is doing this imminently.
 
-** Change suite-building API so that MySuite really ISA TestSuite.
-
-Suites get instantiated via new() rather than the current suite()
-nonsense.  This is a *big* API change, but Adam's utterly convinced we
-need to do it.  He also thinks it should be possible to keep backwards
-compatibility.
-
 ** Stop `make test' failing when DEBUG is enabled?
 
 ** Deal with broken base.pm in older Perls
