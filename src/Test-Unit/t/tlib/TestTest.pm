@@ -203,7 +203,7 @@ sub test_assert_on_matching_regex {
     my $matching_regex = $self->make_dummy_testcase
         (sub {
              my $self = shift;
-             $self->assert('foo' =~ /foo/, 'foo matches foo (boolean)');
+             $self->assert(scalar('foo' =~ /foo/), 'foo matches foo (boolean)');
              $self->assert(qr/foo/, 'foo', 'foo matches foo (Assertion::Regex)');
          });
     $self->verify_success($matching_regex);
