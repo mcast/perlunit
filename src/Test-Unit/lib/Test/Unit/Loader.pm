@@ -115,14 +115,14 @@ Test::Unit::Loader - unit testing framework helper class
 
 =head1 SYNOPSIS
 
-This class is not intended to be used directly 
+This class is not intended to be used directly.
 
 =head1 DESCRIPTION
 
-This class is used by the framework to load testcase classes into the
-runtime environment. It handles testcase class names (that is, classes
-inheriting from Test::Unit::TestCase), Test::Harness style test files,
-and directory names.
+This class is used by the framework to load test classes into the
+runtime environment.  It handles test case and test suite classes
+(referenced either via their package names or the files containing
+them), Test::Harness style test files, and directory names.
 
 =head1 AUTHOR
 
