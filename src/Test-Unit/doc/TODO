@@ -35,20 +35,6 @@ nonsense.  This is a *big* API change, but Adam's utterly convinced we
 need to do it.  He also thinks it should be possible to keep backwards
 compatibility.
 
-** Fix error message from failed compilation of suites.
-
-If a testcase fails compilation due to a failed `use Module', you
-currently get
-
-  (This error is expected) Suite class Tests::GGconfig not found:
-  Can't locate Module in @INC ...
-
-rather than just
-
-  Can't locate Module in @INC ...
-  
-`Failed to load ...'; this needs fixing.  Adam has a patch for this.
-
 ** Stop `make test' failing when DEBUG is enabled?
 
 ** Deal with broken base.pm in older Perls
