@@ -2,13 +2,16 @@ package Test::Unit::TestCase;
 use strict;
 use constant DEBUG => 0;
 
+use Test::Unit::Test;
 use base qw(Test::Unit::Test);
 
 use Test::Unit::ExceptionFailure; 
 use Test::Unit::ExceptionError; 
 use Test::Unit::TestResult;
 
-use vars '@ISA';
+use Devel::Symdump;
+    
+use Error qw/:try/;
 
 sub new {
     my $class = shift;
@@ -44,19 +47,16 @@ sub run_bare {
     my $self = shift;
     print ref($self) . "::run_bare() called\n" if DEBUG;
     $self->set_up();
-    eval {
-	$self->run_test();
-    };
-    my $exception = $@;
-    $self->tear_down();
-    if ($exception) {
-	print ref($self) . "::run_bare() propagating exception\n" if DEBUG;
-	if (!ref($exception) ||
-	    ! eval {$exception->isa("Test::Unit::ExceptionFailure")} ) {
-	    $exception = Test::Unit::ExceptionError->new($exception);
-	}
-	die $exception; # propagate exception
+    try {
+        $self->run_test();
     }
+    catch Error::Simple with {
+        throw Test::Unit::ExceptionError->make_from_error_simple(shift, $self);
+    }
+    finally {
+        # Only gets called if 'set_up' succeed
+        $self->tear_down;
+    };
 }
 
 sub run_test {
@@ -92,11 +92,10 @@ sub list_tests {
         push @tests, @{"$class\::TESTS"};
     }
     else {
-        push @tests, grep { /^test/ && $class->can($_) }
-            keys %{"$class\::"};
+        my $st = Devel::Symdump->new($class);
+        push @tests, map {/::(test[^:]*$)/ ? $1 : () } $st->functions;
     }
-    push @tests, map {$_->can('list_tests') ? $_->list_tests : ()}
-        @{"$class\::ISA"};
+    push @tests, map {$_->can('list_tests') ? $_->list_tests : () } @{"$class\::ISA"};
     my %tests = map {$_ => ''} @tests if @tests;
     return keys %tests;
 }

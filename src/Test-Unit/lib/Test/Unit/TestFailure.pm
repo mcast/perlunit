@@ -2,6 +2,8 @@ package Test::Unit::TestFailure;
 use strict;
 use constant DEBUG => 0;
 
+use overload '""' => 'to_string';
+
 sub new {
     my $class = shift;
     my ($test, $exception) = @_;
@@ -23,8 +25,9 @@ sub thrown_exception {
 
 sub to_string {
     my $self = shift;
-    return $self->failed_test()->to_string() . "\n" .
-	$self->thrown_exception()->to_string();
+    my $failed_test = $self->failed_test;
+    my $exception = $self->thrown_exception;
+    "$failed_test\n$exception";
 }
 
 1;

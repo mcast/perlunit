@@ -29,7 +29,7 @@ sub run {
 
 sub to_string {
     my $self = shift;
-	return $self->{_fTest}->to_string();
+    "$self->{_fTest}";
 }
 
 sub get_test {

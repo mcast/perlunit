@@ -5,5 +5,5 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
     'NAME'	   => 'Test::Unit',
-    'VERSION_FROM' => 'lib/Test/Unit.pm', # finds $VERSION
+    'VERSION_FROM' => 'lib/Test/Unit/Test.pm', # finds $VERSION
 );

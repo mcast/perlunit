@@ -3,11 +3,7 @@ package Test::Unit::Assertion::CodeRef;
 use strict;
 use base qw/Test::Unit::Assertion/;
 
-require Test::Unit::ExceptionFailure;
-
 use Carp;
-
-use overload '""' => \&to_string;
 
 my $deparser;
 
@@ -20,17 +16,17 @@ sub new {
 
 sub do_assertion {
     my $self = shift;
-    my $possible_object = shift;
+    my $possible_object = $_[0];
     if (eval {$possible_object->isa('UNIVERSAL')}) {
         # It's an object!
-        $possible_object->$$self(@_) ||
+        $possible_object->$$self(@_[1..$#_]) ||
             $self->fail("$possible_object\->{$self}(" .
-                        join (", ", @_) .
+                        join (", ", map {defined($_) ? $_ : '<undef>'} @_) .
                         ") failed" . ($@ ? " with error $@." : "."));
     }
     else {
-        $$self->($possible_object, @_) ||
-            $self->fail("{$self}->(" . join(', ', $possible_object, @_) .
+        $$self->(@_) ||
+            $self->fail("{$self}->(" . join(', ', map {defined($_) ? $_ : '<undef>'} @_) .
                         ") failed" . ($@ ? " with error $@." : "."));
     }
 }

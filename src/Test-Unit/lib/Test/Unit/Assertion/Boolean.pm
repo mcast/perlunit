@@ -8,6 +8,8 @@ use Test::Unit::Assertion;
 
 use base 'Test::Unit::Assertion';
 
+use overload 'bool' => sub {$ {$_[0]}};
+
 sub new {
     my $class = shift;
     my $bool  = shift;
@@ -19,6 +21,11 @@ sub new {
 sub do_assertion {
     my $self = shift;
     $self->fail(@_) unless $$self;
+}
+
+sub to_string {
+    my $self = shift;
+    $$self ? 'TRUE' : 'FALSE';
 }
 
 1;

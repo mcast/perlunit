@@ -4,13 +4,12 @@ use strict;
 
 require Test::Unit::ExceptionFailure;
 
+use overload '""' => 'to_string';
+
 sub fail {
     my $self = shift;
-    local $^W;
-    my $message = join '', @_;
-    my $exception = Test::Unit::ExceptionFailure->new($message);
-    $exception->hide_backtrace;
-    die $exception;
+    Test::Unit::ExceptionFailure->throw(-object => $self,
+                                        -text => join '', @_);
 }
 
 sub do_assertion {

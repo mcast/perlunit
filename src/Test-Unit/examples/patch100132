@@ -35,4 +35,5 @@ sub tear_down {
 
 
 create_suite( 'Experimental::Sample' );
+create_suite;
 run_suite();

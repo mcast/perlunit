@@ -1,35 +1,19 @@
 package Test::Unit::Exception;
+use Carp;
 use strict;
 use constant DEBUG => 0;
 
-sub new {
-    my $pkg = shift;
-    my $class = ref $pkg || $pkg;
-    my ($message) = @_;
-    
-    $message = '' unless defined($message);
-    $message = "$class:\n$message\n";
-
-    my $i = 0;
-    my $stacktrace = '';
-    my ($pack, $file, $line, $subname, $hasargs, $wantarray);
-    
-    while (($pack, $file, $line, $subname, 
-	    $hasargs, $wantarray) = caller(++$i)) {
-	$stacktrace .= "Level $i: in package '$pack', file '$file', at line '$line', sub '$subname'\n";
-    }
-    
-    bless { _message => $message, _stacktrace => $stacktrace }, $class;
-}
+use Error;
+use base 'Error';
 
 sub stacktrace {
     my $self = shift;
-    return $self->{_stacktrace};
+    warn "Stacktrace is deprecated and no longer works"
 }
 
 sub get_message {
     my $self = shift;
-    return $self->{_message};
+    $self->text;
 }
 
 sub hide_backtrace {
@@ -37,10 +21,16 @@ sub hide_backtrace {
     $self->{_hide_backtrace} = 1;
 }
 
+sub stringify {
+    my $self = shift;
+    my $str .= "${\($self->object)} " if $self->object;
+    $str    .= ($self->text || 'Died');
+    return $str;
+}
+
 sub to_string {
     my $self = shift;
-    return $self->get_message() if $self->{_hide_backtrace};
-    return $self->get_message() . $self->stacktrace();
+    $self->stringify;
 }
 
 1;

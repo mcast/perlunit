@@ -4,6 +4,10 @@ use constant DEBUG => 0;
 
 use base qw(Test::Unit::Assert);
 
+use vars '$VERSION';
+
+$VERSION = '0.2';
+
 use Carp;
 
 sub count_test_cases {

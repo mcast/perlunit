@@ -1,6 +1,7 @@
 package Test::Unit::Assertion::Regexp;
 
 use strict;
+use Test::Unit::Assertion;
 use base qw/Test::Unit::Assertion/;
 
 sub new {
@@ -15,6 +16,11 @@ sub do_assertion {
     my $target = shift;
     $target =~ $$self ||
         $self->fail("'$target' did not match /$$self/");
+}
+
+sub to_string {
+    my $self = shift;
+    "$$self";
 }
 
 1;

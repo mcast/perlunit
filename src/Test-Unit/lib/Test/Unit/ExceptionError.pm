@@ -2,6 +2,14 @@ package Test::Unit::ExceptionError;
 use strict;
 use base qw(Test::Unit::Exception);
 
+sub make_from_error_simple {
+    my $self = shift;
+    my $ex = shift;
+    my $object = shift;
+    $ex->{'-object'} = $object;
+    bless $ex, ref($self) || $self;
+}
+
 1;
 __END__
 

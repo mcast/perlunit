@@ -4,18 +4,14 @@ use constant DEBUG => 0;
 
 use base qw(Test::Unit::TestDecorator);
 
-sub new {
-	my $self = shift()->SUPER::new(@_);
-	return $self;
-}
 sub run {
-	my $self = shift();
-    my ($result) = @_;
+	my $self    = shift();
+    my($result) = @_;
 	my $protectable = sub {
-			$self->set_up();
-			$self->basic_run($result);
-			$self->tear_down();
-		};
+        $self->set_up();
+        $self->basic_run($result);
+        $self->tear_down();
+    };
 	$result->run_protected($self, $protectable);
 }
 
