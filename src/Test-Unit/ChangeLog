@@ -1,4 +1,30 @@
-2002-06-13  adamspiers  <adamspiers@juno.london.guideguide.com>
+2002-06-14  adamspiers  <adamspiers@juno.london.guideguide.com>
+
+	* MANIFEST:
+	'make manifest' revealed more missing files, though none of them crucial
+
+	* AUTHORS: change Adam's email address
+
+	* lib/Test/Unit/TestRunner.pm:
+	Don't die if the run was unsuccessful; we might want to reuse the runner
+	for another run.
+
+	* MANIFEST: argh!  0.23's MANIFEST was missing several crucial files.
+
+2002-06-13  adamspiers  <perlunit@adamspiers.org>
+
+	* lib/Test/Unit/Runner/Terminal.pm: forgot to update the pod
+
+	* .cvsignore: ignore tarballs
+
+	* doc/release-checklist: typo
+
+	* README, doc/release-checklist:
+	cut down on the poor maintainer's workload
+
+	* Changes: deprecate this file
+
+	* ChangeLog: new stuff for 0.23
 
 	* lib/Test/Unit.pm: version 0.23
 
@@ -15,11 +41,11 @@
 
 	* lib/Test/Unit/Procedural.pm: remove spurious 'use' line
 
-2002-06-12  adamspiers  <adamspiers@juno.london.guideguide.com>
+2002-06-12  adamspiers  <perlunit@adamspiers.org>
 
 	* lib/Test/Unit/Debug.pm: allow debugging to a file with debug_to_file
 
-2002-06-10  adamspiers  <adamspiers@juno.london.guideguide.com>
+2002-06-10  adamspiers  <perlunit@adamspiers.org>
 
 	* lib/Test/Unit/Runner/Terminal.pm:
 	use \e[4A\r instead of \e[4F, which not all terminals support
@@ -46,7 +72,7 @@
 	* lib/Test/Unit/Listener.pm:
 	pseudo-document the parameters for the listener interface
 
-2002-05-23  adamspiers  <adamspiers@juno.london.guideguide.com>
+2002-05-23  adamspiers  <perlunit@adamspiers.org>
 
 	* doc/TODO, lib/Test/Unit/TestCase.pm:
 	(poorly) document @TESTS and the filtering mechanism
