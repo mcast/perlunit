@@ -167,7 +167,7 @@ sub test_ok_equals {
 sub test_ok_not_equals {
     my $self = shift;
     my $adder = sub { 2+2 };
-    my %checks = (
+    my @checks = (
         # interface is ok(GOT, EXPECTED);
         q{expected 1, got 0}                => [ 0,      1       ], 
         q{expected 0, got 1}                => [ 1,      0       ], 
@@ -179,14 +179,15 @@ sub test_ok_not_equals {
         q{expected 5, got 4}                => [ $adder, 5       ], 
         q{'foo' did not match /(?-xism:x)/} => [ 'foo',  qr/x/   ], 
     );
-    my %tests = ();
-    while (my ($expected, $args) = each %checks) {
-	$tests{$expected}
-          = [ __LINE__, sub { shift->ok(@$args) } ];
-	$tests{'failure comment'}
-          = [ __LINE__, sub { shift->ok(@$args, 'failure comment') } ];
+    my @tests = ();
+    while (@checks) {
+        my $expected = shift @checks;
+        my $args     = shift @checks;
+	push @tests, $expected => [ __LINE__, sub { shift->ok(@$args) } ];
+	push @tests, 'failure comment'
+          => [ __LINE__, sub { shift->ok(@$args, 'failure comment') } ];
     }
-    $self->check_failures(%tests);
+    $self->check_failures(@tests);
 }
 
 sub test_fail {
@@ -234,7 +235,7 @@ sub test_success_assert_not_equals {
 
 sub test_fail_assert_not_equals {
     my $self = shift;
-    my %pairs = (
+    my @pairs = (
         # Some of these are debatable, but at least including the tests
         # will alert us if any of the outcomes change.
         "0 and 0 should differ"      => [ 0,        0        ],
@@ -250,15 +251,17 @@ sub test_fail_assert_not_equals {
         "'' and '' should differ"    => [ '',       ''       ],
         "both args were undefined"   => [ undef,    undef    ],
     );
-    my %tests = ();
-    while (my ($expected, $pair) = each %pairs) {
-        $tests{$expected}
-          = [ __LINE__, sub { shift->assert_not_equals(@$pair) } ];
-        $tests{"$expected with comment"}
-          = [ __LINE__, sub { shift->assert_not_equals(@$pair,
-                                                       "$expected with comment") } ];
+    my @tests = ();
+    while (@pairs) {
+        my $expected = shift @pairs;
+        my $pair     = shift @pairs;
+        push @tests, $expected
+          => [ __LINE__, sub { shift->assert_not_equals(@$pair) } ];
+        push @tests, "$expected with comment",
+          => [ __LINE__, sub { shift->assert_not_equals(@$pair,
+                                                        "$expected with comment") } ];
     }
-    $self->check_failures(%tests);
+    $self->check_failures(@tests);
 }
 
 sub test_fail_assert_not_null {
@@ -280,6 +283,91 @@ sub test_succeed_assert_not_null {
     $self->assert_not_null(10);
 }
 
+sub test_assert_deep_equals {
+    my $self = shift;
+
+    $self->assert_deep_equals([], []);
+    $self->assert_deep_equals({}, {});
+    $self->assert_deep_equals([ 0, 3, 5 ], [ 0, 3, 5 ]);
+    my $hashref = { a => 2, b => 4 };
+    $self->assert_deep_equals($hashref, $hashref);
+    $self->assert_deep_equals($hashref, { b => 4, a => 2 });
+    my $complex = {
+        array => [ 1, $hashref, 3 ],
+        undefined => undef,
+        number => 3.2,
+        string => 'hi mom',
+        deeper => {
+            and => [
+                even => [ qw(deeper wahhhhh) ],
+                { foo => 11, bar => 12 }
+            ],
+        },
+    };
+    $self->assert_deep_equals(
+        $complex,
+        {
+            array => [ 1, $hashref, 3 ],
+            undefined => undef,
+            number => 3.2,
+            string => 'hi mom',
+            deeper => {
+                and => [
+                    even => [ qw(deeper wahhhhh) ],
+                    {
+                        foo => 11, bar => 12 }
+                ],
+            },
+        },
+    );
+
+    my $differ = sub {
+        my ($got, $expected) = @_;
+        qr/^Structures\ begin\ differing\ at: $ \n
+           \s* \$got .* = .* $got      .* $ \n
+           \$expected .* = .* $expected/mx;
+    };
+
+    my @pairs = (
+        'Both arguments were not references' => [ undef, 0 ],
+        'Both arguments were not references' => [ 0, undef ],
+        'Both arguments were not references' => [ 0, 1     ],
+        'Both arguments were not references' => [ 0, ''    ],
+        'Both arguments were not references' => [ '', 0    ],
+         $differ->(qw/ARRAY HASH/)     => [ [],      {}      ],
+         $differ->(qw/ARRAY HASH/)     => [ [1,2],   {1,2}   ],
+         $differ->('not\ exist', "'3'") => [ [1,2],   [1,2,3] ],
+         $differ->("'3'", 'not\ exist') => [ [1,2,3], [1,2]   ],
+         $differ->("'wahhhhh'", "'wahhhh'") => [
+             $complex,
+             {
+                 array => [ 1, $hashref, 3 ],
+                 undefined => undef,
+                 number => 3.2,
+                 string => 'hi mom',
+                 deeper => {
+                     and => [
+                         even => [ qw(deeper wahhhh) ],
+                         { foo => 11, bar => 12 }
+                     ],
+                 },
+             }
+         ],
+    );
+
+    my @tests = ();
+    while (@pairs) {
+        my $expected = shift @pairs;
+        my $pair     = shift @pairs;
+        push @tests, $expected,
+          [ __LINE__, sub { shift->assert_deep_equals(@$pair) } ];
+        push @tests, "$expected with comment",
+          [ __LINE__, sub { shift->assert_deep_equals(@$pair,
+                                                     "$expected with comment") } ];
+    }
+    $self->check_failures(@tests);
+}
+
 sub check_failures {
     my $self = shift;
     $self->check_exceptions('Test::Unit::Failure', @_);
@@ -292,13 +380,15 @@ sub check_errors {
 
 sub check_exceptions {
     my $self = shift;
-    my ($exception_class, %tests) = @_;
+    my ($exception_class, @tests) = @_;
     my ($asserter, $file, $line)
       = caller($Error::Depth + 1); # EVIL hack!  Assumes check_exceptions
                                    # always called via check_{failures,errors}.
                                    # My brain hurts too much right now to think
                                    # of a better way. 
-    while (my ($expected, $test_components) = each %tests) {
+    while (@tests) {
+        my $expected        = shift @tests;
+        my $test_components = shift @tests;
         my ($test_code_line, $test) = @$test_components;
 	my $exception;
 	try {
@@ -342,7 +432,8 @@ sub check_exception {
     Test::Unit::Failure->throw(
         -text => "Expected $exception_class `$expected', got `$got'",
         -object => $self,
-    ) unless $got eq $expected;
+    ) unless UNIVERSAL::isa($expected, 'Regexp')
+               ? $got =~ /$expected/ : $got eq $expected;
 }
 
 sub check_file_and_line {

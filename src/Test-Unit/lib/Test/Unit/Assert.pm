@@ -172,7 +172,147 @@ sub assert_not_equals {
                       -object  => $self,);
     };
 }
+
+# Shamelessly pinched from Test::More and adapted to Test::Unit.
+our @Data_Stack;
+my $DNE = bless [], 'Does::Not::Exist';
+sub assert_deep_equals {
+    my $self = shift;
+    my $this = shift;
+    my $that = shift;
+
+    local $Error::Depth = $Error::Depth + 1;
+
+    if (! ref $this || ! ref $that) {
+        Test::Unit::Failure->throw(
+            -text => @_ ? join('', @_)
+                        : 'Both arguments were not references'
+        );
+    }
+
+    local @Data_Stack = ();
+    if (! $self->_deep_check($this, $that)) {
+        Test::Unit::Failure->throw(
+            -text => @_ ? join('', @_)
+                        : $self->_format_stack(@Data_Stack)
+        );
+    }
+}    
+
+sub _deep_check {
+    my $self = shift;
+    my ($e1, $e2) = @_;
+
+    # Quiet uninitialized value warnings when comparing undefs.
+    local $^W = 0; 
+
+    return 1 if $e1 eq $e2;
+
+    if (UNIVERSAL::isa($e1, 'ARRAY') and UNIVERSAL::isa($e2, 'ARRAY')) {
+        return $self->_eq_array($e1, $e2);
+    }
+    elsif (UNIVERSAL::isa($e1, 'HASH') and UNIVERSAL::isa($e2, 'HASH')) {
+        return $self->_eq_hash($e1, $e2);
+    }
+    elsif (UNIVERSAL::isa($e1, 'REF') and UNIVERSAL::isa($e2, 'REF')) {
+        push @Data_Stack, { type => 'REF', vals => [$e1, $e2] };
+        my $ok = $self->_deep_check($$e1, $$e2);
+        pop @Data_Stack if $ok;
+        return $ok;
+    }
+    elsif (UNIVERSAL::isa($e1, 'SCALAR') and UNIVERSAL::isa($e2, 'SCALAR')) {
+        push @Data_Stack, { type => 'REF', vals => [$e1, $e2] };
+        return _deep_check($$e1, $$e2);
+    }
+    else {
+        push @Data_Stack, { vals => [$e1, $e2] };
+        return 0;
+    }
+}
+
+sub _eq_array  {
+    my $self = shift;
+    my($a1, $a2) = @_;
+    return 1 if $a1 eq $a2;
+
+    my $ok = 1;
+    my $max = $#$a1 > $#$a2 ? $#$a1 : $#$a2;
+    for (0..$max) {
+        my $e1 = $_ > $#$a1 ? $DNE : $a1->[$_];
+        my $e2 = $_ > $#$a2 ? $DNE : $a2->[$_];
+
+        push @Data_Stack, { type => 'ARRAY', idx => $_, vals => [$e1, $e2] };
+        $ok = $self->_deep_check($e1,$e2);
+        pop @Data_Stack if $ok;
+
+        last unless $ok;
+    }
+    return $ok;
+}
+
+sub _eq_hash {
+    my $self = shift;
+    my($a1, $a2) = @_;
+    return 1 if $a1 eq $a2;
+
+    my $ok = 1;
+    my $bigger = keys %$a1 > keys %$a2 ? $a1 : $a2;
+    foreach my $k (keys %$bigger) {
+        my $e1 = exists $a1->{$k} ? $a1->{$k} : $DNE;
+        my $e2 = exists $a2->{$k} ? $a2->{$k} : $DNE;
+
+        push @Data_Stack, { type => 'HASH', idx => $k, vals => [$e1, $e2] };
+        $ok = $self->_deep_check($e1, $e2);
+        pop @Data_Stack if $ok;
+
+        last unless $ok;
+    }
+
+    return $ok;
+}
+
+sub _format_stack {
+    my $self = shift;
+    my @Stack = @_;
+
+    my $var = '$FOO';
+    my $did_arrow = 0;
+    foreach my $entry (@Stack) {
+        my $type = $entry->{type} || '';
+        my $idx  = $entry->{'idx'};
+        if( $type eq 'HASH' ) {
+            $var .= "->" unless $did_arrow++;
+            $var .= "{$idx}";
+        }
+        elsif( $type eq 'ARRAY' ) {
+            $var .= "->" unless $did_arrow++;
+            $var .= "[$idx]";
+        }
+        elsif( $type eq 'REF' ) {
+            $var = "\${$var}";
+        }
+    }
+
+    my @vals = @{$Stack[-1]{vals}}[0,1];
     
+    my @vars = ();
+    ($vars[0] = $var) =~ s/\$FOO/     \$got/;
+    ($vars[1] = $var) =~ s/\$FOO/\$expected/;
+
+    my $out = "Structures begin differing at:\n";
+    foreach my $idx (0..$#vals) {
+        my $val = $vals[$idx];
+        $vals[$idx] = !defined $val ? 'undef' : 
+                      $val eq $DNE  ? "Does not exist"
+                                    : "'$val'";
+    }
+
+    $out .= "$vars[0] = $vals[0]\n";
+    $out .= "$vars[1] = $vals[1]\n";
+
+    return $out;
+}
+
 {
     my %assert_subs =
         (
@@ -425,6 +565,15 @@ Force string comparison
 
 Assert that STRING does or does not match the PATTERN regex.
 
+=item assert_deep_equals(A, B [, MESSAGE ])
+
+Assert that reference A is a deep copy of reference B.  The references
+can be complex, deep structures.  If they are different, the default
+message will display the place where they start differing.
+
+B<NOTE> This is NOT well-tested on circular references.  Nor am I
+quite sure what will happen with filehandles.
+
 =item assert_null(ARG [, MESSAGE])
 
 =item assert_not_null(ARG [, MESSAGE])
@@ -475,6 +624,9 @@ Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
 
 Thanks for patches go to:
 Matthew Astley, David Esposito, Piers Cawley.
+
+Thanks for the deep structure comparison routines to Michael Schwern
+and the other Test::More folk.
 
 =head1 SEE ALSO
 
