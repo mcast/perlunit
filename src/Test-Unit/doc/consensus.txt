@@ -204,6 +204,17 @@ can be exercised.
 Also Adam has patched some of the PerlUnit constructors to allow
 passing a classname instead of being invoked as a method.
 
+*** check for broken Error.pm overloading of exceptions [as]
+
+Older Error.pms don't do boolean overload, so
+
+  eval { ... };
+  if ($@) {
+    ...
+  }
+
+could break.  We should check for that.
+
 ** Generic tests for users to include
 
 Matthew wrote some. Whether anyone else wants them remains to be seen.
