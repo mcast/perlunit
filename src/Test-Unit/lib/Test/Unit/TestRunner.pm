@@ -7,6 +7,8 @@ use base qw(Test::Unit::TestListener);
 use Test::Unit::TestSuite;
 use Test::Unit::TestResult;
 
+use Benchmark;
+
 sub new {
     my $class = shift;
     my ($filehandle) = @_;
@@ -52,11 +54,11 @@ sub do_run {
     my ($suite, $wait) = @_;
     my $result = $self->create_test_result();
     $result->add_listener($self);
-    my $start_time = time();
+    my $start_time = new Benchmark();
     $suite->run($result);
-    my $end_time = time();
-    my $run_time = $end_time - $start_time;
-    $self->_print("\n", "Time: ", $run_time, "\n");
+    my $end_time = new Benchmark();
+    my $run_time = timediff($end_time, $start_time);
+    $self->_print("\n", "Time: ", timestr($run_time), "\n");
 
     $self->print_result($result);
     
