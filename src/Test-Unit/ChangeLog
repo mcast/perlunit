@@ -1,3 +1,81 @@
+2001-11-07  Adam Spiers  <adam@spiers.net>
+
+	* doc/consensus.txt:
+	- only edit consensus.txt in HEAD
+	- consensus on use vs. require
+	- deal with broken base.pm issue
+	
+	* lib/Test/Unit/Exception.pm: cosmetics in failure output
+
+	* lib/Test/Unit/Assert.pm:
+	- cosmetics in failure output
+	- add missing require (thanks to Hans Donner <cobra@pobox.com>)
+	- add a controversial but very convenient and harmless alias:
+	    &ok -> &assert_equals
+
+	* .cvsignore: cvs-ignore Makefile
+
+2001-10-31  pdcawley  <pdcawley@iterative-software.com>
+
+	* MANIFEST: Tidied up the MANIFEST so make tardist works.
+
+	* MANIFEST, t/try_examples.t:
+	Fixed t/try_examples.t to recognize a passing test.
+
+2001-10-30  pdcawley  <pdcawley@iterative-software.com>
+
+	* lib/Test/Unit/TestRunner.pm, lib/Test/Unit/UnitHarness.pm, lib/Test/Unit/tests/AllTests.pm, lib/Test/Unit/tests/ListenerTest.pm, Makefile.PL:
+	Tidied up output of TestRunner
+	Added prerequisites to Makefile.PL
+	Removed some dependencies on Test::Unit::InnerClass
+
+2001-10-26  Adam Spiers  <adam@spiers.net>
+
+	* lib/Test/Unit/tests/AssertTest.pm: fix barewords error
+
+2001-10-25  Adam Spiers  <adam@spiers.net>
+
+	* doc/consensus.txt: todo: check for broken Error.pms
+
+2001-09-07  pdcawley  <pdcawley@iterative-software.com>
+
+	* ChangeLog: Added some stuff in the ChangeLog
+
+	* lib/Test/Unit/Result.pm: More doc fixes.
+
+	* lib/Test/Unit/Result.pm, lib/Test/Unit/TestCase.pm:
+	Doctored Test::Unit::Result again, so that if $test->run_bare *does*
+	return false we actually add a failure instead of just leaving things
+	up in the air (causes a problem with test harnesses if we don't)
+
+	* lib/Test/Unit/Assert.pm, lib/Test/Unit/TestCase.pm, lib/Test/Unit/tests/AssertTest.pm, ChangeLog:
+	Tidied up the documentation in Test::Unit::Assert.
+	Made sure that Test::Unit::TestCase::run_bare returns true if it doesn't
+	throw an exception.
+
+	* lib/Test/Unit/TestCase.pm: An attempt at improving the documentation.
+
+	* lib/Test/Unit/Setup.pm: New file.
+
+	* Changes, MANIFEST, examples/README, examples/fail_example.pm, lib/Test/Unit/Setup.pm, lib/Test/Unit/TestSetup.pm:
+	Renamed Test::Unit::TestSetup to Test::Unit::Setup
+
+	* lib/Test/Unit/Listener.pm, lib/Test/Unit/tests/ListenerTest.pm:
+	New file.
+
+	* MANIFEST, lib/Test/Unit/HarnessUnit.pm, lib/Test/Unit/Listener.pm, lib/Test/Unit/TestListener.pm, lib/Test/Unit/TestRunner.pm, lib/Test/Unit/TkTestRunner.pm, lib/Test/Unit/UnitHarness.pm, lib/Test/Unit/tests/AllTests.pm, lib/Test/Unit/tests/ListenerTest.pm, lib/Test/Unit/tests/TestListenerTest.pm:
+	Renamed Test::Unit::TestListener to Test::Unit::Listener
+
+	* lib/Test/Unit/Decorator.pm: New file.
+
+	* MANIFEST, lib/Test/Unit/Decorator.pm, lib/Test/Unit/TestDecorator.pm, lib/Test/Unit/TestSetup.pm:
+	Renamed Test::Unit::TestDecorator to Test::Unit::Decorator
+
+	* lib/Test/Unit/Loader.pm: New file.
+
+	* ChangeLog, MANIFEST, lib/Test/Unit/HarnessUnit.pm, lib/Test/Unit/Loader.pm, lib/Test/Unit/TestListener.pm, lib/Test/Unit/TestLoader.pm, lib/Test/Unit/TkTestRunner.pm:
+	Renamed Test::Unit::TestLoader to Test::Unit::Loader
+
 2001-09-07  Piers Cawley  <pdcawley@iterative-software.com>
 
 	* lib/Test/Unit/TestCase.pm
