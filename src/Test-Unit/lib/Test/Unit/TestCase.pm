@@ -83,6 +83,8 @@ sub to_string {
 
 1;
 
+
+
 =head1 NAME
 
 Test::Unit::TestCase - unit testing framework testcase base class
@@ -92,6 +94,12 @@ Test::Unit::TestCase - unit testing framework testcase base class
   package FooBar;
   use base qw(Test::Unit::TestCase);
   
+  sub new {
+      my $self = shift()->SUPER::new(@_);
+      # your state for fixture here
+      return $self;
+  }
+
   sub set_up {
       # provide fixture
   }
@@ -131,20 +139,16 @@ test runs. Here is an example:
   use base qw(Test::Unit::TestCase);
 
   sub new {
-      my $class = shift;
-      my ($name) = @_;
-      my $self = bless {}, $class;
-      my $a_test_case = $self->SUPER::new($name);
-      bless $a_test_case, $class;
-      $a_test_case->{_value_1} = 0;
-      $a_test_case->{_value_2} = 0;
-      return $a_test_case;
+      my $self = shift()->SUPER::new(@_);
+      $self->{value_1} = 0;
+      $self->{value_2} = 0;
+      return $self;
   }
   
   sub set_up {
       my $self = shift;
-      $self->{_value_1} = 2;
-      $self->{_value_2} = 3;
+      $self->{value_1} = 2;
+      $self->{value_2} = 3;
   }
   
 For each test implement a method which interacts with the fixture. Verify
@@ -153,7 +157,7 @@ with a boolean value.
 
   sub test_add {
       my $self = shift;
-      my $result = $self->{_value_1} + $self->{_value_2};
+      my $result = $self->{value_1} + $self->{value_2};
       $self->assert($result == 5);
   }
   
