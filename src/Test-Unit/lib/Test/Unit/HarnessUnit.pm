@@ -35,29 +35,40 @@ sub start_test {
   my $test=shift;
 }
 
-sub add_error {
+sub not_ok {
     my $self = shift;
     my ($test, $exception) = @_;
-    $self->_print("\nnot ok ERROR ".$test->name()."\n");
+    $self->_print("\n".$exception->stacktrace()
+				  ."\n\nnot ok ERROR "
+				  .$test->name()."\n");
+}
+
+sub ok {
+    my $self = shift;
+    my ($test) = @_;
+    $self->_print("\n\nok PASS "
+				  .$test->name()."\n");
+}
+
+sub add_error {
+    my $self = shift;
+	$self->not_ok(@_);
 }
 	
 sub add_failure {
     my $self = shift;
-    my ($test, $exception) = @_;
-    $self->_print("\nnot ok FAIL ".$test->name()."\n");
+	$self->not_ok(@_);
 }
 
 sub add_pass {
-    # in this runner passes are ignored.
     my $self = shift;
-    my ($test) = @_;
-    $self->_print("\nok PASS ".$test->name()."\n");
+	$self->ok(@_);
 }
 
 sub end_test {
     my $self = shift;
     my ($test) = @_;
-	print "\nTEST ".$test->name()." complete.\n";
+	$self->_print("\nTEST ".$test->name()." complete.\n");
 }
 
 sub create_test_result {
@@ -117,11 +128,11 @@ sub start {
 	my $suite=Test::Unit::TestLoader::load(@args);
 	if ($suite) {
 	  my $count=$suite->count_test_cases();
-	  print "\nSTARTING TEST RUN\n1..$count\n";
+	  $self->_print("\nSTARTING TEST RUN\n1..$count\n");
 	  $self->do_run($suite);
 	  exit(0);
     } else {
-	  print "Invalid argument to test runner: $args[0]\n";
+	  $self->_print("Invalid argument to test runner: $args[0]\n");
 	  exit(1);
 	}
 }

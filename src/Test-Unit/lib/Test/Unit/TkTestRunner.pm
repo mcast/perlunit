@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2000 Brian Ewins
 #
-# $Id: TkTestRunner.pm,v 1.3 2000-02-23 18:13:11 ba22a Exp $
+# $Id: TkTestRunner.pm,v 1.4 2000-02-23 21:26:59 ba22a Exp $
 #
 
 
@@ -34,21 +34,18 @@ sub start_test {
 sub add_pass {
   my $self=shift;
   my ($test,$exception)=@_;
-  $self->{'passes'}++;
   $self->update();
 }
 
 sub add_failure {
   my $self=shift;
   $self->add_message(@_);
-  $self->{'failures'}++;
   $self->update();
 }
 
 sub add_error {
   my $self=shift;
   $self->add_message(@_);
-  $self->{'errors'}++;
   $self->update();
 }
 
@@ -61,8 +58,9 @@ sub new {
   # fill in the test name from the command line if possible.
   $self->{'testname'}=shift; 
   map {$self->{$_}=0} 
-  qw(runs errors failures passes start history_size planned);
+  qw(run_count start history_size planned);
   $self->{'status'}='STOPPPED';
+  $self->{'result'}=new Test::Unit::TestResult();
   $self->{'history'}=[];
   # Lay the window out....
   my $main=MainWindow->new(-title=>'PerlUnit Test Harness');
@@ -76,44 +74,35 @@ sub new {
 		-command => sub {$self->run()}
 	       )
 	->form(-right=>['%100'],-top=>['%0']);
-  my $lab_runs=$main->
-	LabEntry(-label=>'Runs:',
-			 -text=> \$self->{'runs'},
-			 -state=>'disabled',
-			 -width=>12, 
+  my @common_opts=(-width=>12, 
 			 -relief=>'flat',
-			 -justify=>'left'
-			)
-	  ->form(-left=>['%0'],-top=>[$history_list]);
-  my $lab_pass=$main
-	->LabEntry(-label=>'Passed:',
-			   -text=>\$self->{'passes'},
-			   -state=>'disabled',
-			   -width=>12, 
-			   -relief=>'flat',
-			   -justify=>'left'
-			)
-	  ->form(-left=>[$lab_runs],-top=>[$history_list]);
-  my $lab_fail=$main
-	->LabEntry(-label=>'Failures:',
-			   -text=>\$self->{'failures'},
-			   -state=>'disabled',
-			   -width=>12, 
-			   -relief=>'flat',
-			   -justify=>'left'
-			)
-	  ->form(-left=>[$lab_pass],-top=>[$history_list]);
-  my $lab_err=$main
-	->LabEntry(-label=>'Errors:',
-			   -text=>\$self->{'errors'},
-			   -state=>'disabled',
-			   -width=>12, 
-			   -relief=>'flat',
-			   -justify=>'left'
-			)
-	  ->form(-left=>[$lab_fail],-top=>[$history_list]);
-  # There is no gauge control. Make do by having a 
-  # coloured rectangle on a Tk::Canvas.
+			 -justify=>'left');
+  my $prev_widget='%0';
+  my $prev_row=$history_list;
+  foreach my $widget ( 
+					  $main->Label(-text=>'Runs:',@common_opts),
+					  $self->{'runs'}=
+					  $main->Label(-text=> '0' ,@common_opts),
+					  $main->Label(-text=>'Passed:',@common_opts),
+					  $self->{'passes'}=
+					  $main->Label(-text=>'0',@common_opts)
+					 ) {
+	$widget->form(-left=>[$prev_widget],-top=>[$prev_row]);
+	$prev_widget=$widget;
+  }
+  $prev_row=$prev_widget;
+  $prev_widget='%0';  
+  foreach my $widget ( 
+					  $main->Label(-text=>'Failed:',@common_opts),
+					  $self->{'failures'}=
+					  $main->Label(-text=>'0',@common_opts),
+					  $main->Label(-text=>'Errors:',@common_opts),
+					  $self->{'errors'}=
+					  $main->Label(-text=>'0',@common_opts)
+					 ) {
+	$widget->form(-left=>[$prev_widget],-top=>[$prev_row]);
+	$prev_widget=$widget;
+  }
   my $gauge=$main
 	->ArrayBar(-width=>30,
 			   -length=>400,
@@ -122,13 +111,14 @@ sub new {
 			   -colors=> ['green','red','gray55'],
   			   -borderwidth=>2
 			  )
-	  ->form(-left=>['%0'],-top=>[$btn_run,50]);
+	  ->form(-left=>['%0'],-top=>[$prev_widget]);
   my $listbox=$main
 	->Scrolled('Listbox',
 			   -scrollbars=>'e',
 			   -width=>60,
-			   -height=>15)
-	  ->form(-fill=>'both',-top=>[$gauge]);
+			   -height=>15);
+  $listbox->bind('<Double-1>'=>sub {$self->view_details()});
+  $listbox->form(-fill=>'both',-top=>[$gauge]);
   my $btn_stop=$main
 	->Button(-text => 'Stop',
 			 -command => sub { $self->cancel() }
@@ -181,10 +171,19 @@ sub clear_messages {
 
 sub update {
   my $self=shift;
-  my $bad=$self->{'failures'}+$self->{'errors'};
-  my $total=$bad+$self->{'passes'};
+  my $result=$self->{'result'};
+  my $total=$result->run_count();
+  my $failures=$result->failure_count();
+  my $errors=$result->error_count();
+  my $passes=$total-$failures-$errors;
+  my $bad=$failures+$errors;
+  #$passes=$result->run_count();
   my $todo=($total>$self->{'planned'})?0:$self->{'planned'}-$total;
-  $self->{'gauge'}->value($self->{'passes'},$bad,$todo);
+  $self->{'runs'}->configure('-text',$self->{'run_count'});
+  $self->{'passes'}->configure('-text',$passes);
+  $self->{'failures'}->configure('-text',$failures);
+  $self->{'errors'}->configure('-text',$errors);
+  $self->{'gauge'}->value($passes,$bad,$todo);
   $self->{'elapsed'}=timestr(timediff(new Benchmark(),$self->{'start'}),'nop');
   # force entry into the event loop.
   # this makes it nearly like its threaded...
@@ -210,10 +209,10 @@ sub run {
   $self->{'history'}=[$self->{'testname'},
 					  grep { defined $_ and $_ ne $self->{'testname'}} 
 					  (@{$self->{'history'}})[0..9]];
-  $self->{'runs'}++;
-  map {$self->{$_}=0} qw(errors failures passes);
+  $self->{'run_count'}++;
   $self->clear_messages();
   $self->{'start'}=new Benchmark();
+
   $self->update();
   $self->{'suite'}=Test::Unit::TestLoader::load($self->{'testname'});
   $self->{'result'}=Test::Unit::TestResult->new();
@@ -242,6 +241,9 @@ sub view_details {
   my $dialog=$self->{'main'}->DialogBox(-title=>'Details',-buttons=>['OK']);
   #my $frame=$dialog->add();
   my $text=$dialog->add("Scrolled","ROText", -width=>80, -height=>20)->pack;
+#  $text->insert("end",$self->{'detail'}->[$self->{'listbox'}->curselection]
+#			   ->stacktrace());
+  # again assumption is that Exception is overloaded.
   $text->insert("end",$self->{'detail'}->[$self->{'listbox'}->curselection]
 			   ->stacktrace());
   $dialog->Show();
@@ -254,6 +256,8 @@ package Tk::ArrayBar;
 # Heavily - ie almost totally - based on the code in ProgressBar.
 use Tk;
 use Tk::Canvas;
+use Tk::ROText;
+use Tk::DialogBox;
 use Carp;
 use strict;
 

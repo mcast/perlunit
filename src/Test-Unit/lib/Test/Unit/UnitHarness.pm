@@ -8,8 +8,9 @@ use Exporter;
 use Config;
 use Carp;
 use FileHandle;
-use constant DEBUG => 1;
+use constant DEBUG => 0;
 use Test::Unit::TestCase;
+use Test::Unit::Exception;
 use strict;
 
 use vars qw($VERSION $verbose $switches $have_devel_corestack $curtest
@@ -22,7 +23,7 @@ $VERSION = "1.1502";
 @EXPORT= qw(&runtests);
 @EXPORT_OK= qw($verbose $switches);
 
-$verbose = 1;
+$verbose = 0;
 $switches = "-w";
 
 # class and object methods
@@ -50,6 +51,7 @@ sub run {
   my $fh = new FileHandle;
   my $next=1;
   my $max=0;
+  my $message="";
 
   # pass -I flags to children
   my $old5lib = $ENV{PERL5LIB};
@@ -65,24 +67,40 @@ sub run {
   my $cmd = "$^X $s $test|";
   $cmd = "MCR $cmd" if $^O eq 'VMS';
   $fh->open($cmd) or print "can't run $test. $!\n";
-  while (<$fh>) {
-    if( $verbose ){ print $_; }
-    if (/^1\.\.([0-9]+)/) {
+  for my $line (<$fh>) {
+    if( $verbose ){ print $line; }
+    if ($line=~/^1\.\.([0-9]+)/) {
 	  # Not supported in TestResult - It's needed!!!
       #$result->plan($1);
       $next=1;
       $max=$1;
-    } elsif ($max && /^(not\s+)?ok\b/) {
+	  $message="";
+    } elsif ($max && $line=~/^(not\s+)?ok\b/) {
       my $this = $next;
-      if (/^not ok\s*(\d*)/){
-	$this = $1 if $1 > 0;
-	$result->add_failure($this);
-      } elsif (/^ok\s*(\d*)/) {
-	$this = $1 if $1 > 0;
-	$result->add_pass($this);
+      if ($line=~/^not ok\s*(\d*)/){
+		$this = $1 if $1 > 0;
+		my $testcase=new Test::Unit::TestCase("$test case $this");
+		$result->start_test($testcase);
+		$result->add_failure(new Test::Unit::TestCase("$test case $this"),
+							 new Test::Unit::Exception($message));
+		$result->end_test($testcase);
+		$message="";
+      } elsif ($line=~/^ok\s*(\d*)/) {
+		$this = $1 if defined $1 and $1 ne "" and $1 > 0;
+		my $testcase=new Test::Unit::TestCase("$test case $this");
+		$result->start_test($testcase);
+		$result->add_pass($testcase);
+		$result->end_test($testcase);
+		$message="";
       }
       $next++;
-    }
+    } else {
+	  # this is the message, not the medium...
+	  # this wasnt part of the Test::Harness protocol, so it
+	  # must be output from the program. Collect this, it might
+	  # prove useful!
+	  $message.=$line;
+	}
   }
   $fh->close; # must close to reap child resource values
   if ($^O eq 'VMS') {
