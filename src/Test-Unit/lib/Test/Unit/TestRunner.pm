@@ -5,6 +5,7 @@ use constant DEBUG => 0;
 use base qw(Test::Unit::Listener); 
 
 use Test::Unit::TestSuite;
+use Test::Unit::Loader;
 use Test::Unit::Result;
 
 use Benchmark;
@@ -89,16 +90,19 @@ sub print_result {
 sub print_errors {
     my $self = shift;
     my ($result) = @_;
-    if ( my $error_count = $result->error_count() ) {
-        my $msg = ($error_count == 1) ? "There was 1 error:\n" : "There were $error_count errors:\n";
-        $self->_print($msg);
+    return unless my $error_count = $result->error_count();
+    my $msg = "\nThere " .
+              ($error_count == 1 ?
+                "was 1 error"
+              : "were $error_count errors") .
+              ":\n";
+    $self->_print($msg);
 
-        my $i = 0;
-        for my $e (@{$result->errors()}) {
-	    chomp $e;
-            $i++;
-            $self->_print("$i) $e\n");
-        }
+    my $i = 0;
+    for my $e (@{$result->errors()}) {
+        chomp $e;
+        $i++;
+        $self->_print("$i) $e\n");
     }
 }
 
@@ -106,13 +110,19 @@ sub print_failures {
     my $self = shift;
     my ($result) = @_;
     return unless my $failure_count = $result->failure_count;
-    $self->_print(($failure_count == 1) ? "There was 1 failure:\n" : "There were $failure_count failures:\n");
-	my $i = 0; 
-	for my $e (@{$result->failures()}) {
-            chomp $e;
-	    $i++;
-	    $self->_print("$i ) $e\n");
-	}
+    my $msg = "\nThere " .
+              ($failure_count == 1 ?
+                "was 1 failure"
+              : "were $failure_count failures") .
+              ":\n";
+    $self->_print($msg);
+
+    my $i = 0; 
+    for my $f (@{$result->failures()}) {
+        chomp $f;
+        $self->_print("\n") if $i++;
+        $self->_print("$i) $f\n");
+    }
 }
 
 sub print_header {
@@ -124,8 +134,8 @@ sub print_header {
         $self->_print("\n", "!!!FAILURES!!!", "\n",
                       "Test Results:\n",
                       "Run: ", $result->run_count(), 
-                      " Failures: ", $result->failure_count(),
-                      " Errors: ", $result->error_count(),
+                      ", Failures: ", $result->failure_count(),
+                      ", Errors: ", $result->error_count(),
                       "\n");
     }
 }
@@ -164,10 +174,7 @@ sub start {
         die "Usage TestRunner.pl [-wait] name, where name is the name of the TestCase class", "\n";
     }
     
-    eval "require $test_case" 
-        or die "Suite class " . $test_case . " not found: $@";
-    my $suite = Test::Unit::TestSuite->new($test_case) ||
-        die "Couldn't build a test suite";
+    my $suite = Test::Unit::Loader::load($test_case);
     $self->do_run($suite, $wait);
 }
 
