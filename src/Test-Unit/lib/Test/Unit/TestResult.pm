@@ -96,8 +96,17 @@ sub run {
     my ($test) = @_;
     printf "%s::run(%s) called\n", ref($self), $test->name() if DEBUG;
     $self->start_test($test);
+    $self->run_protected($test, sub {$test->run_bare();});
+    $self->end_test($test);
+} 
+
+sub run_protected {
+    my $self = shift;
+    print ref($self) . "::run_protected() called\n" if DEBUG;
+    my ($test, $protected) = @_;
+
     eval { 
-	$test->run_bare();
+		&$protected(); 
     };
     my $exception = $@;
     if ($exception) {
@@ -119,11 +128,8 @@ sub run {
 	# others have to implement  - Christian
 
         $self->add_pass($test);
-    }
-    $self->end_test($test);
-} 
-
-# I put run_protected() into run() above
+	}
+}
 
 sub run_count {
     my $self = shift;

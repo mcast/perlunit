@@ -38,7 +38,13 @@ and the (running) examples named 'patch100132-1' and
 	perl -I ../lib -I ./ patch100132-2
 
 -------------------------------------------------- 
-3 Supplementary stuff
+3 Example for TestDecorator and TestSetup:
+
+perl -I../lib/ ../TestRunner.pl fail_example
+
+
+-------------------------------------------------- 
+4 Supplementary stuff
 
 A file that Brian is working on ... 
 	

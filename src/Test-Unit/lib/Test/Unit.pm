@@ -202,8 +202,8 @@ Thanks go to the other PerlUnit framework people:
 Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen, Matthew Astley,
 Adam Spiers, Piers Cawley.
 
-Thanks for patches go to:
-Matthew Astley, David Esposito.
+Thanks for patches and other contributions go to:
+David Esposito, Kevin Connor.
 
 =head1 SEE ALSO
 
