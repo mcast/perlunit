@@ -203,3 +203,58 @@ sub start_test {
 }
 
 1;
+__END__
+
+
+=head1 NAME
+
+    Test::Unit::TestRunner - unit testing framework helper class
+
+=head1 SYNOPSIS
+
+    use Test::Unit::TestRunner;
+
+    my $testrunner = Test::Unit::TestRunner->new();
+    $testrunner->start($my_testcase_class);
+
+=head1 DESCRIPTION
+
+    This class is the test runner for the command line style use
+    of the testing framework.
+
+    It is used by simple command line tools like the TestRunner.pl
+    script provided.
+
+    The class needs one argument, which is the name of the class
+    encapsulating the tests to be run.
+    
+    Options:
+	-wait : wait for user confirmation between tests
+	-v    : Version info
+
+=head1 AUTHOR
+
+    Framework JUnit authored by Kent Beck and Erich Gamma.
+
+    Ported from Java to Perl by Christian Lemburg.
+
+    Copyright (c) 2000 Christian Lemburg, <lemburg@acm.org>.
+
+    All rights reserved. This program is free software; you can
+    redistribute it and/or modify it under the same terms as
+    Perl itself.
+
+    Thanks go to the other PerlUnit framework people: 
+    Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
+
+=head1 SEE ALSO
+
+    - Test::Unit::TestCase
+    - Test::Unit::TestListener
+    - Test::Unit::TestSuite
+    - Test::Unit::TestResult
+    - Test::Unit::TkTestRunner
+    - For further examples, take a look at the framework self test 
+      collection (Test::Unit::tests::AllTests).
+
+=cut

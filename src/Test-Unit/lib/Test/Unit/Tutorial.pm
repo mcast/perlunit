@@ -6,7 +6,6 @@ package Test::Unit::Tutorial;
 
 1;
 __END__
-# Below is the stub of documentation for your module. You better edit it!
 
 =head1 NAME
 
@@ -18,10 +17,20 @@ __END__
 
 =head1 DESCRIPTION
 
-    Here should be extensive documentation on what unit testing is, why it
-    is useful, and how to do it with the Test::Unit collection of modules.
+    Here should be extensive documentation on what unit testing is,
+    why it is useful, and how to do it with the Test::Unit collection
+    of modules.
 
     Sorry for not implementing this yet.
+
+    Please have a look at the examples in the examples directory
+    and read the README file that came with this distribution.
+
+    A short tutorial on how to use the unit testing framework is
+    included in the Test::Unit::TestCase documentation.
+
+    Further examples can be found by looking at the self test
+    collection, starting in Test::Unit::tests::AllTests.
 
 =head1 AUTHOR
 
@@ -32,6 +41,7 @@ __END__
     - The module documentation for all modules in the Test::Unit tree.
     - Refactoring. Improving The Design Of Existing Code. Martin Fowler. 
       Addison-Wesley, 1999.
+    - The JUnit (unit testing framework for Java) documentation. 
     - http://www.xProgramming.com/
 
 =cut

@@ -29,6 +29,7 @@ if (defined($Test::Unit::InnerClass::SIGNPOST)) {
 } 
 
 1;
+__END__
 
 
 =head1 NAME
