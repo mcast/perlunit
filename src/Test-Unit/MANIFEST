@@ -7,6 +7,7 @@ TestRunner.pl
 TkTestRunner.pl
 doc/consensus.txt
 doc/release-checklist
+doc/TODO
 examples/Experimental/Sample.pm
 examples/README
 examples/fail_example.pm
