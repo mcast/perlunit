@@ -1,6 +1,6 @@
 # PerlUnit was originally written as a port of Kent Beck and Erich
 # Gamma's xUnit testing framework by Christian Lemburg and Brian
-# Ewins, and is now maintained by Piers Cawley and the rest of the
+# Ewins, and is now maintained by Adam Spiers and the rest of the
 # PerlUnit team. 
 #
 # The following is an alphabetical list of all the people who've
@@ -10,7 +10,7 @@
 # The use of this database for anything other than PerlUnit
 # development is strictly forbidden. (Passive distribution with the
 # PerlUnit source code package is naturally allowed)
--- 
+
 Adam Spiers                     <perlunit@adamspiers.org>
 Brian Ewins
 Cayte Linder
