@@ -3,11 +3,12 @@ use strict;
 use constant DEBUG => 0;
 
 sub new {
-    my $class = shift;
+    my $pkg = shift;
+    my $class = ref $pkg || $pkg;
     my ($message) = @_;
     
     $message = '' unless defined($message);
-    $message = ref($class) . ": " . $message . "\n";
+    $message = "$class: $message\n";
 
     my $i = 0;
     my $stacktrace = '';
