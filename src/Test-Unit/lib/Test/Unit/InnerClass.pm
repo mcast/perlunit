@@ -18,14 +18,29 @@ if (defined($Test::Unit::InnerClass::SIGNPOST)) {
     my $i = 0;
     sub make_inner_class {
 	my ($class, $extension_text, @constructor_args) = @_;
+	$extension_text =~ s/(\s*\n)+\z//m; # trim trailing blank lines
 	$i++;
 	my $classname = "Load" . $Test::Unit::InnerClass::HOW_OFTEN . "_"
 	    . "Anonymous" . $i;
-	eval  "package $class" . "::" . $classname . "; "
-	    . "use base qw($class); " . $extension_text;
-	no strict 'refs';
-	return ("$class" . "::" . $classname)->new(@constructor_args);
-	}
+	my $inner_class_name = "${class}::${classname}";
+	my $code = <<EOEVAL;
+package $inner_class_name;
+use base qw($class);
+
+$extension_text
+EOEVAL
+	chop $code;
+	
+	eval $code;
+	die <<EODIE if $@;
+Failed to compile inner class: $@
+Code follows:
+--------- 8< --------- 8< ---------
+$code
+--------- 8< --------- 8< ---------
+EODIE
+	return $inner_class_name->new(@constructor_args);
+    }
 } 
 
 1;
