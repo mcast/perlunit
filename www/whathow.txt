@@ -1,5 +1,6 @@
            Note to other PerlUnit developers from Matthew [mca-gdl]
            ========================================================
+	   $Id: whathow.txt,v 1.2 2001-02-20 00:06:17 mca-gdl Exp $
 
 I'm planning something simple to start. "Beware the infrastructure"
 they say, so I'll wait before banging out a pod2html thingie that hits
@@ -15,7 +16,8 @@ Updating the website
   export CVS_RSH=ssh
   export CVSROOT=:ext:`whoami`@cvs.PerlUnit.sourceforge.net:/cvsroot/perlunit
   cd /home/groups/perlunit
-  cvs exp www
+  cvs exp -r HEAD www
+  chmod -R g+w www
   mv htdocs htdocs~   ; mv www/htdocs .
 # mv cgi-bin cgi-bin~ ; mv www/cgi-bin .
 
