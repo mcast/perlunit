@@ -33,7 +33,7 @@ lib/Test/Unit/Listener.pm
 lib/Test/Unit/Loader.pm
 lib/Test/Unit/Result.pm
 lib/Test/Unit/TestRunner.pm
-lib/Test/Unit/TestSetup.pm
+lib/Test/Unit/Setup.pm
 lib/Test/Unit/TestSuite.pm
 lib/Test/Unit/TkTestRunner.pm
 lib/Test/Unit/Tutorial.pm

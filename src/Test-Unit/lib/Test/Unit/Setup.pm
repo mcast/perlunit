@@ -1,4 +1,4 @@
-package Test::Unit::TestSetup;
+package Test::Unit::Setup;
 use strict;
 use constant DEBUG => 0;
 
@@ -35,18 +35,18 @@ __END__
 
 =head1 NAME
 
-Test::Unit::TestSetup - unit testing framework helper class
+Test::Unit::Setup - unit testing framework helper class
 
 =head1 SYNOPSIS
 
     # A Decorator to set up and tear down additional fixture state.
-    # Subclass TestSetup and insert it into your tests when you want
+    # Subclass Setup and insert it into your tests when you want
     # to set up additional state once before the tests are run.
 
 =head1 DESCRIPTION
 
 A Decorator to set up and tear down additional fixture state.
-Subclass TestSetup and insert it into your tests when you want
+Subclass Setup and insert it into your tests when you want
 to set up additional state once before the tests are run.
 
 =head1 AUTHOR
