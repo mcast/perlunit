@@ -67,6 +67,7 @@ t/tlib/NoTestCaseClass.pm
 t/tlib/NoTestCases.pm
 t/tlib/OneTestCase.pm
 t/tlib/OverrideTestCase.pm
+t/tlib/RunnerTest.pm
 t/tlib/Success.pm
 t/tlib/SuiteTest.pm
 t/tlib/TestAssertionCodeRef.pm
