@@ -14,7 +14,7 @@ sub new {
     my ($pack, $file, $line, $subname, $hasargs, $wantarray);
     
     while (($pack, $file, $line, $subname, 
-	    $hasargs, $wantarray) = caller($i++)) {
+	    $hasargs, $wantarray) = caller(++$i)) {
 	$stacktrace .= "Level $i: in package '$pack', file '$file', at line '$line', sub '$subname'\n";
     }
     
