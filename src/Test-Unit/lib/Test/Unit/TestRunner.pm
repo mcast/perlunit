@@ -125,8 +125,8 @@ sub print_failures {
         chomp(my $f_to_str = $f);
         $self->_print("\n") if $i++;
         $self->_print("$i) $f_to_str\n");
-        $self->_print("\nOutput was:\n", $f->object->output())
-          if $f->object->output();
+        $self->_print("\nAnnotations:\n", $f->object->annotations())
+          if $f->object->annotations();
     }
 }
 

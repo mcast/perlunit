@@ -16,17 +16,17 @@ sub new {
     my $class = shift;
     my ($name) = @_;
     bless {
-        _name => $name,
-        _out  => '',
+        _name        => $name,
+        _annotations => '',
     }, $class;
 }
 
-sub print {
+sub annotate {
     my $self = shift;
-    $self->{_out} .= join '', @_;
+    $self->{_annotations} .= join '', @_;
 }
   
-sub output { $_[0]->{_out} }
+sub annotations { $_[0]->{_annotations} }
 
 sub count_test_cases {
     my $self = shift;
