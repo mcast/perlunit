@@ -4,7 +4,7 @@ use strict;
 
 use base 'Exporter';
 use vars qw(@EXPORT_OK);
-@EXPORT_OK = qw(debug debug_pkg no_debug_pkg debug_pkgs no_debug_pkgs);
+@EXPORT_OK = qw(debug debug_pkg no_debug_pkg debug_pkgs no_debug_pkgs debugged);
 
 my %DEBUG = ();
 
@@ -27,6 +27,11 @@ sub no_debug_pkg {
 
 sub no_debug_pkgs {
     $DEBUG{$_} = 0 foreach @_;
+}
+
+sub debugged {
+    my ($package, $filename, $line) = caller();
+    return $DEBUG{$_[0] || $package};
 }
 
 1;
