@@ -28,14 +28,19 @@ in this file will make a mess IMHO  -- mca
 
 * Coding conventions
 
+If in doubt, conform to the style shown in the existing code.
+
 ** use vs. require
 
 After a discussion on perlunit-devel in March 2001, subject 'Towards
 sensible failure messages', we settled on use rather than require, except
 where we only want to load a module if we need it, of course.
 
-* Test::Unit::Assert::assert()
+** whitespace
 
+No hard tabs, 4 column indent level.  
+
+* Test::Unit::Assert::assert()
 
 What is Test::Unit::Assert for? -- pdc
 
