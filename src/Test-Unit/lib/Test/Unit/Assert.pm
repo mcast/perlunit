@@ -66,11 +66,28 @@ sub assert_equals {
     }
 }
 
-sub ok {
+sub ok { # To make porting from Test easier
     my $self = shift;
-    my ($got, $expected) = @_;
+    my @args = @_;
     local $Error::Depth = $Error::Depth + 1;
-    $self->assert_equals($expected, $got);
+    if (@args == 1) {
+	$self->assert($args[0]); # boolean assertion
+    }
+    elsif (@args == 2) {
+	if (ref $args[0] eq 'CODE') {
+	    $self->assert(@args);
+	}
+	elsif (eval {$args[1]->isa('Regexp')}) {
+	    $self->assert($args[1], $args[0]);
+	}
+	else {
+	    # reverse got/expected
+	    $self->assert_equals($args[1], $args[0]);
+	}
+    }
+    else {
+	# TODO: throw error
+    }
 }
 
 sub assert_not_equals {
@@ -330,6 +347,10 @@ should get a sensible error message.
 
 Calls CODEREF->(@ARGS). Assertion fails if this returns false (or
 throws Test::Unit::Failure)
+
+=item ok(@ARGS)
+
+Simulates the behaviour of the L<Test|Test> module.  Deprecated.
 
 =back
 
