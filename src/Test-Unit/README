@@ -39,9 +39,9 @@ PREREQUISITES
 INSTALLATION
     Just perform the usual incantation:
 
-    gunzip Test-Unit-0.12.tar.gz
-    tar -xvf Test-Unit-0.12.tar 
-    cd Test-Unit-0.12
+    gunzip Test-Unit-0.13.tar.gz
+    tar -xvf Test-Unit-0.13.tar 
+    cd Test-Unit-0.13
     perl Makefile.PL
     make
     make test
@@ -58,7 +58,7 @@ AUTHOR
     Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
 
     Thanks for patches go to:
-    Matthew Astley.
+    Matthew Astley, David Esposito.
 
 SEE ALSO
     - Test::Unit::TestCase (included in this install)

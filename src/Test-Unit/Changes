@@ -1,5 +1,12 @@
 Revision history for Perl extension Test::Unit.
 
+0.13    - patched the patch from 0.12, added patches by David Esposito,
+          (documentation for optional message arg to assert(), make
+	  TkTestRunner use to_string() for exception display), added
+	  documentation on problems in using assert() with regexes and 
+	  messages, fixed these problems for the procedural style
+	  interface (where they can be solved) 
+
 0.12    - added patch by Matthew Astley (method to quell backtrace on 
           failed tests, see Test::Unit::TestCase).
 
