@@ -182,7 +182,7 @@ sub assert_not_equals {
         no strict 'refs';
         *{"Test::Unit::Assert::assert_$type"} =
             sub {
-                local $Error::Depth = $Error::Depth + 1;
+                local $Error::Depth = $Error::Depth + 3;
                 my $self = shift;
                 $assertion->do_assertion(@_);
             };
