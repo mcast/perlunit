@@ -1,7 +1,6 @@
 package Test::Unit::TestCase;
 use strict;
 
-use Test::Unit::Test;
 use base qw(Test::Unit::Test);
 
 use Test::Unit::Debug qw(debug);
@@ -16,8 +15,18 @@ use Error qw/:try/;
 sub new {
     my $class = shift;
     my ($name) = @_;
-    bless { _name => $name }, $class;
+    bless {
+        _name => $name,
+        _out  => '',
+    }, $class;
 }
+
+sub print {
+    my $self = shift;
+    $self->{_out} .= join '', @_;
+}
+  
+sub output { $_[0]->{_out} }
 
 sub count_test_cases {
     my $self = shift;

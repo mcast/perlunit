@@ -100,9 +100,11 @@ sub print_errors {
 
     my $i = 0;
     for my $e (@{$result->errors()}) {
-        chomp $e;
+        chomp(my $e_to_str = $e);
         $i++;
-        $self->_print("$i) $e\n");
+        $self->_print("$i) $e_to_str\n");
+        $self->_print("output was:\n", $e->object->output(), "\n")
+          if $e->object->output();
     }
 }
 
@@ -119,9 +121,11 @@ sub print_failures {
 
     my $i = 0; 
     for my $f (@{$result->failures()}) {
-        chomp $f;
+        chomp(my $f_to_str = $f);
         $self->_print("\n") if $i++;
-        $self->_print("$i) $f\n");
+        $self->_print("$i) $f_to_str\n");
+        $self->_print("\nOutput was:\n", $f->object->output(), "\n")
+          if $f->object->output();
     }
 }
 

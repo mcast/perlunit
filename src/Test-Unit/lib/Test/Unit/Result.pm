@@ -29,6 +29,7 @@ sub add_error {
     my $self = shift;
     debug(ref($self) . "::add_error() called\n");
     my ($test, $exception) = @_;
+    $exception->set_object($test) unless $exception->object();
     push @{$self->errors()}, $exception;
     $self->tell_listeners(add_error => @_);
 }
@@ -37,6 +38,7 @@ sub add_failure {
     my $self = shift;
     debug(ref($self) . "::add_failure() called\n");
     my ($test, $exception) = @_;
+    $exception->set_object($test) unless $exception->object();
     push @{$self->failures()}, $exception;
     $self->tell_listeners(add_failure => @_);
 }
