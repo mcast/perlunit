@@ -91,7 +91,10 @@ sub run {
     my ($test) = @_;
     printf "%s::run(%s) called\n", ref($self), $test->name() if DEBUG;
     $self->start_test($test);
-    $self->run_protected($test, sub { $test->run_bare() && $self->add_pass($test) });
+    $self->run_protected($test, sub {
+                             $test->run_bare() ? $self->add_pass($test) :
+                             $self->add_failure($test)
+                         });
     $self->end_test($test);
 } 
 

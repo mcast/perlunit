@@ -49,6 +49,7 @@ sub run_bare {
     $self->set_up();
     try {
         $self->run_test();
+        1;
     }
     catch Error::Simple with {
         # Something died, which throws an Error::Simple
@@ -58,7 +59,6 @@ sub run_bare {
         # Only gets called if 'set_up' succeed
         $self->tear_down;
     };
-    1;
 }
 
 sub run_test {
@@ -72,11 +72,9 @@ sub run_test {
     }
 }
 
-sub set_up {
-}
+sub set_up    { 1 }
 
-sub tear_down {
-}
+sub tear_down { 1 }
 
 sub to_string {
     my $self = shift;
