@@ -1,0 +1,9 @@
+./lib/Test/Unit.pm
+./lib/Test/SuiteWrapper.pm
+./Changes
+./MANIFEST
+./Makefile.PL
+./test.pl
+./examples/tester.pl
+./examples/tester.png
+./Makefile
