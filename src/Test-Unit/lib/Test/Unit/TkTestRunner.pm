@@ -12,7 +12,7 @@ See http://c2.com/cgi/wiki?TestingFrameworks
 PerlUnit is free software, redistributable under the
 same terms as Perl.
 
-$Id: TkTestRunner.pm,v 1.14 2001-11-15 17:14:19 adamspiers Exp $
+$Id: TkTestRunner.pm,v 1.15 2002-01-29 17:59:04 adamspiers Exp $
 END_COPYRIGHT_NOTICE
 
 use Tk;
@@ -113,11 +113,6 @@ sub create_punit_menu {
 sub create_menus {
   my $self=shift;
   $self->{'frame'}->configure(-menu=>$self->create_punit_menu());
-}
-
-sub create_test_result {
-  my $self=shift;
-  return new Test::Unit::Result();
 }
 
 sub create_ui {

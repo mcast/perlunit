@@ -1,7 +1,14 @@
 package Test::Unit::Runner;
 use strict;
 
+use Test::Unit::Result;
+
 use base qw(Test::Unit::Listener);
+
+sub create_test_result {
+  my $self=shift;
+  return Test::Unit::Result->new();
+}
 
 sub filter {
     my $self = shift;

@@ -6,7 +6,6 @@ use strict;
 use base qw(Test::Unit::Runner); 
 
 use Test::Unit::TestSuite;
-use Test::Unit::Result;
 use Test::Unit::Loader;
 
 sub new {
@@ -68,11 +67,6 @@ sub end_test {
     my ($test) = @_;
 }
 
-sub create_test_result {
-    my $self = shift;
-    return Test::Unit::Result->new();
-}
-	
 sub do_run {
     my $self    = shift;
     my ($suite) = @_;
