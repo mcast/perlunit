@@ -11,63 +11,65 @@ use Test::Unit::UnitHarness;
 sub obj_load { shift; load(@_) }
 
 sub load {
-    my $test_case=shift;
+    my $target = shift;
+    print "Test::Unit::Loader::load($target) called\n" if DEBUG;
+
     my $suite;
-    print "Test::Unit::Loader::load($test_case) called\n" if DEBUG;
     # Is it a test class?
-    if ($test_case=~/^[\w:]+$/ 
-        && eval "require $test_case"
+    if ($target =~ /^[\w:]+$/ 
+        && eval "require $target"
         && ! $@) {
         # first up: is this a real test case?
-        print "$test_case compiled OK as test class\n" if DEBUG;
-        $suite = try_test_suite($test_case) || try_test_case($test_case);
-    } elsif ($test_case=~/\.pm$/ 
-             && eval "require \"$test_case\""
+        print "$target compiled OK as test class\n" if DEBUG;
+        $suite = try_test_suite($target) || try_test_case($target);
+    }
+    elsif ($target =~ /\.pm$/ 
+             && eval "require \"$target\""
              && ! $@) {
-        print "$test_case compiled OK as filename\n" if DEBUG;
+        print "$target compiled OK as filename\n" if DEBUG;
         #In this case I need to figure out what the class
         #was I just loaded!
-        $test_case = get_package_name_from_file($test_case);        
-        $suite = try_test_suite($test_case) || try_test_case($test_case);
-    } else {
+        my $package = get_package_name_from_file($target);        
+        $suite = try_test_suite($package) || try_test_case($package);
+    }
+    else {
         die $@;
     }
     return $suite if $suite;
     
-    for my $file ("$test_case",
-                  "$test_case.t",
-                  "t/$test_case",
-                  "t/$test_case.t" ) {
+    for my $file ("$target",
+                  "$target.t",
+                  "t/$target",
+                  "t/$target.t" ) {
         # try it out as a test::harness type test.
-        $suite=try_test_harness($file);
+        $suite = try_test_harness($file);
         return $suite if $suite;
     }
     # one last shot: is it a _directory_?
-    $suite = try_test_dir($test_case);
+    $suite = try_test_dir($target);
     return $suite if $suite;
-    die "(This error is expected) Suite class " . $test_case . " not found: $@";
+    die "(This error is expected) Suite class " . $target . " not found: $@";
     
 }
 
 sub try_test_case {
-    my $test_case=shift;
-    no strict 'refs';
-    if ($test_case->isa("Test::Unit::TestCase")) {
-        print "$test_case isa Test::Unit::TestCase\n" if DEBUG;
-        return Test::Unit::TestSuite->new($test_case);
+    my $package = shift;
+    if ($package->isa("Test::Unit::TestCase")) {
+        print "$package isa Test::Unit::TestCase\n" if DEBUG;
+        return Test::Unit::TestSuite->new($package);
     } 
 }
 
 sub try_test_suite {
-    my $test_case=shift;
-    no strict 'refs';
-    if ($test_case->can("suite")) {
-        print "$test_case has a suite() method\n" if DEBUG;
-        return $test_case->suite();
+    my $package = shift;
+    if ($package->can("suite")) {
+        print "$package has a suite() method\n" if DEBUG;
+        return $package->suite();
     } 
 }
+
 sub try_test_harness {
-    my $test_case=shift;
+    my $test_case = shift;
     if (-r $test_case) {
         my $fh = new FileHandle;
         $fh->open($test_case) or return;
@@ -78,7 +80,7 @@ sub try_test_harness {
 }
 
 sub try_test_dir {
-    my $test_case=shift;
+    my $test_case = shift;
     if (-d $test_case) {
         die "This is a test directory. I haven't implemented that.\n";
         return Test::Unit::UnitHarness::new_dir($test_case);
@@ -92,7 +94,7 @@ sub try_test_dir {
 # loaded from. Somehow I feel this information is in perl
 # somwhere but if it is I dont know where...
 sub get_package_name_from_file {
-    my $test_case=shift;
+    my $test_case = shift;
     my $fh = new FileHandle;
     my $filename;
     my $real_path = $INC{$filename};
