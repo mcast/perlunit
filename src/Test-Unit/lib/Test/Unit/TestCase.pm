@@ -113,7 +113,7 @@ __END__
     sub test_bar {
         # test the bar feature
     }
-  
+
 =head1 DESCRIPTION
 
     (Taken from the JUnit TestCase class documentation)
