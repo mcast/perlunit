@@ -1,9 +1,11 @@
 package Test::Unit::TestLoader;
 use strict;
+use FileHandle;
 use constant DEBUG => 1;
 
 use Test::Unit::TestSuite;
 use Test::Unit::TestCase;
+use Test::Unit::UnitHarness;
 
 # should really do something in here about a local @INC.
 sub load {
@@ -11,7 +13,7 @@ sub load {
   my $suite;
   # Is it a test class?
   print "About to load $test_case\n" if DEBUG;
-  if (eval "require $test_case") {
+  if ($test_case=~/^[\w:]+$/ and eval "require $test_case") {
 	print "Eval succeeded.\n" if DEBUG;
 	# first up: is this a real test case?
 	$suite=try_test_case($test_case);
@@ -19,7 +21,7 @@ sub load {
 	$suite=try_test_suite($test_case);
 	return $suite if ($suite);
   } else {
-	print $@ if DEBUG;
+	print "Debug: ".$@ if DEBUG;
   }
   for my $file ("$test_case",
 			  "$test_case.t",
@@ -40,7 +42,6 @@ sub try_test_case {
   my $test_case=shift;
   no strict 'refs';
   if ($test_case->isa("Test::Unit::TestCase")) {
-	print "$test_case is indeed a subclass of TestCase.\n" if DEBUG;
 	return Test::Unit::TestSuite->new($test_case);
   } 
 }
@@ -48,20 +49,24 @@ sub try_test_suite {
   my $test_case=shift;
   no strict 'refs';
   if ($test_case->can("suite")) {
-	print "$test_case is indeed a subclass of TestCase.\n" if DEBUG;
 	return $test_case->suite();
   } 
 }
 sub try_test_harness {
   my $test_case=shift;
-  if (-d $test_case) {
-	die "This is a test directory. I havent implemented that.\n";
+  if (-r $test_case) {
+	my $fh = new FileHandle;
+	$fh->open($test_case) or return;
+	my $first = <$fh>;
+	$fh->close or return;
+	return Test::Unit::UnitHarness->new($test_case);
   }
 }
 sub try_test_dir {
   my $test_case=shift;
   if (-d $test_case) {
 	die "This is a test directory. I havent implemented that.\n";
+	return Test::Unit::UnitHarness::new_dir($test_case);
   }
 }
 
