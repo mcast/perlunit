@@ -11,24 +11,28 @@ sub new {
 sub add_error { 
     my $self = shift;
     my $class = ref($self);
+    my ($test, $exception) = @_;
     croak "call to abstract method ${class}::add_error";
 }
 
 sub add_failure {
     my $self = shift;
     my $class = ref($self);
+    my ($test, $exception) = @_;
     croak "call to abstract method ${class}::add_failure";
 }
  
 sub end_test {
     my $self = shift;
     my $class = ref($self);
+    my ($test) = @_;
     croak "call to abstract method ${class}::end_test";
 }
     
 sub start_test {
     my $self = shift;
     my $class = ref($self);
+    my ($test) = @_;
     croak "call to abstract method ${class}::start_test";
 }
 
