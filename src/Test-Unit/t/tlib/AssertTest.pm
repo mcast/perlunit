@@ -38,8 +38,8 @@ sub test_assert {
     $self->assert([]);
     $self->assert([ 'foo', 7 ]);
     $self->check_failures(
-        'expected TRUE, got FALSE' => [ __LINE__, sub { shift->assert(0)   } ],
-        'expected TRUE, got FALSE' => [ __LINE__, sub { shift->assert('')  } ],
+        'Boolean assertion failed' => [ __LINE__, sub { shift->assert(0)   } ],
+        'Boolean assertion failed' => [ __LINE__, sub { shift->assert('')  } ],
 
         'bang'  => [ __LINE__, sub { shift->assert(0, 'bang')              } ],
         'bang'  => [ __LINE__, sub { shift->assert('', 'bang')             } ],
@@ -138,9 +138,9 @@ sub test_ok_boolean {
     my $self = shift;
     $self->ok(1);
     $self->check_failures(
-        'expected TRUE, got FALSE' => [ __LINE__, sub { shift->ok(0)     } ],
-        'expected TRUE, got FALSE' => [ __LINE__, sub { shift->ok('')    } ],
-        'expected TRUE, got FALSE' => [ __LINE__, sub { shift->ok(undef) } ],
+        'Boolean assertion failed' => [ __LINE__, sub { shift->ok(0)     } ],
+        'Boolean assertion failed' => [ __LINE__, sub { shift->ok('')    } ],
+        'Boolean assertion failed' => [ __LINE__, sub { shift->ok(undef) } ],
     );
 }
 
