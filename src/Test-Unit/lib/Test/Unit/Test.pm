@@ -18,4 +18,15 @@ sub run {
     croak "call to abstract method ${class}::run";
 }
 
+sub name {
+    my $self = shift;
+    my $class = ref($self);
+    croak "call to abstract method ${class}::name";
+}
+
+sub to_string {
+    my $self = shift;
+    return $self->name();
+}
+
 1;

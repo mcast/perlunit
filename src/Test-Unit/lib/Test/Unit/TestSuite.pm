@@ -156,6 +156,7 @@ sub run {
 	last if $result->should_stop();
 	$e->run($result);
     }
+	return $result;
 }
     
 sub test_at {
@@ -176,7 +177,7 @@ sub tests {
 
 sub to_string {
     my $self = shift;
-    return $self->{_Name};
+    return $self->name();
 }
 
 sub warning {
