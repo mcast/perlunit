@@ -8,7 +8,7 @@ sub new {
     my ($message) = @_;
     
     $message = '' unless defined($message);
-    $message = "$class: $message\n";
+    $message = "$class:\n$message\n";
 
     my $i = 0;
     my $stacktrace = '';

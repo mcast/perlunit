@@ -23,6 +23,7 @@ lib/Test/Unit/TestCase.pm
 lib/Test/Unit/TestFailure.pm
 lib/Test/Unit/TestListener.pm
 lib/Test/Unit/Assert.pm
+lib/Test/Unit/Assert/CodeRef.pm
 lib/Test/Unit/ExceptionError.pm
 lib/Test/Unit/ExceptionFailure.pm
 lib/Test/Unit/Test.pm

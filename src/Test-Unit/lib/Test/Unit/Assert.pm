@@ -9,10 +9,21 @@ sub assert {
     $self->fail($message) unless $condition;
 }
 
+sub coderef_assert {
+    my $self               = shift;
+    my($coderef, @args) = @_;
+    die unless ref $coderef;
+    if (ref($coderef) eq 'CODE') {
+        require Test::Unit::Assert::CodeRef;
+        $coderef = Test::Unit::Assert::CodeRef->new($coderef);
+    }
+    $coderef->do_assert(@args) || $self->fail("$coderef failed.");
+}
+
 sub fail {
     my $self = shift;
     print ref($self) . "::fail() called\n" if DEBUG;
-    my ($message) = @_;
+    my $message = join '', @_;
     my $ex = Test::Unit::ExceptionFailure->new($message);
     $ex->hide_backtrace() unless $self->get_backtrace_on_fail();
     die $ex;
