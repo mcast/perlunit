@@ -45,11 +45,6 @@ sub add_pass {
     # in this runner passes are ignored.
 }
 
-sub create_test_result {
-    my $self = shift;
-    return Test::Unit::Result->new();
-}
-	
 sub do_run {
     my $self = shift;
     my ($suite, $wait) = @_;
@@ -58,10 +53,8 @@ sub do_run {
     my $start_time = new Benchmark();
     $suite->run($result, $self);
     my $end_time = new Benchmark();
-    my $run_time = timediff($end_time, $start_time);
-    $self->_print("\n", "Time: ", timestr($run_time), "\n");
     
-    $self->print_result($result);
+    $self->print_result($result, $start_time, $end_time);
     
     if ($wait) {
         print "<RETURN> to continue"; # go to STDIN any case
@@ -82,7 +75,11 @@ sub main {
 
 sub print_result {
     my $self = shift;
-    my ($result) = @_;
+    my ($result, $start_time, $end_time) = @_;
+
+    my $run_time = timediff($end_time, $start_time);
+    $self->_print("\n", "Time: ", timestr($run_time), "\n");
+
     $self->print_header($result);
     $self->print_errors($result);
     $self->print_failures($result);

@@ -6,8 +6,27 @@ use Test::Unit::Result;
 use base qw(Test::Unit::Listener);
 
 sub create_test_result {
-  my $self=shift;
-  return Test::Unit::Result->new();
+  my $self = shift;
+  return $self->{_result} = Test::Unit::Result->new();
+}
+
+sub result { shift->{_result} }
+
+sub start_suite {
+    my $self = shift;
+    my ($suite) = @_;
+    push @{ $self->{_suites_running} }, $suite;
+} 
+
+sub end_suite {
+    my $self = shift;
+    my ($suite) = @_;
+    pop @{ $self->{_suites_running} };
+}
+
+sub suites_running {
+    my $self = shift;
+    return @{ $self->{_suites_running} || [] };
 }
 
 sub filter {

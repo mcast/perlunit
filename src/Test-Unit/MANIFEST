@@ -34,6 +34,7 @@ lib/Test/Unit/Loader.pm
 lib/Test/Unit/Procedural.pm
 lib/Test/Unit/Result.pm
 lib/Test/Unit/Runner.pm
+lib/Test/Unit/Runner/Terminal.pm
 lib/Test/Unit/Setup.pm
 lib/Test/Unit/Test.pm
 lib/Test/Unit/TestCase.pm

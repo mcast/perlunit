@@ -259,6 +259,9 @@ sub run {
     my $self = shift;
     my ($result, $runner) = @_;
 
+    $result ||= create_result();
+    $result->tell_listeners(start_suite => $self);
+
     $self->add_warning("No tests found in " . $self->name())
         unless @{ $self->tests() };
 
@@ -271,6 +274,9 @@ sub run {
         last if $result->should_stop();
         $t->run($result);
     }
+
+    $result->tell_listeners(end_suite => $self);
+
     return $result;
 }
     

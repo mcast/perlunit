@@ -8,6 +8,20 @@ sub new {
     croak "call to abstract constructor ${class}::new";
 }
 
+sub start_suite {
+    my $self = shift;
+    my $class = ref($self);
+    my ($suite) = @_;
+    croak "call to abstract method ${class}::start_suite";
+}
+
+sub start_test {
+    my $self = shift;
+    my $class = ref($self);
+    my ($test) = @_;
+    croak "call to abstract method ${class}::start_test";
+}
+
 sub add_error { 
     my $self = shift;
     my $class = ref($self);
@@ -29,13 +43,6 @@ sub end_test {
     croak "call to abstract method ${class}::end_test";
 }
     
-sub start_test {
-    my $self = shift;
-    my $class = ref($self);
-    my ($test) = @_;
-    croak "call to abstract method ${class}::start_test";
-}
-
 1;
 __END__
 
