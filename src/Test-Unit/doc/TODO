@@ -37,9 +37,17 @@ compatibility.
 
 ** Fix error message from failed compilation of suites.
 
-If a testcase fails compilation, you currently get `Suite class
-MyTests::Foo not found', rather than `Failed to load ...'; this needs
-fixing.  Adam has an old patch for this.
+If a testcase fails compilation due to a failed `use Module', you
+currently get
+
+  (This error is expected) Suite class Tests::GGconfig not found:
+  Can't locate Module in @INC ...
+
+rather than just
+
+  Can't locate Module in @INC ...
+  
+`Failed to load ...'; this needs fixing.  Adam has a patch for this.
 
 ** Stop `make test' failing when DEBUG is enabled?
 
@@ -58,18 +66,6 @@ it's worth branching off for the release straight away.
 
 ** Test::Unit::Loader working with whole directories.
 
-** Allow runner state
-
-Refactoring of runner classes to allow storing state in the runner.
-(Adam already has a patch for this.)
-
-This paves the way for choosing which tests to skip in a given run;
-see next item.
-
-We could also use it for controlling debugging levels.
-
-
-
 ** Test filtering
 
 Piers suggested the beautiful idea of using Attribute::Handlers so you
@@ -79,7 +75,9 @@ could do things like:
   sub test_something : skip_if(<condition>) {...}
   sub test_something : skip {...}
 
-Adam needs this for work ASAP, and will probably implement very soon.
+Adam needs this for work ASAP, and will probably implement it very soon.
+There is already a primitive filtering mechanism in place which is
+controlled by the filter() and filter_method() methods.
 
 ** Rethink how the tests are split up between the t/*.t.
 
