@@ -51,6 +51,50 @@ sub test_assert {
     );
 }
 
+sub test_assert_str_equals {
+    my $self = shift;
+    my @pass = (
+        ['', ''],
+        [0, 0],
+        [1, 1],
+        ['foo', 'foo'],
+    );
+    foreach my $pair (@pass) {
+        my ($expected, $got) = @$pair;
+        $self->assert_str_equals($expected, $got);
+        $self->assert_str_equals($expected, $got, 'failure message');
+    }
+    $self->check_failures(
+        'expected value was undef; should be using assert_null?' =>
+          [ __LINE__, sub { shift->assert_str_equals(undef, undef) } ],
+        'expected value was undef; should be using assert_null?' =>
+          [ __LINE__, sub { shift->assert_str_equals(undef, 0)     } ],
+        'expected value was undef; should be using assert_null?' =>
+          [ __LINE__, sub { shift->assert_str_equals(undef, '')    } ],
+        'expected value was undef; should be using assert_null?' =>
+          [ __LINE__, sub { shift->assert_str_equals(undef, 'foo') } ],
+        "expected '', got undef" =>
+          [ __LINE__, sub { shift->assert_str_equals('', undef)    } ],
+        "expected 'foo', got undef" => 
+          [ __LINE__, sub { shift->assert_str_equals('foo', undef) } ],
+        "expected '', got '0'" =>
+          [ __LINE__, sub { shift->assert_str_equals('', 0)        } ],
+        "expected '0', got ''" =>
+          [ __LINE__, sub { shift->assert_str_equals(0, '')        } ],
+        "expected '0', got undef" =>
+          [ __LINE__, sub { shift->assert_str_equals(0, undef)     } ],
+        "expected '0', got '1'" =>
+          [ __LINE__, sub { shift->assert_str_equals(0, 1)         } ],
+        "expected '0', got '-0'" =>
+          [ __LINE__, sub { shift->assert_str_equals(0, '-0')      } ],
+        "expected '-0', got '0'" =>
+          [ __LINE__, sub { shift->assert_str_equals('-0', 0)      } ],
+        "expected 'foo', got 'bar'" =>
+          [ __LINE__, sub { shift->assert_str_equals('foo', 'bar') } ],
+        
+    );
+}
+
 sub test_multi_assert {
     my $self = shift;
     my $assertion = sub {

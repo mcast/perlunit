@@ -120,7 +120,10 @@ sub assert_equals {
     my($asserter, $file, $line) = caller($Error::Depth);
     my @args = @_;
     try {
-        if (defined($args[0]) xor defined($args[1])) {
+        if (! defined($args[0]) and ! defined($args[1])) {
+            # pass
+        }
+        elsif (defined($args[0]) xor defined($args[1])) {
             $self->fail('one arg was not defined');
         }
         elsif (is_numeric($args[0])) {
@@ -356,81 +359,118 @@ sub _format_stack {
 }
 
 {
-    my %assert_subs =
-        (
-         str_equals => sub {
-             local $^W;
-             my $str1 = shift;
-             my $str2 = shift;
-             $str1 eq $str2 or
-                 Test::Unit::Failure->throw
-                         (-text => @_ ? join('',@_) :
-                          "expected '$str1', got '$str2'");
-         },
-         str_not_equals => sub {
-             local $^W;
-             my $str1 = shift;
-             my $str2 = shift;
-             $str1 ne $str2 or
-                 Test::Unit::Failure->throw
-                         (-text => @_ ? join('',@_) :
-                          "'$str1' and '$str2' should differ");
-         },
-         num_equals => sub {
-             local $^W;
-             my $num1 = shift;
-             my $num2 = shift;
-             $num1 == $num2 or
-                 Test::Unit::Failure->throw
-                         (-text => @_ ? join('', @_) :
-                            "expected $num1, got $num2");
-         },
-         num_not_equals => sub {
-             local $^W;
-             my $num1 = shift;
-             my $num2 = shift;
-             $num1 != $num2 or
-                 Test::Unit::Failure->throw
-                         (-text => @_ ? join('', @_) :
-                          "$num1 and $num2 should differ");
-         },
-         matches => sub {
-             my $regexp = shift;
-             eval { $regexp->isa('Regexp') } or
-                 Test::Unit::Error->throw(
-                     -text => "arg 1 to assert_matches() must be a regexp"
-                 );
-             my $string = shift;
-             $string =~ $regexp or
-                 Test::Unit::Failure->throw
-                         (-text => @_ ? join('', @_) :
-                          "$string didn't match /$regexp/");
-         },
-         does_not_match => sub {
-             my $regexp = shift;
-             eval { $regexp->isa('Regexp') } or
-                 Test::Unit::Error->throw(
-                     -text => "arg 1 to assert_does_not_match() must be a regexp"
-                 );
-             my $string = shift;
-             $string !~ $regexp or
-                 Test::Unit::Failure->throw
-                         (-text => @_ ? join('', @_) :
-                          "$string matched /$regexp/");
-         },
-         null       => sub {
-             my $arg = shift;
-             !defined($arg) or
-                 Test::Unit::Failure->throw
-                         (-text => @_ ? join('',@_) : "$arg is defined");
-         },
-         not_null   => sub {
-             my $arg = shift;
-             defined($arg) or
-                 Test::Unit::Failure->throw
-                         (-text => @_ ? join('', @_) : "<undef> unexpected");
-         }
-        );
+    my %assert_subs = (
+        str_equals => sub {
+            my $str1 = shift;
+            my $str2 = shift;
+            defined $str1 or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) :
+                    "expected value was undef; should be using assert_null?"
+              );
+            defined $str2 or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) : "expected '$str1', got undef"
+              );
+            $str1 eq $str2 or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) : "expected '$str1', got '$str2'"
+              );
+        },
+        str_not_equals => sub {
+            my $str1 = shift;
+            my $str2 = shift;
+            defined $str1 or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) :
+                    "expected value was undef; should be using assert_not_null?"
+              );
+            defined $str2 or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) :
+                    "expected a string ne '$str1', got undef"
+              );
+            $str1 ne $str2 or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) : "'$str1' and '$str2' should differ"
+              );
+        },
+        num_equals => sub {
+            my $num1 = shift;
+            my $num2 = shift;
+            defined $num1 or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) :
+                    "expected value was undef; should be using assert_null?"
+              );
+            defined $num2 or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) : "expected '$num1', got undef"
+              );
+            # silence `Argument "" isn't numeric in numeric eq (==)' warnings
+            local $^W; 
+            $num1 == $num2 or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('', @_) : "expected $num1, got $num2"
+              );
+        },
+        num_not_equals => sub {
+            my $num1 = shift;
+            my $num2 = shift;
+            defined $num1 or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) :
+                    "expected value was undef; should be using assert_not_null?"
+              );
+            defined $num2 or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) :
+                    "expected a number != '$num1', got undef"
+              );
+            # silence `Argument "" isn't numeric in numeric ne (!=)' warnings
+            local $^W; 
+            $num1 != $num2 or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('', @_) : "$num1 and $num2 should differ"
+              );
+        },
+        matches => sub {
+            my $regexp = shift;
+            eval { $regexp->isa('Regexp') } or
+              Test::Unit::Error->throw(
+                  -text => "arg 1 to assert_matches() must be a regexp"
+              );
+            my $string = shift;
+            $string =~ $regexp or
+              Test::Unit::Failure->throw
+                  (-text => @_ ? join('', @_) :
+                     "$string didn't match /$regexp/");
+        },
+        does_not_match => sub {
+            my $regexp = shift;
+            eval { $regexp->isa('Regexp') } or
+              Test::Unit::Error->throw(
+                  -text => "arg 1 to assert_does_not_match() must be a regexp"
+              );
+            my $string = shift;
+            $string !~ $regexp or
+              Test::Unit::Failure->throw
+                  (-text => @_ ? join('', @_) :
+                     "$string matched /$regexp/");
+        },
+        null       => sub {
+            my $arg = shift;
+            !defined($arg) or
+              Test::Unit::Failure->throw
+                  (-text => @_ ? join('',@_) : "$arg is defined");
+        },
+        not_null   => sub {
+            my $arg = shift;
+            defined($arg) or
+              Test::Unit::Failure->throw
+                  (-text => @_ ? join('', @_) : "<undef> unexpected");
+        },
+    );
     foreach my $type (keys %assert_subs) {
         my $assertion = Test::Unit::Assertion::CodeRef->new($assert_subs{$type});
         no strict 'refs';
