@@ -24,7 +24,7 @@ sub thrown_exception {
 sub to_string {
     my $self = shift;
     return $self->failed_test()->to_string() . 
-	$self->thrown_exception()->stacktrace();
+	$self->thrown_exception()->to_string();
 }
 
 1;
