@@ -51,6 +51,7 @@ sub suite {
     $suite->add_test(Test::Unit::tests::SuiteTest->new("test_one_test_case"));
     $suite->add_test(Test::Unit::tests::SuiteTest->new("test_not_existing_test_case"));
     $suite->add_test(Test::Unit::tests::SuiteTest->new("test_inherited_tests"));
+    $suite->add_test(Test::Unit::tests::SuiteTest->new("test_inherited_inherited_tests"));
     $suite->add_test(Test::Unit::tests::SuiteTest->new("test_shadowed_tests"));
     return $suite;
 }
@@ -63,6 +64,14 @@ sub test_inherited_tests {
     $suite->run($self->result());
     $self->assert($self->result()->was_successful());
     $self->assert(2 == $self->result()->run_count());
+}
+
+sub test_inherited_inherited_tests {
+    my $self = shift;
+    my $suite = Test::Unit::TestSuite->new("Test::Unit::tests::InheritedInheritedTestCase");
+    $suite->run($self->result());
+    $self->assert($self->result()->was_successful());
+    $self->assert(3 == $self->result()->run_count());
 }
 
 sub test_no_test_case_class {
