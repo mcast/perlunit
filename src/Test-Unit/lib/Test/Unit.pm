@@ -1,7 +1,7 @@
 package Test::Unit;
 
 use strict;
-use vars qw($VERSION @ISA @EXPORT $SIGNPOST %suites);
+use vars qw($VERSION @ISA @EXPORT);
 
 use Test::Unit::TestSuite;
 use Test::Unit::TestRunner;
@@ -12,19 +12,14 @@ require Exporter;
 
 @EXPORT = qw(assert create_suite run_suite add_suite);
 
-if (defined($SIGNPOST)) {
-    # highlander principle
-    goto END_OF_THIS_MODULE;
-} else {
-    $SIGNPOST = 'I was here';
-    my $test_suite = Test::Unit::TestSuite->empty_new("Test::Unit");
-    %suites = ('Test::Unit' => $test_suite);
-}
-    
 $VERSION = '0.10';
 
 # private
 
+my $test_suite = Test::Unit::TestSuite->empty_new("Test::Unit");
+my %suites = ();
+%suites = ('Test::Unit' => $test_suite);
+    
 sub add_to_suites {
     my $suite_holder = shift;
     if (not exists $suites{$suite_holder}) {
@@ -101,8 +96,5 @@ sub add_suite {
     die "Error: no suite '$to_add_to'" unless exists $suites{$to_add_to};
     $suites{$to_add_to}->add_test($suites{$to_be_added});
 }
-
-
-END_OF_THIS_MODULE:
 
 1;
