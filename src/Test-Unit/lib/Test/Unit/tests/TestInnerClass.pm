@@ -9,6 +9,7 @@ sub test_inner_class_multiple_load {
     
     $self->assert(defined($Test::Unit::InnerClass::SIGNPOST));
     
+    local $^W = 0; # reloading will trigger warnings, turn them off
     do 'Test/Unit/InnerClass.pm'; # we must load it this way to check, sorry
     my $how_often_1 = $Test::Unit::InnerClass::HOW_OFTEN;
     my $innerclass_1 = Test::Unit::InnerClass::make_inner_class("Test::Unit::TestCase", << 'EOIC', "innerclass1");
