@@ -20,7 +20,10 @@ my @examples = grep { $_ ne '.' && $_ ne '..' } glob "examples/*";
 my %guru_checked = (
 
      "examples/patch100132" => <<'EGC',
-Can't call method "run" on an undefined value at lib/Test/Unit/TestRunner.pm line 58.
+...
+Time:  0 wallclock secs ( 0.00 usr +  0.00 sys =  0.00 CPU)
+
+OK (3 tests)
 EGC
 
      "examples/patch100132-1" => <<'EGC',
