@@ -159,7 +159,7 @@ sub start {
     my $self = shift;
     my (@args) = @_;
 
-    my $test_case = "";
+    my $test = "";
     my $wait = 0;
 
     for (my $i = 0; $i < @args; $i++) {
@@ -171,14 +171,14 @@ Test::Unit Version $Test::Unit::Test::VERSION
 (c) 2000 Christian Lemburg, Brian Ewins, J.E. Fritz, Cayte Lindner, Zhon Johansen
 EOF
         } else {
-            $test_case = $args[$i];
+            $test = $args[$i];
         }
     }
-    if ($test_case eq "") {
-        die "Usage TestRunner.pl [-wait] name, where name is the name of the TestCase class", "\n";
+    if ($test eq "") {
+        die "Usage: TestRunner.pl [-wait] name, where name is the name of the Test class\n";
     }
     
-    my $suite = Test::Unit::Loader::load($test_case);
+    my $suite = Test::Unit::Loader::load($test);
     $self->do_run($suite, $wait);
 }
 
@@ -201,7 +201,7 @@ Test::Unit::TestRunner - unit testing framework helper class
     use Test::Unit::TestRunner;
 
     my $testrunner = Test::Unit::TestRunner->new();
-    $testrunner->start($my_testcase_class);
+    $testrunner->start($my_test_class);
 
 =head1 DESCRIPTION
 
