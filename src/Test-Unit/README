@@ -1,0 +1,4 @@
+use TestRunner.pl like this (lib adjusted for this directory):
+
+	perl -I./lib TestRunner.pl Test::Unit::tests::TestTest
+
