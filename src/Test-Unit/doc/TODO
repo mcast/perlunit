@@ -98,6 +98,11 @@ Adam needs this for work ASAP, and will probably implement it very soon.
 There is already a primitive filtering mechanism in place which is
 controlled by the filter() and filter_method() methods.
 
+Update: Adam met up with Piers a few months ago and together they
+figured out that Attribute::Handlers may be unusable due to its
+magic happening in the BEGIN phase, whereas all user test code gets
+compiled at run-time via Test::Unit::Loader.  Hmm.
+
 * After 1.0
 
 No harm done if they end up being done before 1.0 though, of course.
