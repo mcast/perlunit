@@ -1,0 +1,116 @@
+-*- outline -*-
+
+* Intro
+
+We were wondering how we should go about keeping track of the
+consensuses (sp?) we reached on the perlunit-devel mailing list.
+
+Matthew was all for a cumbersome set of tags so we could grep the list
+for "points".
+
+Christian suggested a simple text file in CVS which we modify as
+appropriate.
+
+This is a compromise - a simple text file marked up for use with
+emacs' "outline-mode". I chose this because I know that at least 2/4
+active developers use emacs. Open to other suggestions of course.
+
+				-- MCA 27/2/2001
+
+** Links back to the mailing list
+
+Might be handy for those with local archives, but dropping message-ids
+in this file will make a mess IMHO  -- mca
+
+* Test::Unit::Assert::assert()
+
+** assert_eq(this, that, message) and other comparison routines
+
+PerlUnit doesn't include these because the user should be left to
+decide for s/himself whether to use == or eq .
+
+For the same reason we suggest users should roll their own structure
+comparison routines or use FreezeThaw::cmpStr()
+
+Having said this, we don't have concrete examples of Bad Things
+happening, as Adam pointed out. Please add examples below...
+
+** assert_regexp(string, qr/regexp/, message)
+
+seems like a good idea, not yet implemented? -- mca
+
+** coderef_assert($cr, $self);
+
+Write some stuff Piers! I'm a bit baffled -- mca
+
+* Test::Unit::TestSuite, auto-adding tests
+
+** interaction with inheritance
+
+Broken in v0.13, it will take SUPER::test_foo if test_foo is
+an inheritted method in the class being scanned.
+
+Hopefully being fixed by Piers?
+
+** regexps to pull functions called /^test/
+
+I think current consensus is to change the default to /^test[_A-Z]/
+but make it configurable.
+
+I seem to have lost that thread -- mca
+
+* Debug methods
+
+Not much agreement yet, here are some of the suggestions
+
+** $self->debug()
+
+A dead/unused patch from Matthew, the idea was a default debug in the
+base T:U:TestCase class and methods to override it. Messy and
+inconvenient.
+
+** $self->listener->debug($@)
+
+Some say listeners are Java-ish. Others say that they're good anyway.
+9-)
+
+Arguments are headed towards something like
+       debug( level => 123,
+	      user => "simple message",
+	      developer => "complicated message" );
+or some variation on the theme.
+
+This all looks rather verbose so far though. 8-(
+
+** clever things with caller()
+
+one vote for [MCA] (provided you can override it)
+one vote against? [PDC]
+
+* Documentation
+
+Where should it be kept? At the moment it lives almost entirely in POD
+and mailing list/message board format, and so is inaccessible.
+
+A pod2html pass of released software should probably be served on the
+website.
+
+Matthew's (almost finished) cvspublish.pl script could do most of this
+but is probably overkill. Also it doesn't grok MANIFEST files.
+
+There is a documentation manager on SF. The front door is not too
+friendly and there is no back door to the data inside it.
+
+* Generic tests for users to include
+
+Matthew wrote some. Whether anyone else wants them remains to be seen.
+
+* Test coverage tests
+
+There was a big thread on this but it's someone else's turn to write
+about that. 8-)  -- mca
+
+* Namespace pollution
+
+We're going to try to avoid it while generating "inner classes" or
+whatever, for the self-tests.
