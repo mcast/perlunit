@@ -46,9 +46,11 @@ sub make_dummy_testcase {
     my $self = shift;
     my $sub  = pop;
     my $method_name = shift || 'run_test';
-
+    my $test_name = (caller(1))[3] . '_inner';
+    
     Class::Inner->new(parent => 'Test::Unit::TestCase',
-                      methods => { $method_name => $sub });
+                      methods => { $method_name => $sub },
+                      args => [$test_name]);
 }
 
 sub test_case_to_string {
@@ -60,7 +62,10 @@ sub test_case_to_string {
 
 sub test_error {
     my $self = shift;
-    my $error = $self->make_dummy_testcase(sub { Test::Unit::ExceptionError->throw(-object => $self) });
+    my $error = $self->make_dummy_testcase
+        (sub {
+             Test::Unit::ExceptionError->throw(-object => $self);
+         });
     $self->verify_error($error);
 }
 
@@ -72,7 +77,11 @@ sub test_fail {
 
 sub test_failure {
     my $self = shift;
-    my $failure = $self->make_dummy_testcase(sub {my $self = shift; $self->assert(0)});
+    my $failure = $self->make_dummy_testcase
+        (sub {
+             my $self = shift;
+             $self->assert(0);
+         });
     $self->verify_failure($failure);
 }
     

@@ -1,5 +1,5 @@
 ~$
-\.(bak|tar|gz)$
+\.(bak|tar|gz|ptkdb)$
 CVS/
 Makefile$
 Makefile.old

@@ -2,7 +2,6 @@ package Test::Unit::TestResult;
 use strict;
 use constant DEBUG => 0;
 
-use Test::Unit::TestFailure;
 use Test::Unit::ExceptionFailure;
 use Test::Unit::ExceptionError;
 
@@ -30,7 +29,7 @@ sub add_error {
     my $self = shift;
     print ref($self) . "::add_error() called\n" if DEBUG;
     my ($test, $exception) = @_;
-    push @{$self->errors()}, Test::Unit::TestFailure->new($test, $exception);
+    push @{$self->errors()}, $exception;
     $self->tell_listeners(add_error => @_);
 }
 
@@ -38,7 +37,7 @@ sub add_failure {
     my $self = shift;
     print ref($self) . "::add_failure() called\n" if DEBUG;
     my ($test, $exception) = @_;
-    push @{$self->failures()}, Test::Unit::TestFailure->new($test, $exception);
+    push @{$self->failures()}, $exception;
     $self->tell_listeners(add_failure => @_);
 }
 

@@ -3,12 +3,17 @@ package Test::Unit::Assertion;
 use strict;
 
 require Test::Unit::ExceptionFailure;
+use Carp;
 
 use overload '""' => 'to_string';
 
 sub fail {
     my $self = shift;
+    my($asserter,$file,$line) = caller(2); # We're always called from
+                                           # within an Assertion...
     Test::Unit::ExceptionFailure->throw(-object => $self,
+                                        -file => $file,
+                                        -line => $line,
                                         -text => join '', @_);
 }
 

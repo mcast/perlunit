@@ -5,38 +5,64 @@ use strict;
 use constant DEBUG => 0;
 
 require Test::Unit::ExceptionFailure;
+require Test::Unit::Exception;
+
 use Test::Unit::Assertion::CodeRef;
+
+use Error qw/:try/;
 use Carp;
 
 sub assert {
     my $self = shift;
     my $assertion = $self->normalize_assertion(shift);
+    my($asserter,$file,$line) = caller($Error::Depth);
+    
     print "Calling $assertion\n" if DEBUG;
-    $assertion->do_assertion(@_) ||
-        $self->fail("$assertion failed\n");
+    my @args = @_;
+    try { $assertion->do_assertion(@args) }
+    catch Test::Unit::Exception with {
+        my $e = shift;
+        $e->throw_new(-package => $asserter,
+                      -file    => $file,
+                      -line    => $line,
+                      -object  => $self);
+    }
 }
 
 sub is_numeric {
     my $str = shift;
+    local $^W;
     return defined $str && ! ($str == 0 && $str !~ /[+-]?0(e0)?/);
 }
 
+# First argument determines the comparison type.
 sub assert_equals {
     my $self = shift;
-    if (is_numeric($_[0])) {
-        $self->assert_num_equals(@_);
-    }
-    elsif (eval {ref($_[0]) && $_[0]->isa('UNIVERSAL')}) {
-        require overload;
-        if (overload::Method($_[0], '==')) {
-            $self->assert_num_equals(@_);
+    my($asserter, $file, $line) = caller($Error::Depth);
+    my @args = @_;
+    try {
+        if (is_numeric($args[0])) {
+            $self->assert_num_equals(@args);
+        }
+        elsif (eval {ref($args[0]) && $args[0]->isa('UNIVERSAL')}) {
+            require overload;
+            if (overload::Method($args[0], '==')) {
+                $self->assert_num_equals(@args);
+            }
+            else {
+                $self->assert_str_equals(@args);
+            }
         }
         else {
-            $self->assert_str_equals(@_);
+            $self->assert_str_equals(@args);
         }
     }
-    else {
-        $self->assert_str_equals(@_);
+    catch Test::Unit::Exception with {
+        my $e = shift;
+        $e->throw_new(-package => $asserter,
+                      -file    => $file,
+                      -line    => $line,
+                      -object  => $self);
     }
 }
 
@@ -53,6 +79,7 @@ sub assert_equals {
         no strict 'refs';
         *{"Test\::Unit\::Assert\::assert_$type"} =
             sub {
+                local $Error::Depth = $Error::Depth + 1;
                 my $self = shift;
                 $assertion->do_assertion(@_);
             };
@@ -93,9 +120,12 @@ sub normalize_assertion {
 sub fail {
     my $self = shift;
     print ref($self) . "::fail() called\n" if DEBUG;
+    my($asserter,$file,$line) = caller($Error::Depth);
     my $message = join '', @_;
     Test::Unit::ExceptionFailure->throw(-text => $message,
-                                        -object => $self);
+                                        -object => $self,
+                                        -file => $file,
+                                        -line => $line);
 }
 
 sub quell_backtrace {

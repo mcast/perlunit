@@ -77,16 +77,6 @@ sub test_succeed_assert_not_null {
     $self->assert_not_null(10);
 }
 
-sub test_assert_equals_again {
-    my $self = shift;
-    $self->assert_equals(1,'1.0', "1 == '1.0'");
-    $self->assert_equals('1.0', 1, "'1.0' == 1");
-    $self->assert_equals('foo', 'foo', 'foo eq foo');
-    $self->assert_equals('0e0', 0, '0E0 == 0');
-    $self->assert_equals(0, 'foo', "0 == 'foo'");
-    $self->assert_equals('0', 'foo', "'0' == 'foo'");
-}
-
 # Key = assert_method
 # Value = [[@arg_list],undef/expected exception]
 my %test_hash =
@@ -109,16 +99,6 @@ my %test_hash =
                               ],
                   },
 );
-sub test_assert_not_equals {
-    my $self = shift;
-    foreach my $pair ([1,'foo'], ['foo', 0], ['foo', 1], [0,1], ['foo', 'bar']) {
-        try { $self->assert_equals(@$pair); 0}
-        catch Test::Unit::ExceptionFailure with { 1 } or
-            Test::Unit::ExceptionFailure->throw(-text => 'should not have matched',
-                                                -object => $self);
-    }
-}
-
 
 sub suite {
     my $self = shift;

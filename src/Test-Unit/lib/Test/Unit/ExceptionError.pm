@@ -6,8 +6,7 @@ sub make_from_error_simple {
     my $self = shift;
     my $ex = shift;
     my $object = shift;
-    $ex->{'-object'} = $object;
-    bless $ex, ref($self) || $self;
+    $self->throw(%$ex, -object => $object);
 }
 
 1;

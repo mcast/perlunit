@@ -6,6 +6,12 @@ use constant DEBUG => 0;
 use Error;
 use base 'Error';
 
+sub throw_new {
+    my $self = shift;
+    my $class = ref $self;
+    $class->throw(%{$self || {}},@_);
+}
+
 sub stacktrace {
     my $self = shift;
     warn "Stacktrace is deprecated and no longer works"
@@ -23,14 +29,30 @@ sub hide_backtrace {
 
 sub stringify {
     my $self = shift;
-    my $str .= "${\($self->object)} " if $self->object;
-    $str    .= ($self->text || 'Died');
+    my $file = $self->file;
+    my $line = $self->line;
+    my $message = $self->text || 'Died';
+    my $object = $self->object;
+
+    my $str = "$file:$line - ";
+    $str .= $object->to_string if $object && $object->can('to_string');
+    $str .= $message;
     return $str;
 }
 
 sub to_string {
     my $self = shift;
     $self->stringify;
+}
+
+sub failed_test {
+    carp "Test::Unit::Exception::failed_test called";
+    return $_[0]->object;
+}
+
+sub thrown_exception {
+    carp "Test::Unit::Exception::thrown_exception called";
+    return $_[0]->object;
 }
 
 1;

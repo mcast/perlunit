@@ -18,7 +18,7 @@ sub load {
         && eval "require $test_case"
         && ! $@) {
         # first up: is this a real test case?
-        $suite = try_test_case($test_case) || try_test_suite($test_case);
+        $suite = try_test_suite($test_case) || try_test_case($test_case);
     } elsif ($test_case=~/\.pm$/ 
              && eval "require \"$test_case\""
              && ! $@) {

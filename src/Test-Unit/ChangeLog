@@ -1,0 +1,69 @@
+2001-09-02  Piers Cawley  <pdcawley@iterative-software.com>
+
+	* lib/Test/Unit/TestFailure.pm:
+	Removed.
+
+	* lib/Test/Unit/InnerClass.pm:
+	Removed
+	
+	* lib/Test/Unit/tests/AssertTest.pm 
+	Switched to a ResultsMatrix style of testing. Seems to work quite
+	well... 
+
+	* lib/Test/Unit/Assert.pm
+	(is_numeric): Got rid of warnings when the argument isn't numeric.
+
+	* t/all_tests.t: 
+	* t/assert_test.t:
+	Got rid of C<use lib '../lib'> since blib should be handling that.
+
+	* lib/Test/Unit/tests/TestTest.pm: 
+	Basic refactoring to use Class::Inner.
+	(make_dummy_testcase): New helper method to make anonymous
+	classes used in many of the tests.
+
+	* lib/Test/Unit/Assertion/Boolean.pm
+	(do_assertion): Switched to a slightly more sensible way of
+	generating failure messages.
+
+	* lib/Test/Unit/TestLoader.pm
+	(load): Changed the order in which we call C<try_test_suite> and
+	C<try_test_case>. 
+
+	* lib/Test/Unit/TestResult.pm: 
+	Removed dependency on Test::Unit::TestFailure.
+
+	* lib/Test/Unit/ExceptionError.pm
+	(make_from_error_simple): Fixed things up slightly. This method
+	maybe needs a leading underscore; Framework users should probably
+	never see it...
+
+	* lib/Test/Unit/Assertion.pm
+	(fail): Fixed things to put appropriate information into the
+	thrown exception.
+
+	* lib/Test/Unit/Assert.pm: 
+	General refactoring work to get things working with the CPAN
+	modules. 
+	(assert): Now, when an exception is generated, we try and get the
+	appropriate caller information for setting -line and -file. Which
+	is nice.
+	(assert_equals): Fixed to use try/catch. Fixed a nasty bug with @_
+	getting silently emptied via try, so now, before we call try, we
+	copy @_ to @args and use that inside the closure, otherwise
+	assert_equals would always return true.
+	(assert_str_equals,assert_num_equals,assert_null,assert_not_null):
+	All now set $Error::Depth correctly.
+
+	* lib/Test/Unit/Exception.pm
+	(stringify): Tidied up stringification.
+	(failed_test, thrown_exception): We now conform to the
+	Test::Unit::TestFailure interface. Which means that we can get rid
+	of Test::Unit::TestFailure itself. Which is nice.
+
+	* lib/Test/Unit.pm:
+	Switched to using Devel::Symdump, Class::Inner and Error
+	(assert): Moved to the try/catch style.
+	(create_suite): Vaguely major refactoring. Switched to using
+	Devel::Symdump and Class::Inner instead of the hand rolled symbol
+	table manipulation and Test::Unit::InnerClass

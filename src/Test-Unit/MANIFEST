@@ -1,3 +1,4 @@
+ChangeLog
 Changes
 MANIFEST
 Makefile.PL
@@ -34,10 +35,6 @@ examples/fail_example.pm
 examples/patch100132
 examples/patch100132-1
 examples/patch100132-2
-examples/procedural-adding-suites-example.pl
-examples/procedural-another-package-example.pl
-examples/procedural-fail-example.pl
-examples/procedural-ok-example.pl
 examples/tester.pl
 examples/tester.png
 foo.t
@@ -51,11 +48,9 @@ lib/Test/Unit/Exception.pm
 lib/Test/Unit/ExceptionError.pm
 lib/Test/Unit/ExceptionFailure.pm
 lib/Test/Unit/HarnessUnit.pm
-lib/Test/Unit/InnerClass.pm
 lib/Test/Unit/Test.pm
 lib/Test/Unit/TestCase.pm
 lib/Test/Unit/TestDecorator.pm
-lib/Test/Unit/TestFailure.pm
 lib/Test/Unit/TestListener.pm
 lib/Test/Unit/TestLoader.pm
 lib/Test/Unit/TestResult.pm
@@ -77,7 +72,7 @@ lib/Test/Unit/tests/OverrideTestCase.pm
 lib/Test/Unit/tests/Success.pm
 lib/Test/Unit/tests/SuiteTest.pm
 lib/Test/Unit/tests/TestAssertionCodeRef.pm
-lib/Test/Unit/tests/TestInnerClass.pm
+lib/Test/Unit/tests/TestExceptions.pm
 lib/Test/Unit/tests/TestListenerTest.pm
 lib/Test/Unit/tests/TestTest.pm
 lib/Test/Unit/tests/TornDown.pm
