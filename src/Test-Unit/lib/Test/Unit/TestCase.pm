@@ -33,14 +33,6 @@ sub run {
     print ref($self) . "::run() called\n" if DEBUG;
     my ($result) = @_;
     $result = create_result() unless defined($result);
-    $self->_run($result);
-    return $result;
-}
-
-sub _run {
-    my $self = shift;
-    print ref($self) . "::_run() called\n" if DEBUG;
-    my ($result) = @_;
     $result->run($self);
     return $result;
 }

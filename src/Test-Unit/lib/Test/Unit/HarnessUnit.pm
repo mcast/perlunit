@@ -105,18 +105,12 @@ sub main {
 sub run {
     my $self = shift;
     my ($class) = @_;
+    my $a_test_runner = Test::Unit::TestRunner->new();
     if ($class->isa("Test::Unit::Test")) {
-	$self->_run($class);
+	$a_test_runner->do_run($class, 0);
     } else {
-	$self->_run(Test::Unit::TestSuite->new($class));
+	$a_test_runner->do_run(Test::Unit::TestSuite->new($class), 0);
     }
-}
-	
-sub _run {
-    my $self = shift;
-    my ($test) = @_;
-    my $a_test_runner = this_package()->new();
-    $a_test_runner->do_run($test, 0);
 }
 
 sub start {
