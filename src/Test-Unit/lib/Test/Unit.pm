@@ -98,3 +98,90 @@ sub add_suite {
 }
 
 1;
+
+
+=head1 NAME
+
+    Test::Unit - Procedural style unit testing interface
+
+=head1 SYNOPSIS
+
+    use Test::Unit;
+
+    # your code to be tested goes here
+
+    sub foo { return 23 };
+    sub bar { return 42 };
+
+    # define tests
+
+    sub test_foo { assert(foo() == 23); }	
+    sub test_bar { assert(bar() == 42); }
+
+    # set_up and tear_down are used to
+    # prepare and release resources need for testing
+
+    sub set_up    { print "hello world\n"; }
+    sub tear_down { print "leaving world again\n"; }
+
+    # run your test
+
+    create_suite();
+    run_suite();
+
+=head1 DESCRIPTION
+
+    Test::Unit is the procedural style interface to a sophisticated
+    unit testing framework for Perl that is derived from the JUnit 
+    testing framework for Java by Kent Beck and Erich Gamma. While 
+    this framework is originally intended to support unit testing
+    in an object-oriented development paradigm (with support for
+    inheritance of tests etc.), Test::Unit is intended to  provide
+    a simpler interface to the framework that is more suitable for 
+    use in a scripting style environment. Therefore, Test::Unit does
+    not provide much support for an object-oriented approach to
+    unit testing - if you want that, please have a look at 
+    Test::Unit::Tutorial and go for subclassing Test::Unit::TestCase.
+
+    You test a given unit (a script, a module, whatever) by using
+    Test::Unit, which exports the following routines into your namespace:
+
+    assert()       - used to assert that a boolean condition is true
+    create_suite() - used to create a test suite consisting of all
+                     methods with a name prefix of 'test'
+    run_suite()    - runs the test suite (text output)
+    add_suite()    - used to add test suites to each other
+		     
+    For convenience, create_suite() will automatically build a test 
+    suite for a given package. This will build a test case for each 
+    subroutine in the package given that has a name starting with 
+    "test" and pack them all together into one TestSuite object for 
+    easy testing. If you dont give a package name to create_suite(), 
+    the current package is taken as default.
+    
+    Test output is one status line (a "." for every successful test run,
+    or an "F" for any failed test run, to indicate progress), one result
+    line ("OK" or "!!!FAILURES!!!"), and possibly many lines reporting
+    detailed error messages for any failed tests.
+
+    Please remember, Test::Unit is intended to be a simple and
+    convenient interface. If you need more functionality, take the
+    object-oriented approach outlined in Test::Unit::Tutorial.
+ 
+
+=head1 AUTHOR
+
+    Copyright (c) 2000 Christian Lemburg.
+    All rights reserved. This program is free software; you can 
+    redistribute it and/or modify it under the same terms as Perl itself. 
+
+    Thanks go to the other PerlUnit framework people:
+    Brian Ewin, Cayte Lindner, J.E. Fritz, Zhon Johansen
+
+=head1 SEE ALSO
+
+    Test::Unit::Tutorial
+    Test::Unit::TestCase
+    The procedural style examples provided in the examples directory.
+
+=cut
