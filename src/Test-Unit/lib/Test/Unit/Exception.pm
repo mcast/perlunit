@@ -34,9 +34,9 @@ sub stringify {
     my $message = $self->text || 'Died';
     my $object = $self->object;
 
-    my $str = "$file:$line - ";
-    $str .= $object->to_string() . ' ' if $object && $object->can('to_string');
-    $str .= $message;
+    my $str = "$file:$line";
+    $str .= ' - ' . $object->to_string() if $object && $object->can('to_string');
+    $str .= "\n" . $message;
     return $str;
 }
 
