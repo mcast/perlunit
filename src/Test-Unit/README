@@ -10,3 +10,4 @@ and the examples for the procedural API like this:
 
 	perl -w -I./lib examples/procedural-ok-example.pl
 	perl -w -I./lib examples/procedural-fail-example.pl
+	perl -w -I./lib examples/procedural-another-package-example.pl
