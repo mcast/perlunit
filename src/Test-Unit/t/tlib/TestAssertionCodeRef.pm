@@ -1,4 +1,4 @@
-package Test::Unit::tests::TestAssertionCodeRef;
+package TestAssertionCodeRef;
 use strict;
 
 use base qw(Test::Unit::TestCase);

@@ -418,7 +418,7 @@ L<Test::Unit::Exception>
 =item *
 
 The framework self-testing suite
-(L<Test::Unit::tests::AllTests|Test::Unit::tests::AllTests>)
+(L<t::tlib::AllTests|t::tlib::AllTests>)
 
 =back
 

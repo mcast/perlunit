@@ -259,7 +259,7 @@ L<Test::Unit::TkTestRunner>
 =item *
 
 For further examples, take a look at the framework self test
-collection (Test::Unit::tests::AllTests).
+collection (t::tlib::AllTests).
 
 =back
 

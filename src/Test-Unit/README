@@ -20,8 +20,7 @@ DESCRIPTION
     A short tutorial on the object-oriented approach can be found
     in the documentation of Test::Unit::TestCase (the test 
     baseclass). The Test::Unit self-test suite (contained in
-    in Test::Unit::tests::AllTests) is a good example of this
-    approach.
+    in t/tlib) is a good example of this approach.
 
     There is also a GUI based interface to the testing framework.
     The "TkTestRunner.pl" script shows how to invoke it.
@@ -70,8 +69,8 @@ SEE ALSO
 EXAMPLES
     Use TkTestRunner like this:
 
-	perl -w -I./lib TkTestRunner.pl Test::Unit::tests::AllTests
+	perl -w -I./lib -I./t/tlib TkTestRunner.pl AllTests
 
     Use TestRunner.pl like this (lib adjusted for this directory):
 	
-	perl -w -I./lib TestRunner.pl Test::Unit::tests::AllTests
+	perl -w -I./lib -I./t/tlib TestRunner.pl AllTests

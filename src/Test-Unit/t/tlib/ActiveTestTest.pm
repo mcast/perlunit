@@ -1,4 +1,4 @@
-package Test::Unit::tests::ActiveTestTest;
+package ActiveTestTest;
 
 use strict;
 

@@ -1,8 +1,8 @@
-package Test::Unit::tests::InheritedTestCase;
+package InheritedTestCase;
 
 # Test class used in SuiteTest
 
-use base qw(Test::Unit::tests::OneTestCase);
+use base qw(OneTestCase);
 
 sub new {
     shift()->SUPER::new(@_);

@@ -1,4 +1,4 @@
-package Test::Unit::tests::NoTestCaseClass;
+package NoTestCaseClass;
 use strict;
 
 sub new {

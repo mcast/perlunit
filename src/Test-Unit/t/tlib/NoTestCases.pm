@@ -1,4 +1,4 @@
-package Test::Unit::tests::NoTestCases;
+package NoTestCases;
 use strict;
 
 use base qw(Test::Unit::TestCase);

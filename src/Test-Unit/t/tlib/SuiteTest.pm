@@ -1,4 +1,4 @@
-package Test::Unit::tests::SuiteTest;
+package SuiteTest;
 
 use strict;
 
@@ -6,8 +6,8 @@ use base qw(Test::Unit::TestCase);
 
 use Test::Unit::Result;
 use Test::Unit::TestSuite;
-use Test::Unit::tests::TornDown;
-use Test::Unit::tests::WasRun;
+use TornDown;
+use WasRun;
 require Test::Unit::Assertion::CodeRef;
 
 my %method_hash = (runs => 'run_count',
@@ -59,14 +59,14 @@ sub set_up {
 sub suite {
     my $class = shift;
     my $suite = Test::Unit::TestSuite->empty_new("Suite Tests");
-    $suite->add_test(Test::Unit::tests::SuiteTest->new("test_no_test_case_class"));
-    $suite->add_test(Test::Unit::tests::SuiteTest->new("test_no_test_cases"));
-    $suite->add_test(Test::Unit::tests::SuiteTest->new("test_one_test_case"));
-    $suite->add_test(Test::Unit::tests::SuiteTest->new("test_not_existing_test_case"));
-    $suite->add_test(Test::Unit::tests::SuiteTest->new("test_inherited_tests"));
-    $suite->add_test(Test::Unit::tests::SuiteTest->new("test_inherited_inherited_tests"));
-    $suite->add_test(Test::Unit::tests::SuiteTest->new("test_shadowed_tests"));
-    $suite->add_test(Test::Unit::tests::SuiteTest->new("test_complex_inheritance"));
+    $suite->add_test(SuiteTest->new("test_no_test_case_class"));
+    $suite->add_test(SuiteTest->new("test_no_test_cases"));
+    $suite->add_test(SuiteTest->new("test_one_test_case"));
+    $suite->add_test(SuiteTest->new("test_not_existing_test_case"));
+    $suite->add_test(SuiteTest->new("test_inherited_tests"));
+    $suite->add_test(SuiteTest->new("test_inherited_inherited_tests"));
+    $suite->add_test(SuiteTest->new("test_shadowed_tests"));
+    $suite->add_test(SuiteTest->new("test_complex_inheritance"));
     return $suite;
 }
 
@@ -74,7 +74,7 @@ sub suite {
 
 sub test_inherited_tests {
     my $self = shift;
-    my $suite = Test::Unit::TestSuite->new("Test::Unit::tests::InheritedTestCase");
+    my $suite = Test::Unit::TestSuite->new("InheritedTestCase");
     $suite->run($self->result());
     $self->basic_assertion({success => 1, runs => 2});
     $self->assert($self->result()->was_successful());
@@ -84,7 +84,7 @@ sub test_inherited_tests {
 sub test_complex_inheritance {
     my $self = shift;
     eval q{
-        package Test::Unit::tests::_SuperClass;
+        package _SuperClass;
         use base qw(Test::Unit::TestCase);
         sub test_case {
             my $self = shift;
@@ -92,12 +92,12 @@ sub test_complex_inheritance {
         }
         sub override_this_method { 0 ; }
         
-        package Test::Unit::tests::_SubClass;
-        use base qw(Test::Unit::tests::_SuperClass);
+        package _SubClass;
+        use base qw(_SuperClass);
         sub override_this_method { 1 ; }
     };
     die $@ if $@;
-    my $suite = Test::Unit::TestSuite->new("Test::Unit::tests::_SubClass");
+    my $suite = Test::Unit::TestSuite->new("_SubClass");
     my $result = $self->result;
     $suite->run($result);
     
@@ -107,7 +107,7 @@ sub test_complex_inheritance {
 
 sub test_inherited_inherited_tests {
     my $self = shift;
-    my $suite = Test::Unit::TestSuite->new("Test::Unit::tests::InheritedInheritedTestCase");
+    my $suite = Test::Unit::TestSuite->new("InheritedInheritedTestCase");
     $suite->run($self->result());
     $self->basic_assertion(success => 1, runs => 3);
     $self->assert($self->result()->was_successful());
@@ -116,7 +116,7 @@ sub test_inherited_inherited_tests {
 
 sub test_no_test_case_class {
     my $self = shift;
-    my $t = Test::Unit::TestSuite->new("Test::Unit::tests::NoTestCaseClass");
+    my $t = Test::Unit::TestSuite->new("NoTestCaseClass");
     $t->run($self->result());
     $self->basic_assertion(success => 0, runs => 1);
     $self->assert(1 == $self->result()->run_count()); # warning test
@@ -125,7 +125,7 @@ sub test_no_test_case_class {
 
 sub test_no_test_cases {
     my $self = shift;
-    my $t = Test::Unit::TestSuite->new("Test::Unit::tests::NoTestCases");
+    my $t = Test::Unit::TestSuite->new("NoTestCases");
     $t->run($self->result());
     $self->basic_assertion(runs => 1, failures => 1, success => 0);
     $self->assert(1 == $self->result()->run_count()); # warning test
@@ -135,7 +135,7 @@ sub test_no_test_cases {
 
 sub test_not_existing_test_case {
     my $self = shift;
-    my $t = Test::Unit::tests::SuiteTest->new("not_existing_method");
+    my $t = SuiteTest->new("not_existing_method");
     $t->run($self->result());
     $self->basic_assertion(runs => 1, failures => 1, errors => 0);
     $self->assert(1 == $self->result()->run_count());
@@ -145,7 +145,7 @@ sub test_not_existing_test_case {
 
 sub test_one_test_case {
     my $self = shift;
-    my $t = Test::Unit::TestSuite->new("Test::Unit::tests::OneTestCase");
+    my $t = Test::Unit::TestSuite->new("OneTestCase");
     $t->run($self->result());
     $self->basic_assertion(runs => 1, failures => 0, errors => 0, success => 1);
     $self->assert(1 == $self->result()->run_count());
@@ -156,7 +156,7 @@ sub test_one_test_case {
 
 sub test_shadowed_tests {
     my $self = shift;
-    my $t = Test::Unit::TestSuite->new("Test::Unit::tests::OverrideTestCase");
+    my $t = Test::Unit::TestSuite->new("OverrideTestCase");
     $t->run($self->result());
     $self->basic_assertion(runs => 1);
     $self->assert(1 == $self->result()->run_count());

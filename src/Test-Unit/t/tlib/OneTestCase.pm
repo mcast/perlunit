@@ -1,4 +1,4 @@
-package Test::Unit::tests::OneTestCase;
+package OneTestCase;
 
 # Test class used in SuiteTest
 

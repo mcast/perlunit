@@ -1,4 +1,4 @@
-package Test::Unit::tests::ListenerTest;
+package ListenerTest;
     
 # Test class used in SuiteTest
 

@@ -29,7 +29,7 @@ A short tutorial on how to use the unit testing framework is included
 in L<Test::Unit::TestCase>.
 
 Further examples can be found by looking at the self test collection,
-starting in Test::Unit::tests::AllTests.
+starting in t::tlib::AllTests.
 
 =head1 AUTHOR
 

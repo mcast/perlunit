@@ -1,10 +1,10 @@
-package Test::Unit::tests::TestTest;
+package TestTest;
 use strict;
 
 use base qw(Test::Unit::TestCase);
 
-use Test::Unit::tests::TornDown;
-use Test::Unit::tests::WasRun;
+use TornDown;
+use WasRun;
 use Test::Unit::Error;
 use Test::Unit::Failure;
 use Class::Inner;
@@ -55,9 +55,9 @@ sub make_dummy_testcase {
 
 sub test_case_to_string {
     my $self = shift;
-    $self->assert(qr"test_case_to_string\(Test::Unit::tests::TestTest\)",
+    $self->assert(qr"test_case_to_string\(TestTest\)",
                   $self->to_string);
-    $self->assert($self->to_string() eq "test_case_to_string(Test::Unit::tests::TestTest)");
+    $self->assert($self->to_string() eq "test_case_to_string(TestTest)");
 }
 
 sub test_error {

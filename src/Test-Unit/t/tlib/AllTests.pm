@@ -1,8 +1,8 @@
-package Test::Unit::tests::AllTests;
+package AllTests;
 
 use Test::Unit::TestRunner;
 use Test::Unit::TestSuite;
-use Test::Unit::tests::SuiteTest;
+use SuiteTest;
 
 sub new {
     my $class = shift;
@@ -12,9 +12,9 @@ sub new {
 sub suite {
     my $class = shift;
     my $suite = Test::Unit::TestSuite->empty_new("Framework Tests");
-    $suite->add_test(Test::Unit::TestSuite->new("Test::Unit::tests::TestTest"));
-    $suite->add_test(Test::Unit::tests::SuiteTest->suite());
-    $suite->add_test(Test::Unit::TestSuite->new("Test::Unit::tests::ListenerTest"));
+    $suite->add_test(Test::Unit::TestSuite->new("TestTest"));
+    $suite->add_test(SuiteTest->suite());
+    $suite->add_test(Test::Unit::TestSuite->new("ListenerTest"));
     return $suite;
 }
 
@@ -24,17 +24,17 @@ __END__
 
 =head1 NAME
 
-Test::Unit::tests::AllTests - unit testing framework self tests
+AllTests - unit testing framework self tests
 
 =head1 SYNOPSIS
 
     # command line style use
 
-    perl TestRunner.pl Test::Unit::tests::AllTests
+    perl TestRunner.pl AllTests
 
     # GUI style use
 
-    perl TkTestRunner.pl Test::Unit::tests::AllTests
+    perl TkTestRunner.pl AllTests
 
 
 =head1 DESCRIPTION

@@ -1,4 +1,4 @@
-package Test::Unit::tests::AssertTest;
+package AssertTest;
 
 use Test::Unit::TestCase;
 
@@ -17,7 +17,7 @@ sub new {
     bless [@_], $class;
 }
 
-package Test::Unit::tests::AssertTest;
+package AssertTest;
 
 use vars qw/@ISA/;
 @ISA = 'Test::Unit::TestCase';

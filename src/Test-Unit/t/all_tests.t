@@ -1,4 +1,6 @@
 use Test::Unit::HarnessUnit;
 
+use lib 't/tlib', 'tlib';
+
 my $testrunner = Test::Unit::HarnessUnit->new();
-$testrunner->start("Test::Unit::tests::AllTests");
+$testrunner->start("AllTests");

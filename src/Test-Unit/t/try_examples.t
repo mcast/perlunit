@@ -1,3 +1,4 @@
+use lib 't/tlib', 'tlib';
 
 # using the standard built-in 'Test' module (assume nothing)
 use strict;

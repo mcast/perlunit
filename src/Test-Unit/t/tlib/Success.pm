@@ -1,4 +1,4 @@
-package Test::Unit::tests::Success;
+package Success;
 
 use Test::Unit::TestCase;
 use strict;
