@@ -11,8 +11,16 @@ require Exporter;
 @ISA = qw(Exporter);
 
 @EXPORT = qw(assert create_suite run_suite add_suite);
+
+# Helper classes
 use Devel::Symdump;
 use Class::Inner;
+
+# Exception handling
+use Error qw/:try/;
+use Test::Unit::Exception;
+use Test::Unit::ExceptionFailure;
+use Test::Unit::ExceptionError;
 
 # NOTE: 
 # this version number has to be kept in sync 
@@ -41,10 +49,20 @@ sub add_to_suites {
 # public
 
 sub assert ($;$) {
-    my ($condition, $message) = @_;
-    my $asserter = caller();
+    my($condition, $message) = @_;
+    my($asserter,$file,$line) = caller(1);
+    
     add_to_suites($asserter);
-    $suites{$asserter}->assert($condition, $message);
+    try {
+        $suites{$asserter}->assert($condition, $message);
+    }
+    catch Test::Unit::Exception with {
+        my $e = shift;
+        $e->throw_new(
+                      -package => $asserter,
+                      -file    => $file,
+                      -line    => $line);
+    }
 }
 
 sub create_suite {
