@@ -66,7 +66,12 @@ sub assert_equals {
     }
 }
 
-*ok = \&assert_equals;
+sub ok {
+    my $self = shift;
+    my ($got, $expected) = @_;
+    local $Error::Depth = $Error::Depth + 1;
+    $self->assert_equals($expected, $got);
+}
 
 sub assert_not_equals {
     my $self = shift;
