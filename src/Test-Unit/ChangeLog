@@ -1,3 +1,15 @@
+2001-09-07  Piers Cawley  <pdcawley@iterative-software.com>
+
+	* lib/Test/Unit/tests/AssertTest.pm
+	(test_fail_assert_not_equals): 
+	(test_success_assert_not_equals): Added tests for assert_not_equals.
+
+	* lib/Test/Unit/Assert.pm 
+	Doc fixes.
+	(assert_not_equals): Aadded the option to assert that things
+	aren't equal. Also added appropriate
+	(assert_(str|num)_not_equals) methods.
+
 2001-09-02  Piers Cawley  <pdcawley@iterative-software.com>
 
 	* lib/Test/Unit/Loader.pm

@@ -66,13 +66,83 @@ sub assert_equals {
     }
 }
 
+sub assert_not_equals {
+    my $self = shift;
+    my($asserter,$file,$line) = caller($Error::Depth);
+    my @args = @_;
+    try {
+        if (is_numeric($args[0])) {
+            $self->assert_num_not_equals(@args);
+        }
+        elsif (eval {ref($args[0]) && $args[0]->isa('UNIVERSAL')}) {
+            require overload;
+            if (overload::Method($args[0], '==')) {
+                $self->assert_num_not_equals(@args);
+            }
+            else {
+                $self->assert_str_not_equals(@args);
+            }
+        }
+        else {
+            $self->assert_str_not_equals(@args);
+        }
+    }
+    catch Test::Unit::Exception with {
+        my $e = shift;
+        $e->throw_new(-package => $asserter,
+                      -file    => $file,
+                      -line    => $line,
+                      -object  => $self,);
+    };
+}
+    
 {
     my %assert_subs =
         (
-         str_equals => sub {local $^W; $_[0] eq $_[1]},
-         num_equals => sub {local $^W; $_[0] == $_[1]},
-         null       => sub {!defined($_[0])},
-         not_null   => sub {defined($_[0])},
+         str_equals => sub {
+             my $str1 = shift;
+             my $str2 = shift;
+             local $^W;
+             $str1 eq $str2 or
+                 Test::Unit::Failure->throw
+                         (-text => @_ ? join('',@_) :
+                          "expected '$str1', got '$str2'");
+         },
+         str_not_equals => sub {
+             local $^W;
+             my $str1 = shift;
+             my $str2 = shift;
+             $str1 ne $str2 or
+                 Test::Unit::Failure->throw
+                         (-text => @_ ? join('',@_) :
+                          "'$str1' and '$str2' should differ");
+         },
+         num_equals => sub {
+             local $^W; $_[0] == $_[1] or
+                 Test::Unit::Failure->throw
+                         (-text => "expected $_[0], got $_[1]");
+         },
+         num_not_equals => sub {
+             my $num1 = shift;
+             my $num2 = shift;
+             local $^W;
+             $num1 != $num2 or
+                 Test::Unit::Failure->throw
+                         (-text => @_ ? join('', @_) :
+                          "$num1 and $num2 should differ");
+         },
+         null       => sub {
+             my $arg = shift;
+             !defined($arg) or
+                 Test::Unit::Failure->throw
+                         (-text => @_ ? join('',@_) : "$arg is defined");
+         },
+         not_null   => sub {
+             my $arg = shift;
+             defined($arg) or
+                 Test::Unit::Failure->throw
+                         (-text => @_ ? join('', @_) : "<undef> unexpected");
+         }
         );
     foreach my $type (keys %assert_subs) {
         my $assertion = Test::Unit::Assertion::CodeRef->new($assert_subs{$type});
@@ -172,24 +242,92 @@ Test::Unit::Assert - unit testing framework assertion class
 
     $self->assert(scalar("foo" =~ /bar/), $your_optional_message_here);
 
+    # Or, if you don't mind us guessing
+
+    $self->assert_equals('expected', $actual [, $optional_message]);
+    $self->assert_equals(1,$actual);
+    $self->assert_not_equals('not expected', $actual [, $optional_message]);
+    $self->assert_not_equals(0,1);
+
+    # Or, if you want to force the comparator
+
+    $self->assert_num_equals(1,1);
+    $self->assert_num_not_equals(1,0);
+    $self->assert_str_equals('string','string');
+    $self->assert_str_not_equals('stringA', 'stringB');
+
+    # assert defined/undefined status
+
+    $self->assert_null(undef);
+    $self->assert_not_null('');
 
 =head1 DESCRIPTION
 
-This class is used by the framework to assert boolean conditions that
-determine the result of a given test. The optional message will be
-displayed if the condition fails. Normally, it is not used directly,
-but you get the functionality by subclassing from Test::Unit::TestCase.
+This class contains the various standard assertions used within the
+framework. With the exception of the C<assert(CODEREF, @ARGS)>, all
+the assertion methods take an optional message after the mandatory
+fields. The message can either be a single string, or a list, which
+will get concatenated. 
 
-You can also pass in a regular expression object or a coderef as first
-argument to get additional functionality. Note that this is the
-recommended approach to testing regular expression matching.
+Although you can specify a message, it is hoped that the default error
+messages generated when an assertion fails will be good enough for
+most cases.
 
-If you want to use the "old" style for testing regular expression
-matching, please be aware of this: the arguments to assert() are
-evaluated in list context, e.g. making a failing regex "pull" the
-message into the place of the first argument. Since this is ususally
-just plain wrong, please use scalar() to force the regex comparison
-to yield a useful boolean value.
+=head2 Methods
+
+=over 4
+
+=item assert_equals(EXPECTED, ACTUAL [, MESSAGE])
+
+=item assert_not_equals(NOTEXPECTED, ACTUAL [, MESSAGE])
+
+The catch all assertions of (in)equality. We make a guess about
+whether to test for numeric or string (in)equality based on the first
+argument. If it looks like a number then we do a numeric test, if it
+looks like a string, we do a string test. 
+
+If the first argument is an object, we check to see if the C<'=='>
+operator has been overloaded and use that if it has, otherwise we do
+the string test.
+
+=item assert_num_equals
+
+=item assert_num_not_equals
+
+Force numeric comparison with these two.
+
+=item assert_str_equals
+
+=item assert_str_not_equals
+
+Force string comparison
+
+=item assert_null(ARG [, MESSAGE])
+
+=item assert_not_null(ARG [, MESSAGE])
+
+Assert that ARG is defined or not defined.
+
+=item assert(BOOLEAN [, MESSAGE]) 
+
+Checks if the BOOLEAN expression returns a true value that is neither
+a CODE ref nor a REGEXP. Note that MESSAGE is almost non optional in
+this case, otherwise all the assertion has to go on is the truth or
+otherwise of the boolean.
+
+=item assert(qr/PATTERN/, ACTUAL [, MESSAGE])
+
+Matches ACTUAL against the PATTERN regex. If you omit MESSAGE, you
+should get a sensible error message.
+
+=item assert(CODEREF, @ARGS)
+
+Calls CODEREF->(@ARGS). Assertion fails if this returns false (or
+throws Test::Unit::Failure)
+
+=back
+
+=head1 AUTHORS
 
 Copyright (c) 2000 Christian Lemburg, E<lt>lemburg@acm.orgE<gt>.
 

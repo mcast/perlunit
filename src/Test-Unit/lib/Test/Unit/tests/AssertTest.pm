@@ -27,8 +27,6 @@ sub assertion_has_failed {
     return eval {ref($error) && $error->isa('Test::Unit::Failure')};
 }
 
-
-
 sub test_assert_equals {
     my $self = shift;
     my $o = TestObject->new();
@@ -52,17 +50,77 @@ sub test_fail {
     my $self = shift;
     my $got_fail;
     try { $self->fail }
-    catch Test::Unit::Failure with { $got_fail = 1 }
+    catch Test::Unit::Failure with {
+        $got_fail = 1
+    }
     otherwise { $got_fail = 0 };
     $got_fail ||
         throw Test::Unit::Failure -text => 'Expected to fail', -object => $self;
+}
+
+sub test_succeed_assert_null {
+    my $self = shift;
+    $self->assert_null(undef);
+}
+
+sub test_fail_assert_null {
+    my $self = shift;
+    my $got_fail;
+    try { $self->assert_null('Defined') }
+    catch Test::Unit::Failure with {
+        my $e = shift;
+        $self->assert_equals('Defined is defined', $e->text);
+        $got_fail++;
+    };
+    try { $self->assert_null('Defined', 'Weirdness'); }
+    catch Test::Unit::Failure with {
+        my $e = shift;
+        $self->assert_equals('Weirdness', $e->text);
+        $got_fail++;
+    };
+    
+    ($got_fail == 2) ||
+        throw Test::Unit::Failure -text => "Expected failure",
+            -object => $self;
+}
+
+sub test_success_assert_not_equals {
+    my $self = shift;
+    $self->assert_not_equals(1,0);
+    $self->assert_not_equals(0,1);
+    $self->assert_not_equals(0,1E10);
+    $self->assert_not_equals(1E10,0);
+    $self->assert_not_equals(1,2);
+    $self->assert_not_equals('string', 1);
+    $self->assert_not_equals(1,'string');
+    $self->assert_not_equals('string',0);
+    # $self->assert_not_equals(0,'string'); # Numeric comparison done here.. 
+}
+
+sub test_fail_assert_not_equals {
+    my $self = shift;
+    foreach my $pair ([1,1], [0,0], [undef,undef],[0,'string'],
+                   ['string', 'string'], ['10', 10], [10, '10']) {
+        my $got_fail = 0;
+        try { $self->assert_not_equals(@$pair) }
+        catch Test::Unit::Failure with { $got_fail = 1 }
+        otherwise { $got_fail = 0 };
+        $got_fail ||
+            throw Test::Unit::Failure
+                -text => "assert_not_equals($$pair[0], $$pair[1]) should fail.",
+                -object => $self;
+    }
 }
 
 sub test_fail_assert_not_null {
     my $self = shift;
     my $got_fail;
     try { $self->assert_not_null(undef) }
-    catch Test::Unit::Failure with { $got_fail = 1 }
+    catch Test::Unit::Failure with {
+        my $e = shift;
+        $self->assert_equals('<undef> unexpected', $e->text);
+        $got_fail = 1
+    }
     otherwise { $got_fail = 0 };
     $got_fail ||
         throw Test::Unit::Failure -text => "Expected failure...", -object => $self;

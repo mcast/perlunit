@@ -58,6 +58,7 @@ sub run_bare {
         # Only gets called if 'set_up' succeed
         $self->tear_down;
     };
+    1;
 }
 
 sub run_test {
