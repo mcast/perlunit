@@ -44,6 +44,22 @@ sub is_a_test_case_class {
 	}
 } 
 
+# get list of all parent classes of a class
+
+sub flatten_inheritance_tree {
+    # finally a place to put my scheme heritage to work
+    my ($pkg, %seen) = @_;
+    my @parents;
+    return if $seen{$pkg};
+    $seen{$pkg}++;	
+    no strict 'refs';
+    for my $p (@{$pkg . "::ISA"}) {
+	push @parents, $p;
+	push @parents, flatten_inheritance_tree($p, %seen);
+    }
+    return @parents;
+}
+
 # class and object methods
 
 sub new {
@@ -71,7 +87,8 @@ sub new {
 	    $self->add_test($self->warning($message));
 	    return $self;
 	}
-	my @packages_to_search = ($classname, @{$classname . "::ISA"});
+	my @packages_to_search = ($classname, 
+				  flatten_inheritance_tree($classname));
 	for my $pkg (@packages_to_search) {
 	    next unless is_a_test_case_class($pkg);
 	    my @candidates = grep /^test/, keys %{$pkg . "::"};
