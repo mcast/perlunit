@@ -19,16 +19,49 @@ sub run {
 }
 
 # ------------------------------------------------ 
-package Test::Unit::Assert;
+package Test::Unit::Exception;
 use constant DEBUG => 0;
 
-use Carp;
+sub new {
+    my $class = shift;
+    my ($message) = @_;
+    
+    my $i = 0;
+    my $stacktrace = '';
+    my ($pack, $file, $line, $subname, $hasargs, $wantarray);
+    
+    $stacktrace = ref($class) . ": " . $message . "\n";
+    while (($pack, $file, $line, $subname, 
+	    $hasargs, $wantarray) = caller($i++)) {
+	$stacktrace .= "Level $i: in package '$pack', file '$file', at line '$line', sub '$subname'\n";
+    }
+    
+    bless { stacktrace => $stacktrace }, $class;
+}
+
+sub stacktrace {
+    my $self = shift;
+    return $self->{stacktrace};
+}
+
+# ------------------------------------------------ 
+package Test::Unit::ExceptionFailure;
+use vars qw(@ISA);
+@ISA=qw(Test::Unit::Exception);
+
+# ------------------------------------------------ 
+package Test::Unit::ExceptionError;
+use vars qw(@ISA);
+@ISA=qw(Test::Unit::Exception);
+
+# ------------------------------------------------ 
+package Test::Unit::Assert;
+use constant DEBUG => 0;
 
 sub assert {
     my $self = shift;
     print ref($self) . "::assert() called\n" if DEBUG;
     my ($condition, $message) = @_;
-    $message = "Assertion failed: " . $message;
     $self->fail($message) unless $condition;
 }
 
@@ -36,7 +69,7 @@ sub fail {
     my $self = shift;
     print ref($self) . "::fail() called\n" if DEBUG;
     my ($message) = @_;
-    croak $message;
+    die Test::Unit::ExceptionFailure->new($message);
 }
 
 
@@ -65,7 +98,8 @@ sub thrownException {
 
 sub toString {
     my $self = shift;
-    return $self->failedTest()->toString() . ": " . $self->thrownException;
+    return $self->failedTest()->toString() . 
+	$self->thrownException()->stacktrace();
 }
 
 # ------------------------------------------------ 
@@ -123,6 +157,9 @@ sub runBare {
     $self->tearDown();
     if ($exception) {
 	print ref($self) . "::_runBare() propagating exception\n" if DEBUG;
+	if (ref($exception) ne "Test::Unit::ExceptionFailure") {
+	    $exception = Test::Unit::ExceptionError->new($exception);
+	}
 	die $exception; # propagate exception
     }
 }
@@ -246,7 +283,7 @@ sub run {
     my $exception = $@;
     if ($exception) {
 	print ref($self) . "::run() caught exception: $exception\n" if DEBUG;
-	if ($exception =~ /Assertion failed: /) {
+	if (ref($exception) eq "Test::Unit::ExceptionFailure") {
 	    $self->addFailure($test, $exception);
 	} else {
 	    $self->addError($test, $exception);
@@ -498,7 +535,7 @@ sub printErrors {
 	my $i = 0; 
 	for my $e (@{$result->errors()}) {
 	    $i++;
-	    $self->_print($i, ") ", $e->failedTest());
+	    $self->_print($i, ") ", $e->toString());
 	}
     }
 }
