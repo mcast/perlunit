@@ -34,8 +34,6 @@ the way before we bump the version number.
 
 Piers is doing this imminently.
 
-** Stop `make test' failing when DEBUG is enabled?
-
 ** Deal with broken base.pm in older Perls
 
 Or we could always be nasty and stop supporting < 5.6, best to avoid
