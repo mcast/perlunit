@@ -20,7 +20,7 @@ sub do_assertion {
 
 sub to_string {
     my $self = shift;
-    "$$self";
+    "/$$self/ regexp assertion";
 }
 
 1;
