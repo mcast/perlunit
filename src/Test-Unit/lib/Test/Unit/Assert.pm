@@ -49,6 +49,10 @@ __END__
     
     $self->assert($your_condition_here, $your_optional_message_here);
 
+    # NOTE: if you want to use regexes in comparisons, do it like this:
+
+    $self->assert(scalar("foo" =~ /bar/), $your_optional_message_here);
+
 =head1 DESCRIPTION
 
     This class is used by the framework to assert boolean conditions
@@ -56,6 +60,21 @@ __END__
     will be displayed if the condition fails. Normally, it is not
     used directly, but you get the functionality by subclassing from 
     Test::Unit::TestCase.
+
+    There is one problem with assert(): the arguments to assert() are
+    evaluated in list context, e.g. making a failing regex "pull" the
+    message into the place of the first argument. Since this is ususally
+    just plain wrong, please use scalar() to force the regex comparison
+    to yield a useful boolean value. I currently do not see a way around
+    this, since function prototypes don't work for object methods, and
+    any other tricks (counting argument number, and complaining if there
+    is only one argument and it looks like a string, etc.) don't appeal
+    to me. Thanks to Matthew Astley for noting this effect. 
+
+    The procedural interface to this framework, Test::Unit, does not have
+    this problem, as it exports a "normal" assert() function, and that can
+    and does use a function prototype to correct the problem.
+
 
 =head1 AUTHOR
 
