@@ -2,7 +2,7 @@ package Test::Unit::TestCase;
 use strict;
 use constant DEBUG => 0;
 
-use base qw(Test::Unit::Assert Test::Unit::Test);
+use base qw(Test::Unit::Test);
 
 use Test::Unit::ExceptionFailure; 
 use Test::Unit::ExceptionError; 

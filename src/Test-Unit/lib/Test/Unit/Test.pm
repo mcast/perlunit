@@ -2,6 +2,8 @@ package Test::Unit::Test;
 use strict;
 use constant DEBUG => 0;
 
+use base qw(Test::Unit::Assert);
+
 use Carp;
 
 sub count_test_cases {
