@@ -11,7 +11,7 @@ sub test_ok {
 }	
 
 sub test_fail {
-	assert(42 == 23, "Born to lose ...");
+	assert("born" =~ /loose/, "Born to lose ...");
 }
 
 sub set_up {
