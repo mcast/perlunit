@@ -404,7 +404,7 @@ sub _format_stack {
 sub normalize_assertion {
     my $self      = shift;
     my $assertion = shift;
-    if (!ref($assertion)) {
+    if (!ref($assertion) || ref($assertion) eq 'ARRAY') {
         require Test::Unit::Assertion::Boolean;
         return Test::Unit::Assertion::Boolean->new($assertion);
     }

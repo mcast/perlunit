@@ -35,6 +35,8 @@ sub test_assert {
         $_[0] eq $_[1] or $self->fail("$_[0] ne $_[1]");
     };
     $self->assert($coderef, 'a', 'a');
+    $self->assert([]);
+    $self->assert([ 'foo', 7 ]);
     $self->check_failures(
         'expected TRUE, got FALSE' => [ __LINE__, sub { shift->assert(0)   } ],
         'expected TRUE, got FALSE' => [ __LINE__, sub { shift->assert('')  } ],
