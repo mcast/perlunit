@@ -107,7 +107,7 @@ sub start {
     my $suite     = Test::Unit::Loader::load(@args);
     if ($suite) {
         my $count=$suite->count_test_cases();
-        $self->_print("\nSTARTING TEST RUN\n1..$count\n");
+        $self->_print("STARTING TEST RUN\n1..$count\n");
         $self->do_run($suite);
         exit(0);
     } else {
