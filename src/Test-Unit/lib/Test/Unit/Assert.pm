@@ -2,6 +2,8 @@ package Test::Unit::Assert;
 use strict;
 use constant DEBUG => 0;
 
+require Test::Unit::ExceptionFailure;
+
 sub assert {
     my $self = shift;
     my $assertion = $self->normalize_assertion(shift);

@@ -2,6 +2,8 @@ package Test::Unit::Assertion;
 
 use strict;
 
+require Test::Unit::ExceptionFailure;
+
 sub fail {
     my $self = shift;
     local $^W;
