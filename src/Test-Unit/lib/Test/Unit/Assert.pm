@@ -25,9 +25,10 @@ sub normalize_assertion {
     }
     elsif (eval {$assertion->isa('UNIVERSAL')}) {
         # It's an object already.
-        die ref($assertion), "is not an exception class\n"
-            unless $assertion->can('do_assertion');
-        return $assertion;
+
+        return $assertion->can('do_assertion') ? $assertion :
+            Test::Unit::Assertion::Boolean->new($assertion);
+        
     }
     elsif (ref($assertion) eq 'CODE') {
         require Test::Unit::Assertion::CodeRef;

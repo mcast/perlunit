@@ -242,4 +242,9 @@ EOIC
     $self->assert(not $result->was_successful());
 }
 
+sub test_assert_with_non_assertion_object {
+    my $self = shift;
+    my $obj = bless {}, 'NonExistentClass';
+    $self->assert($obj, "Object should eval to true");
+}
 1;
