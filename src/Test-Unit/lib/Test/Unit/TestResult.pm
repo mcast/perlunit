@@ -167,3 +167,62 @@ sub to_string {
 }
 
 1;
+
+
+=head1 NAME
+
+    Test::Unit::TestResult - unit testing framework helper class
+
+=head1 SYNOPSIS
+
+    # this class is not intended to be used directly 
+
+=head1 DESCRIPTION
+
+    This class is used by the framework to record the results
+    of tests, which will throw an instance of a subclass of
+    Test::Unit::Exception in case of errors or failures.
+
+    To achieve this, this class gets called with a test case
+    as argument. It will call this test case's run method back
+    and catch any exceptions thrown.
+
+    This is the quintessential call tree of the communication
+    needed to record the results of a given test:
+
+    $aTestCase->run() {
+	# creates result
+	$aTestResult->run($aTestCase) { 
+	    # catches exception and records it
+	    $aTestCase->run_bare() {
+		# runs test method inside eval
+		$aTestCase->run_test() {
+		    # calls method $aTestCase->name() 
+		    # and propagates exception
+		    # method will call Assert::assert() 
+		    # to cause failure if test fails on 
+		    # test assertion
+		    # it finds this because $aTestCase is-a Assert
+		}
+	    }
+	}
+    }
+
+=head1 AUTHOR
+
+    Copyright (c) 2000 Christian Lemburg, <lemburg@acm.org>.
+
+    All rights reserved. This program is free software; you can
+    redistribute it and/or modify it under the same terms as
+    Perl itself.
+
+    Thanks go to the other PerlUnit framework people: 
+    Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
+
+=head1 SEE ALSO
+
+    - Test::Unit::Assert
+    - Test::Unit::TestCase
+    - Test::Unit::Exception
+
+=cut
