@@ -51,7 +51,7 @@ sub _update_status {
     my $self = shift;
     my $result = $self->result;
 
-    # \e[2F goes to home two lines up
+    # \e[2A goes two lines up
     # \e[K clears to end of line
     # \e[J clears below
     # \e7 saves cursor position
@@ -61,7 +61,7 @@ sub _update_status {
 
 
 
-\e[4F\e7Run: %d, Failures: %d, Errors: %d\e[K
+\e[4A\e7Run: %d, Failures: %d, Errors: %d\e[K
 Current suite: %s\e[K
 Current test:  %s\e[J\e8
 STATUS
