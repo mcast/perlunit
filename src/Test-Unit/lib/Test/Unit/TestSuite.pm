@@ -69,7 +69,7 @@ sub build_suite {
 
     foreach my $method ($classname->list_tests) {
         if ( my $a_class_instance = $classname->new($method) ) {
-            push @{$self->tests}, $a_class_instance;
+            $self->add_test($a_class_instance);
         }
         else {
             $self->add_warning("build_suite: Couldn't create a $classname object");
