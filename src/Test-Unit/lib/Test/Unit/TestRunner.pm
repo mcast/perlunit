@@ -14,6 +14,7 @@ sub new {
     my $class = shift;
     my ($filehandle) = @_;
     $filehandle = \*STDOUT unless $filehandle;
+    select((select($filehandle), $| = 1)[0]);
     bless { _Print_stream => $filehandle }, $class;
 }
 

@@ -48,7 +48,6 @@ OK (3 tests)
 EGC
 
      "examples/fail_example.pm" => <<'EGC',
-Test was not successful.
 Suite setup
 .F.Suite teardown
 
@@ -61,6 +60,8 @@ Run: 2, Failures: 1, Errors: 0
 There was 1 failure:
 1) examples/fail_example.pm:19 - test_fail(fail_example)
 Born to lose ...
+
+Test was not successful.
 EGC
 
      );
