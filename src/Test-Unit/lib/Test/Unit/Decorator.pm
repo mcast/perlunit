@@ -4,8 +4,7 @@ use constant DEBUG => 0;
 
 use base qw(Test::Unit::Test);
 
-sub new 
-{
+sub new {
     my $class = shift;
     my ($fTest) = @_;
     return bless { _fTest => $fTest }, $class;
@@ -14,17 +13,17 @@ sub new
 sub basic_run {
     my $self = shift;
     my ($result) = @_;
-	$self->{_fTest}->run($result);
+    $self->{_fTest}->run($result);
 }
 
 sub count_test_cases() {
     my $self = shift;
-	return $self->{_fTest}->count_test_cases();
+    return $self->{_fTest}->count_test_cases();
 }
 sub run {
     my $self = shift;
     my ($result) = @_;
-	$self->{_fTest}->basic_run($result);
+    $self->{_fTest}->basic_run($result);
 }
 
 sub to_string {
@@ -34,7 +33,7 @@ sub to_string {
 
 sub get_test {
     my $self = shift;
-	return $self->{_fTest};
+    return $self->{_fTest};
 }
 
 1;
@@ -69,6 +68,6 @@ Perl itself.
 
 =head1 SEE ALSO
 
-- Test::Unit::TestCase
+L<Test::Unit::TestCase>
 
 =cut
