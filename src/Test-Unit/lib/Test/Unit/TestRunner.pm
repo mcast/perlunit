@@ -60,8 +60,11 @@ sub do_run {
         print "<RETURN> to continue"; # go to STDIN any case
         <STDIN>;
     }
-    die "\nTest was not successful.\n" unless $result->was_successful;
-    return 0;
+
+    $self->_print("\nTest was not successful.\n")
+      unless $result->was_successful;
+
+    return $result->was_successful;
 }
 
 sub end_test {
