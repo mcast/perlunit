@@ -292,9 +292,9 @@ sub filter_test {
     my @filter_tokens = $runner->filter();
 
     foreach my $token (@filter_tokens) {
-        debug("  - by token $token\n");
-        return 1 if $test->filter_method($token, $test->name())
-                 || $test->filter_method($token, 'ALL');
+        my $filtered = $test->filter_method($token);
+        debug("  - by token $token? ", $filtered ? 'yes' : 'no', "\n");
+        return 1 if $filtered;
     }
 
     return 0;

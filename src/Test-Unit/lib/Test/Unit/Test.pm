@@ -32,21 +32,20 @@ sub to_string {
 
 sub filter_method {
     my $self = shift;
-    my ($token, $method) = @_;
+    my ($token) = @_;
 
-    # Convert hash of arrayrefs from filter() into internally cached hash
-    # of hashrefs for faster lookup.
-    my $private = __PACKAGE__ . '_filter';
-    if (! exists $self->{$private}{$token}) {
-        my @methods = @{ $self->filter->{$token} || [] };
-        $self->{$private}{$token} = { map { $_ => 1 } @methods };
+    my $filtered = $self->filter->{$token};
+
+    if (ref $filtered eq 'ARRAY') {
+        return grep $self->name eq $_, @$filtered;
     }
-
-    my $filtered = $self->{$private}{$token}{$method};
-    debug("      filter $method by token $token? ",
-          $filtered ? 'yes' : 'no',
-	  "\n");
-    return $filtered;
+    elsif (ref $filtered eq 'CODE') {
+        return $filtered->($self->name);
+    }
+    else {
+        die "Didn't understand filtering definition for token $token in ",
+            ref($self), "\n";
+    }
 }
 
 my %filter = ();

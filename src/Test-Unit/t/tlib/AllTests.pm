@@ -23,6 +23,7 @@ sub suite {
     $suite->add_test(Test::Unit::TestSuite->new('TestTest'));      
     $suite->add_test('ListenerTest');                             
     $suite->add_test('BadSuitesTest');
+    $suite->add_test('RunnerTest');
     $suite->add_test('WillDie');
     $suite->add_test(InheritedSuite::TestNames->new('test_names'));
 

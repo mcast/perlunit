@@ -55,6 +55,7 @@ t/tlib/BadSuite/BadUse.pm
 t/tlib/BadSuite/SyntaxError.pm
 t/tlib/BadSuitesTest.pm
 t/tlib/ExceptionChecker.pm
+t/tlib/FilteredSuite.pm
 t/tlib/InheritedInheritedTestCase.pm
 t/tlib/InheritedSuite/OverrideNew.pm
 t/tlib/InheritedSuite/OverrideNewName.pm
