@@ -47,7 +47,7 @@ sub filter_method {
     my $filtered = $self->{_filter}{$token}{$method};
     print "filter $method by token $token? ",
           $filtered ? 'yes' : 'no',
-	  "\n";
+	  "\n" if DEBUG;
     return $filtered;
 }
 
