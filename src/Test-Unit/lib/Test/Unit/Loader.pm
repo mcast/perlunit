@@ -72,8 +72,8 @@ sub load_test {
     my $target = shift;
     debug("Test::Unit::Loader::load_test($target) called\n");
     my $package = compile($target);
-    debug("  compile returned $package\n");
     return unless $package;
+    debug("  compile returned $package\n");
     my $suite = load_test_suite($package) || load_test_case($package);
     die "`$target' was not a valid Test::Unit::Test\n" unless $suite;
     return $suite;
