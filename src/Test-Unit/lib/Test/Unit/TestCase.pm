@@ -79,7 +79,7 @@ sub tear_down { 1 }
 sub to_string {
     my $self = shift;
     my $class = ref($self);
-    return $self->name() . "(" . $class . ")";
+    return ($self->name() || "ANON") . "(" . $class . ")";
 }
 
 sub make_test_from_coderef {

@@ -8,5 +8,6 @@ WriteMakefile(
     'VERSION_FROM' => 'lib/Test/Unit/Test.pm', # finds $VERSION
     'PREREQ_PM'    => {'Class::Inner' => 0,
     		       'Devel::Symdump' => 0,
+		       'Error' => 0,
 	              },
 );
