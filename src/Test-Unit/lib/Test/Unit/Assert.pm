@@ -4,8 +4,9 @@ package Test::Unit::Assert;
 use strict;
 use constant DEBUG => 0;
 
-require Test::Unit::Failure;
-require Test::Unit::Exception;
+use Test::Unit::Failure;
+use Test::Unit::Error;
+use Test::Unit::Exception;
 
 use Test::Unit::Assertion::CodeRef;
 
@@ -73,21 +74,24 @@ sub ok { # To make porting from Test easier
     if (@args == 1) {
 	$self->assert($args[0]); # boolean assertion
     }
-    elsif (@args == 2) {
+    elsif (@args >= 2 && @args <= 3) {
 	if (ref($args[0]) eq 'CODE') {
 	    my $code = shift @args;
 	    $self->assert_equals($code->(), @args);
 	}
 	elsif (eval {$args[1]->isa('Regexp')}) {
-	    $self->assert($args[1], $args[0]);
+	    my $got = shift @args;
+	    my $re  = shift @args;
+	    $self->assert($re, $got, @args);
 	}
 	else {
-	    # reverse got/expected
-	    $self->assert_equals($args[1], $args[0]);
+	    my $got 	 = shift @args;
+	    my $expected = shift @args;
+            $self->assert_equals($expected, $got, @args);
 	}
     }
     else {
-	$self->fail('ok() called with wrong number of args');
+	$self->error('ok() called with wrong number of args');
     }
 }
 
@@ -143,9 +147,13 @@ sub assert_not_equals {
                           "'$str1' and '$str2' should differ");
          },
          num_equals => sub {
-             local $^W; $_[0] == $_[1] or
+             local $^W;
+             my $num1 = shift;
+             my $num2 = shift;
+             $num1 == $num2 or
                  Test::Unit::Failure->throw
-                         (-text => "expected '$_[0]', got '$_[1]'");
+                         (-text => @_ ? join('', @_) :
+                            "expected $num1, got $num2");
          },
          num_not_equals => sub {
              my $num1 = shift;
@@ -217,9 +225,20 @@ sub fail {
     my($asserter,$file,$line) = caller($Error::Depth);
     my $message = join '', @_;
     Test::Unit::Failure->throw(-text => $message,
-                                        -object => $self,
-                                        -file => $file,
-                                        -line => $line);
+			       -object => $self,
+			       -file => $file,
+			       -line => $line);
+}
+
+sub error {
+    my $self = shift;
+    print ref($self) . "::error() called\n" if DEBUG;
+    my($asserter,$file,$line) = caller($Error::Depth);
+    my $message = join '', @_;
+    Test::Unit::Error->throw(-text => $message,
+                             -object => $self,
+                             -file => $file,
+                             -line => $line);
 }
 
 sub quell_backtrace {

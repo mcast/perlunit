@@ -53,38 +53,45 @@ sub test_ok_boolean {
 
 sub test_ok_bad_args {
     my $self = shift;
-    $self->check_failures(
-	'Expected ok() to fail'        => sub { shift->ok()        },
-	'Expected ok(1, 2, 3) to fail' => sub { shift->ok(1, 2, 3) },
+    $self->check_errors(
+        'Expected ok() to fail'        	  => sub { shift->ok()           },
+        'Expected ok(1, 2, 3, 4) to fail' => sub { shift->ok(1, 2, 3, 4) },
     );
 }
 
 sub test_ok_equals {
     my $self = shift;
-    $self->ok(2, 2);
-    $self->ok(0, 0);
-    $self->ok(1.34, 1.34);
-    $self->ok('foo', 'foo');
-    $self->ok('', '');
-    $self->ok(sub {2+2}, 4);
-    $self->ok('fixed', qr/x/);
+    foreach my $args ([0, 0], [2, 2], [1.34, 1.34], 
+		      ['foo', 'foo'], ['', ''], 
+		      [sub {2+2}, 4], ['fixed', qr/x/]) {
+	$self->ok(@$args);
+	$self->ok(@$args, 'comment');
+    }
 }
 
 sub test_ok_not_equals {
     my $self = shift;
     my $adder = sub { 2+2 };
-    $self->check_failures(
-        q{ok(0, 1) should fail}         => sub { shift->ok(0, 1)         },
-        q{ok(1, 0) should fail}         => sub { shift->ok(1, 0)         },
-        q{ok(2, 3) should fail}         => sub { shift->ok(2, 3)         },
-        q{ok(-57, -57.001) should fail} => sub { shift->ok(-57, -57.001) },
-        q{ok('foo', 'bar') should fail} => sub { shift->ok('foo', 'bar') },
-        q{ok('foo', '') should fail}    => sub { shift->ok('foo', '')    },
-        q{ok('', 'foo') should fail}    => sub { shift->ok('', 'foo')    },
-        q{ok('', 'foo') should fail}    => sub { shift->ok('', 'foo')    },
-        q{ok(sub {2+2}, 5) should fail} => sub { shift->ok($adder, 5)    },
-        q{ok('foo', qr/x/) should fail} => sub { shift->ok('foo', qr/x/) },
+    my %checks = (
+        q{0, 1}         => [ 0,      1       ], 
+        q{1, 0}         => [ 1,      0       ], 
+        q{2, 3}         => [ 2,      3       ], 
+        q{-57, -57.001} => [ -57,    -57.001 ], 
+        q{'foo', 'bar'} => [ 'foo',  'bar'   ], 
+        q{'foo', ''}    => [ 'foo',  ''      ], 
+        q{'', 'foo'}    => [ '',     'foo'   ], 
+        q{'', 'foo'}    => [ '',     'foo'   ], 
+        q{sub {2+2}, 5} => [ $adder, 5       ], 
+        q{'foo', qr/x/} => [ 'foo',  qr/x/   ], 
     );
+    my %tests = ();
+    while (my ($targs, $args) = each %checks) {
+        my $message = "ok($targs) should fail";
+	$tests{$message} = sub { shift->ok(@$args) };
+        $message =~ s/(\) should fail)/, 'comment'$1/;
+	$tests{$message} = sub { shift->ok(@$args, "comment: $message") };
+    }
+    $self->check_failures(%tests);
 }
 
 sub test_fail {
@@ -155,9 +162,30 @@ sub check_failures {
 	my $got_fail = 0;
 	try { $self->$test() }
 	catch Test::Unit::Failure with {
-	    $got_fail++;
+	    $got_fail = 1;
+	}
+	otherwise {
+	    $got_fail = 0;
 	};
 	$got_fail || throw Test::Unit::Failure -text => $message, -object => $self;
+    }
+}
+
+sub check_errors {
+    my $self = shift;
+    my %tests = @_;
+    while (my ($message, $test) = each %tests) {
+	my $got_error = 0;
+	try {
+	    $self->$test()
+	}
+	catch Test::Unit::Error with {
+	    $got_error = 1;
+	}
+	otherwise {
+	    $got_error = 0;
+	};
+	$got_error || throw Test::Unit::Failure -text => $message, -object => $self;
     }
 }
 
