@@ -20,7 +20,9 @@ foreach (qw(Makefile.PL Makefile examples lib t)) {
 	unless -e $_;
 }
 
-my @examples = grep { $_ ne '.' && $_ ne '..' } glob "examples/*";
+my %skip = map { ("examples/$_") => 1 }
+               qw(. .. CVS Experimental README tester.pl tester.png);
+my @examples = grep { ! $skip{$_} } glob("examples/*");
 
 my %guru_checked = (
 
@@ -63,15 +65,7 @@ EGC
 
      );
 
-# undef indicates things to skip
-@guru_checked{map { "examples/$_" }
-		  qw(CVS Experimental README tester.pl tester.png)} = ();
-
-
-plan(tests => scalar @examples,
-     todo  => [ grep { !defined $guru_checked{$examples[$_-1]} }
-		(1 .. @examples)
-	       ]);
+plan(tests => scalar(@examples));
 
 foreach my $e (keys %guru_checked) {
     warn("Guru ".(defined $guru_checked{$e} ? 'answer' : 'excuse').
@@ -87,7 +81,9 @@ foreach my $e (@examples) {
     if (defined $guru_checked{$e}) {
 	# get program output
         my $runner = $e =~ /\.pm$/ ? './TestRunner.pl ' : '';
-	my $out = `perl -I lib -I examples $runner$e 2>&1`;
+        my $cmd = "perl -I lib -I examples $runner$e 2>&1";
+#        warn "cmd $cmd\n";
+	my $out = `$cmd`;
 	foreach ($out, $guru_checked{$e}) {
 	    # mess about with start & end newlines
 	    s/^\n+//;
