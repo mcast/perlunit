@@ -92,7 +92,7 @@ foreach my $e (@examples) {
 	    # bin the naughty carriage returns
 	    s/\r//g;
 	    # we can't assume the order of tests will be the same
-	    s/^[\.F]+$/TEST-RUN-SUMMARY/sm;
+	    s/^[\.F]+\n?Suite teardown$/TEST-RUN-SUMMARY/sm;
 	    s/::Load[0-9_]+Anonymous[0-9_]+/::LOAD_ANONYMOUS_CLASSNAME/;
 	    # indent lines with '# ' so they're comments if the test fails
 	    s/\n/\n# /g;
