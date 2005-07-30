@@ -2,7 +2,7 @@
 // (hacked from) Default Web Page for groups that haven't setup their page yet
 // Please replace this file with your own website
 //
-// $Id: index.php,v 1.5 2001-04-27 20:09:46 mca-gdl Exp $
+// $Id: index.php,v 1.6 2005-07-30 20:41:38 mca1001 Exp $
 //
 $headers = getallheaders();
 ?>
@@ -31,12 +31,7 @@ $headers = getallheaders();
 </TABLE>
 <!-- end top title table -->
 
-<!-- center table -->
-<TABLE width="100%" border="0" cellspacing="5" bgcolor="#FFFFFF" cellpadding="5" align="center">
-  <TR>
-    <TD>
 
-<br>
 
 <p>If you don't know what a unit testing framework is or why you would
    want one, the <a href="#related">links</a> below will fill you in.
@@ -57,36 +52,37 @@ $headers = getallheaders();
 <li>We have two <a href="http://sourceforge.net/mail/?group_id=2653">mailing lists</a>,
     with archives:
     <ul>
-    <li><a href="http://www.geocrawler.com/redir-sf.php3?list=perlunit-devel">
+    <li><a href="http://sourceforge.net/mailarchive/forum.php?forum_id=2442">
         perlunit-devel</a> (low volume discussion)
-    <li><a href="http://www.geocrawler.com/redir-sf.php3?list=perlunit-users">
+    <li><a href="http://sourceforge.net/mailarchive/forum.php?forum_id=2441">
         perlunit-users</a> (this list is quiet, if not silent)
     </ul>
     There are also some web-based forums but we've mostly abandoned
     them because we don't like the user interface.
 
 <p>
-<li>If you are using or thinking about using Perlunit, we would be
-    grateful if you filled in our
-    <a href="http://sourceforge.net/survey/survey.php?group_id=2653&survey_id=11342">
-    User Background survey</a> so we know a little bit more about our
-    audience.
-<p>
-    If you've already filled it in, feel free to have another go and
-    change your answers. The survey won't tell you what your replies
-    were last time, but it does enforce one-vote-per-account.
-<p>
-    Finally, I did a bad thing - I added two questions to the survey
-    on 27<sup>th</sup> April 2001, despite the warnings not to. Since
-    we only have six answers so far, it doesn't make too much
-    difference... but <strong>if you're one of the other five people
-    then there are more questions to answer!</strong> Sorry about
-    this. I won't do it again. <small>[mca]</small>
-
-<p>
 <li>Browse the
-    <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/perlunit">
-    CVS repository</a> to see the current state of our files.
+    <a href="http://cvs.sourceforge.net/viewcvs.py/perlunit/">
+
+    CVS repository</a> to see the current state of our files.  A quick
+    outline of what's there:
+
+  <dl>
+   <dt>src/Test-Unit</dt>
+   <dd>This is the source for the distributed package.</dd>
+
+   <dt>src/Test-Unit-0.06, src/UnitTests, src/XUnit-0.01, src/api</dt>
+   <dd>Old layouts of the project, everything is in the Attic.  Ignore.</dd>
+
+   <dt>src/junit3.2</dt>
+   <dt>src/tools</dt>
+   <dd>This is project history - what Brian used to start the project.</dd>
+
+   <dt>www/</dt>
+   <dd>Contains the website
+   <a href="http://perlunit.sourceforget.net/">http://perlunit.sourceforget.net/</a>,
+   no released files or source.</dd>
+  </dl>
 
 </ul>
 
@@ -94,9 +90,9 @@ $headers = getallheaders();
    code, which is very convenient if the package is installed.
 <br>
    We plan to make it available here via <code>pod2html</code> at some
-   point, but in the mean time you can browse the <code>POD</code> for
-   the current release via
-
+   point (suggestions for a good tool would be welcome), but in the
+   mean time you can browse the <code>POD</code> for the current
+   release via
    <a href="http://search.cpan.org/search?dist=Test-Unit">CPAN</a>, as
    above.
 
@@ -113,26 +109,9 @@ $headers = getallheaders();
 </ul>
 
 <p align="right"><small>Last update:
-$Date: 2001-04-27 20:09:46 $
+$Date: 2005-07-30 20:41:38 $
 </small></p>
 
-    </TD>
-  </TR>
-</TABLE>
-<!-- end center table -->
 
-<!-- footer table -->
-<TABLE width="100%" border="0" cellspacing="0" cellpadding="2" bgcolor="737b9c">
-  <TR>
-    <TD align="center">
-    <FONT color="#ffffff"><SPAN class="titlebar"><small>
-    All trademarks and copyrights on this page are properties of their
-    respective owners. Forum comments are owned by the poster. The
-    rest is copyright ©1999-2000 VA Linux Systems, Inc.
-    </small></SPAN></FONT>
-    </TD>
-  </TR>
-</TABLE>
-<!-- end footer table -->
 </BODY>
 </HTML>
