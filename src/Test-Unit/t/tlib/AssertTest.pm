@@ -14,16 +14,42 @@ use Class::Inner;
 use vars qw/@ISA/;
 @ISA = qw(Test::Unit::TestCase ExceptionChecker);
 
-sub assertion_has_failed {
-    my $error = shift;
-    return eval {ref($error) && $error->isa('Test::Unit::Failure')};
-}
 
 sub test_assert_equals {
     my $self = shift;
     my $o = TestObject->new();
     $self->assert_equals($o, $o);
+
+    $self->check_failures
+      ("expected 'start o:MyClass=HASH(0x1404343f0) | any o:MyClass=HASH(0x1404343f0) e:start | any o:MyClass=HASH(0x1404343f0) e:in', got 'start o: e: | any o:start e: | any o:in e:'" =>
+       # A false-negative that burned me; problem with is_numeric
+       # Test must be all on one line
+       [ __LINE__, sub { shift->assert_equals("start o:MyClass=HASH(0x1404343f0) | any o:MyClass=HASH(0x1404343f0) e:start | any o:MyClass=HASH(0x1404343f0) e:in", "start o: e: | any o:start e: | any o:in e:"); } ],
+      );
 }
+
+# ...and the root of that problem in test_assert_equals
+sub test_numericness {
+    my $self = shift;
+    my %tests =
+      ( 1	=> 't',
+	0	=> 't',
+  	'0xF00'	=> 'f', # controversial?  but if you +=10 then it's == 10
+	'15e7'	=> 't',
+	'15E7'	=> 't',
+	"not 0"	=> 'f',
+	"not 4"	=> 'f',
+	"  \n 5E2"	=> 't',
+	"  \t 0E0  "	=> 't',
+      );
+    foreach my $str (keys %tests) {
+	my $expect = $tests{$str};
+	my $actual = Test::Unit::Assert::is_numeric($str) ? 't' : 'f';
+	$self->fail("For string '$str', expect $expect but got $actual")
+	  unless $expect eq $actual;
+    }
+}
+
 
 sub test_assert {
     my $self = shift;
@@ -144,6 +170,11 @@ sub test_assert_equals_null {
     my $self = shift;
     $self->assert_equals(undef, undef);
 }
+
+# sub assertion_has_failed {
+#     my $error = shift;
+#     return eval {ref($error) && $error->isa('Test::Unit::Failure')};
+# }
 
 # Not sure this has meaning in Perl
 #  sub test_assert_null_not_equals_null {

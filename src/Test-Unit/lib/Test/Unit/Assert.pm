@@ -111,7 +111,7 @@ sub multi_assert {
 sub is_numeric {
     my $str = shift;
     local $^W;
-    return defined $str && ! ($str == 0 && $str !~ /[+-]?0(e0)?/);
+    return defined $str && ! ($str == 0 && $str !~ /^\s*[+-]?0(e0)?\s*$/i);
 }
 
 # First argument determines the comparison type.
