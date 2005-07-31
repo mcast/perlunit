@@ -2,17 +2,9 @@
 
 use strict;
 
-use lib 't/tlib', 'tlib';
-
 # using the standard built-in 'Test' module (assume nothing)
-use strict;
 use Test;
 
-warn("\nThe STDERR redirection may not work or may behave differently under\n".
-     "your OS. This will probably cause this test to fail.\n")
-    if $^O =~ /Win32/i;
-# this will apply to various OSes. Is there a "capable of doing unix
-# redirections" flag somewhere?
 
 foreach (qw(Makefile.PL Makefile examples lib t)) {
     die("Please run 'make test' from the top-level source directory\n".
@@ -21,7 +13,7 @@ foreach (qw(Makefile.PL Makefile examples lib t)) {
 }
 
 my %skip = map { ("examples/$_") => 1 }
-               qw(. .. CVS Experimental README tester.pl tester.png);
+               qw(. .. CVS Experimental README tester.png);
 my @examples = grep { ! $skip{$_} } glob("examples/*");
 
 my %guru_checked = (
@@ -75,14 +67,25 @@ foreach my $e (keys %guru_checked) {
 }
 
 
-warn "There might be problems with error redirection undef $^O"
+warn("\n > The STDERR redirection may not work or may behave differently under\n".
+     " > your OS '$^O'. That will probably cause this test to fail.\n")
     if grep { $^O =~ $_ } ( qr/win/i );
+# This will apply to various OSes. Is there a "capable of doing unix
+# redirections" flag somewhere?
+
+
+# Attempt to get hold of the correct perl to run the examples.  I
+# think we want $ENV{FULLPERLRUN} when running "make test", but that
+# doesn't filter down to us.  $ENV{PERL5LIB} is set correctly though.
+my $perl = $^X || "perl";
+# warn "running examples with \$perl='$perl'\n  under \@INC=(@INC)\n  with PERL5LIB=$ENV{PERL5LIB}\n";
+
 
 foreach my $e (@examples) {
     if (defined $guru_checked{$e}) {
 	# get program output
         my $runner = $e =~ /\.pm$/ ? './TestRunner.pl ' : '';
-        my $cmd = "perl -I lib -I examples $runner$e 2>&1";
+        my $cmd = "$perl -I examples $runner$e 2>&1";
 #        warn "cmd $cmd\n";
 	my $out = `$cmd`;
 	foreach ($out, $guru_checked{$e}) {
@@ -102,8 +105,9 @@ foreach my $e (@examples) {
 	}
 	ok($out, $guru_checked{$e});
     } else {
-	warn "Skipping example file '$e', no guru-checked answer\n"
-	    unless exists $guru_checked{$e};
-	ok(0);
+	skip( (exists $guru_checked{$e}
+	       ? "Skip $e: not yet checked"
+	       : 0),
+	      "nothing", "data at \$guru_checked{$e}");
     }
 }
