@@ -17,7 +17,7 @@ See http://c2.com/cgi/wiki?TestingFrameworks
 PerlUnit is free software, redistributable under the
 same terms as Perl.
 
-$Id: TkTestRunner.pm,v 1.18 2002-06-10 15:19:00 adamspiers Exp $
+$Id: TkTestRunner.pm,v 1.19 2005-07-31 16:28:56 mca1001 Exp $
 END_COPYRIGHT_NOTICE
 
 use Tk;
@@ -392,8 +392,17 @@ sub show_error_trace {
     );
     my $selected = $self->{failure_list}->curselection;
     return unless defined($selected) && $self->{exceptions}[$selected];
-    my $text = $dialog->add("Scrolled", "ROText", -width => 80, -height => 20)->pack;
+    my $text = $dialog->add("Scrolled", "ROText", -width => 80, -height => 20)
+      ->pack(-expand => 1, -fill => 'both');
     $text->insert("end", $self->{exceptions}[$selected]->to_string());
+
+    my $e = $self->{exceptions}[$selected];
+    if ($e->object->annotations()) {
+	foreach my $data ("\n\nAnnotations:\n", $e->object->annotations()) {
+	    $text->insert("end", $data); # third arg would be a tag
+	}
+    }
+
     $dialog->Show();
 }
 
