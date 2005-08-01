@@ -17,7 +17,7 @@ See http://c2.com/cgi/wiki?TestingFrameworks
 PerlUnit is free software, redistributable under the
 same terms as Perl.
 
-$Id: TkTestRunner.pm,v 1.19 2005-07-31 16:28:56 mca1001 Exp $
+$Id: TkTestRunner.pm,v 1.20 2005-08-01 19:43:32 mca1001 Exp $
 END_COPYRIGHT_NOTICE
 
 use Tk;
@@ -665,18 +665,12 @@ the tests to be run.
 
 =head1 AUTHOR
 
-Framework JUnit authored by Kent Beck and Erich Gamma.
-
-Copyright (c) 2000 Brian Ewins.
+Copyright (c) 2000-2002, 2005 the PerlUnit Development Team
+(see L<Test::Unit> or the F<AUTHORS> file included in this
+distribution).
 
 All rights reserved. This program is free software; you can
 redistribute it and/or modify it under the same terms as Perl itself.
-
-Thanks go to the other PerlUnit framework people: 
-Christian Lemburg, Cayte Lindner, J.E. Fritz, Zhon Johansen.
-
-Thanks for patches go to:
-David Esposito.
 
 =head1 SEE ALSO
 

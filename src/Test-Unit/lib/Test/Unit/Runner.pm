@@ -84,13 +84,12 @@ sub reset_filter {
 
 =head1 AUTHOR
 
-Copyright (c) 2000 Brian Ewins, Christian Lemburg, <lemburg@acm.org>.
+Copyright (c) 2000-2002, 2005 the PerlUnit Development Team
+(see L<Test::Unit> or the F<AUTHORS> file included in this
+distribution).
 
 All rights reserved. This program is free software; you can
 redistribute it and/or modify it under the same terms as Perl itself.
-
-Thanks go to the other PerlUnit framework people: Cayte Lindner,
-J.E. Fritz, Zhon Johansen.
 
 =head1 SEE ALSO
 

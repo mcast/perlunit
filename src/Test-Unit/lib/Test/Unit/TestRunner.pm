@@ -235,17 +235,12 @@ version info
 
 =head1 AUTHOR
 
-Framework JUnit authored by Kent Beck and Erich Gamma.
-
-Ported from Java to Perl by Christian Lemburg.
-
-Copyright (c) 2000 Christian Lemburg, E<lt>lemburg@acm.orgE<gt>.
+Copyright (c) 2000-2002, 2005 the PerlUnit Development Team
+(see L<Test::Unit> or the F<AUTHORS> file included in this
+distribution).
 
 All rights reserved. This program is free software; you can
 redistribute it and/or modify it under the same terms as Perl itself.
-
-Thanks go to the other PerlUnit framework people: 
-Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
 
 =head1 SEE ALSO
 

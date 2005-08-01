@@ -666,21 +666,14 @@ Simulates the behaviour of the L<Test|Test> module.  B<Deprecated.>
 
 =back
 
-=head1 AUTHORS
+=head1 AUTHOR
 
-Copyright (c) 2000 Christian Lemburg, E<lt>lemburg@acm.orgE<gt>.
+Copyright (c) 2000-2002, 2005 the PerlUnit Development Team
+(see L<Test::Unit> or the F<AUTHORS> file included in this
+distribution).
 
 All rights reserved. This program is free software; you can
 redistribute it and/or modify it under the same terms as Perl itself.
-
-Thanks go to the other PerlUnit framework people: 
-Brian Ewins, Cayte Lindner, J.E. Fritz, Zhon Johansen.
-
-Thanks for patches go to:
-Matthew Astley, David Esposito, Piers Cawley.
-
-Thanks for the deep structure comparison routines to Michael Schwern
-and the other Test::More folk.
 
 =head1 SEE ALSO
 
