@@ -30,15 +30,34 @@ in the runners.
 
 ** Tidy up copyrights, credits, and licensing
 
-We currently have copyrights, licenses, and out of date author
-attributions in pretty much every file in the distribution.  This is
-messy, and a pain to maintain.  It would be good to move all the
-copyrights and credits into one or two files (COPYING or LICENSE or
-AUTHORS, say), and then to change the licensing/credit bits and pieces
-in all the other files into something which refers to that one file,
-and also states that none of the files should be distributed
-separately, only as an entire package, thereby preventing the
-copyright-containing file from being disassociated from the others.
+We had copyrights, licenses, and out of date author attributions in
+pretty much every file in the distribution.  Tidied up 2005-07 mca.
+
+> It would be good to move all the copyrights and credits into one or
+> two files (COPYING or LICENSE or AUTHORS, say),
+
+There are still some single-author files:
+
+  T:U:Assertion*
+
+  T:U:Decorator
+  T:U:Setup
+
+  T:U:Tutorial
+
+> and then to change the licensing/credit bits and pieces in all the
+> other files into something which refers to that one file, and also
+> states that none of the files should be distributed separately, only
+> as an entire package, thereby preventing the copyright-containing
+> file from being disassociated from the others.
+
+Well I've done a chunk of that.  It's not clear that the project
+licences need or seek to prevent dissociation of files from the
+project.
+
+It may also be good to have one copy of a program-usable copyright
+message.  Current T:U:TkTestRunner and T:U:TestRunner contain
+copyright strings.
 
 * Document stuff better
 
@@ -186,9 +205,30 @@ Moved here from doc/consensus.txt.
 
 ** Matthew
 
-*** Consider removing examples/tester* (uses old Test::SuiteWrapper)
+*** integrate Debianisations and credit the relevant folks
+/usr/share/doc/libtest-unit-perl/changelog.Debian.gz
 
-*** Make Debian package
+note, dropped from Debian unstable:
+  http://bugs.debian.org/279805
+  http://bugs.debian.org/317416
+
+*** update top-level README
+
+*** Periodic checks
+Search for Test::* and check they still exist
+
+Search for 'package' ... UnitHarness contains >1
+
+http://www.cpan.org/modules/04pause.html says:
+  Please make sure all your *.pm files contain a $VERSION variable that
+  conforms to the CPAN rules, i.e. the complete computation of $VERSION
+  must take place on the one first line within the module that assigns
+  to it. You can test if this is the case by running
+
+  perl -MExtUtils::MakeMaker -le 'print MM->parse_version(shift)' 'file'
+
+
+Bug tracker at http://rt.cpan.org/NoAuth/Bugs.html?Dist=Test-Unit
 
 *** Find a neat way to run unit-tested programs without the suite
 
