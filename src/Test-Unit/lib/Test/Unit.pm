@@ -77,8 +77,9 @@ L<Test::Unit::Procedural>
 
 The Perl Unit development team are humans. In part we develop stuff
 because it scratches our collective itch but we'd also really like to
-know if it scratches yours. Please subscribe to the perlunit-users
-mailing list at
+know if it scratches yours.
+
+Please subscribe to the perlunit-users mailing list at
 L<http://lists.sourceforge.net/lists/listinfo/perlunit-users> and let
 us know what you love and hate about PerlUnit and what else you want
 to do with it.
@@ -105,22 +106,20 @@ BEGIN {
 
 use constant COPYRIGHT_SHORT => <<EOF;
 Test::Unit Version $Test::Unit::VERSION
-(c) 2000 Christian Lemburg, Brian Ewins, J.E. Fritz, Cayte Lindner, Zhon Johansen
+(c) 2000-2002, 2005 Christian Lemburg, Brian Ewins, et. al.
 EOF
 
 
 use constant COPYRIGHT_NOTICE => <<'END_COPYRIGHT_NOTICE';
-This the PerlUnit Tk Test Runner. 
-Copyright (C) 2000 Christian Lemburg, Brian Ewins,
-Cayte Lindner, J. E. Fritz, Zhon Johansen.
+This is PerlUnit version $Test::Unit::VERSION.
+Copyright (C) 2000-2002, 2005 Christian Lemburg, Brian Ewins, et. al.
+
 
 PerlUnit is a Unit Testing framework based on JUnit.
 See http://c2.com/cgi/wiki?TestingFrameworks
 
 PerlUnit is free software, redistributable under the
 same terms as Perl.
-
-$Id: Unit.pm,v 1.28 2005-08-01 20:30:03 mca1001 Exp $
 END_COPYRIGHT_NOTICE
 
 
