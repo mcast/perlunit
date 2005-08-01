@@ -4,8 +4,8 @@ Test::Unit - the PerlUnit testing framework
 
 =head1 SYNOPSIS
 
-This package provides no functionality; it just serves as an
-overview of the available modules in the framework.
+This package provides only the project version number, copyright
+texts, and a framework overview in POD format.
 
 =head1 DESCRIPTION
 
@@ -26,13 +26,34 @@ scripting style environment.  Therefore, Test::Unit does not
 provide much support for an object-oriented approach to unit
 testing.
 
-=head1 AUTHOR
+=head1 COPYRIGHT
 
-Copyright (c) 2000, 2001 the PerlUnit Development Team
+Copyright (c) 2000-2002, 2005 the PerlUnit Development Team
 (see the F<AUTHORS> file included in this distribution).
 
 All rights reserved. This program is free software; you can
 redistribute it and/or modify it under the same terms as Perl itself.
+
+That is, under the terms of either of:
+
+=over 4
+
+=item *
+
+The GNU General Public License as published by the Free Software
+Foundation; either version 1, or (at your option) any later version.
+
+The text of version 2 is included in the PerlUnit distribution package
+as F<COPYING.GPL-2>.
+
+=item *
+
+The "Artistic License" which comes with Perl.
+
+The text of this is included in the PerlUnit distribution package as
+F<COPYING.Artistic>.
+
+=back
 
 =head1 SEE ALSO
 
@@ -76,7 +97,32 @@ use vars qw($VERSION);
 # this module if you say "install Test::Unit" in the CPAN
 # shell.  "make tardist" should do this automatically.
 
-$VERSION = '0.24';
+BEGIN {
+    $VERSION = '0.24';
+}
+
+# Constants for notices displayed to the user:
+
+use constant COPYRIGHT_SHORT => <<EOF;
+Test::Unit Version $Test::Unit::VERSION
+(c) 2000 Christian Lemburg, Brian Ewins, J.E. Fritz, Cayte Lindner, Zhon Johansen
+EOF
+
+
+use constant COPYRIGHT_NOTICE => <<'END_COPYRIGHT_NOTICE';
+This the PerlUnit Tk Test Runner. 
+Copyright (C) 2000 Christian Lemburg, Brian Ewins,
+Cayte Lindner, J. E. Fritz, Zhon Johansen.
+
+PerlUnit is a Unit Testing framework based on JUnit.
+See http://c2.com/cgi/wiki?TestingFrameworks
+
+PerlUnit is free software, redistributable under the
+same terms as Perl.
+
+$Id: Unit.pm,v 1.28 2005-08-01 20:30:03 mca1001 Exp $
+END_COPYRIGHT_NOTICE
+
 
 1;
 __END__

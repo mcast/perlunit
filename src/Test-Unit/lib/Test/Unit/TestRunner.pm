@@ -3,7 +3,7 @@ use strict;
 
 use base qw(Test::Unit::Runner); 
 
-use Test::Unit; # for the version number
+use Test::Unit; # for copyright & version number
 use Test::Unit::TestSuite;
 use Test::Unit::Loader;
 use Test::Unit::Result;
@@ -170,10 +170,7 @@ sub start {
         if ($args[$i] eq "-wait") {
             $wait = 1;
         } elsif ($args[$i] eq "-v") {
-            print <<EOF;
-Test::Unit Version $Test::Unit::VERSION
-(c) 2000 Christian Lemburg, Brian Ewins, J.E. Fritz, Cayte Lindner, Zhon Johansen
-EOF
+	    print Test::Unit::COPYRIGHT_SHORT;
         } else {
             $test = $args[$i];
         }

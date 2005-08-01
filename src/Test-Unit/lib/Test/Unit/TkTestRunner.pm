@@ -6,24 +6,11 @@ use strict;
 
 use base qw(Test::Unit::Runner);
 
-use constant COPYRIGHT_NOTICE => <<'END_COPYRIGHT_NOTICE';
-This the PerlUnit Tk Test Runner. 
-Copyright (C) 2000 Christian Lemburg, Brian Ewins,
-Cayte Lindner, J. E. Fritz, Zhon Johansen.
-
-PerlUnit is a Unit Testing framework based on JUnit.
-See http://c2.com/cgi/wiki?TestingFrameworks
-
-PerlUnit is free software, redistributable under the
-same terms as Perl.
-
-$Id: TkTestRunner.pm,v 1.20 2005-08-01 19:43:32 mca1001 Exp $
-END_COPYRIGHT_NOTICE
-
 use Tk;
 use Tk::BrowseEntry;
 use Benchmark;
 
+use Test::Unit; # for copyright & version number
 use Test::Unit::Result;
 use Test::Unit::Loader;
 
@@ -39,7 +26,7 @@ sub about {
         -buttons => [ 'OK' ]
     );
     my $text = $dialog->add("ROText"); #, -width => 80, -height => 20);
-    $text->insert("end", COPYRIGHT_NOTICE);
+    $text->insert("end", Test::Unit::COPYRIGHT_NOTICE);
     $text->pack();
     $dialog->Show();
 }
