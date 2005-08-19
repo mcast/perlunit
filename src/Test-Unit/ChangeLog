@@ -1,3 +1,87 @@
+2005-08-19  Matthew Astley  <emacsmail-mca@t8o.org>
+
+	* doc/TODO: notes on HarnessUnit, UnitHarness; more on stuff I'd
+	like to do later
+
+	* examples/README: minor update
+
+2005-08-03  Matthew Astley  <mca1001@users.sourceforge.net>
+
+	* doc/class-diagram.{dia,txt,png}: first stab at a UML class
+	diagram, see how it goes
+
+2005-08-01  Matthew Astley  <mca1001@users.sourceforge.net>
+
+	* lib/Test/Unit.pm, lib/Test/Unit/TkTestRunner.pm, lib/Test/Unit/TestRunner.pm:
+	put links to COPYING.* in Test::Unit; move copyright notices from
+	testrunner modules to Test::Unit
+
+	* lib/Test/Unit/<many>, t/tlib/AllTests.pm: set AUTHOR POD
+	sections to the same boilerplate, in files that don't appear to be
+	single-author -- as described in the top level AUTHORS file
+
+	* AUTHORS: update authors list with SF ids and what I found while
+	boilerplating the PODs; add explicit copy of the Perl licence,
+	taken from Debian perl-base package v5.8.4-2
+
+	* COPYING.Artistic, COPYING.GPL-2: licences copied from Debian
+	base-files package v3.0.12
+
+2005-07-31  Matthew Astley  <mca1001@users.sourceforge.net>
+
+	* lib/Test/Unit/Assert.pm (is_numeric): change the test to match
+	only lone numbers. fix SF bug#1014540
+
+	*** NB. this causes assert_equals to switch from assert_num_equals
+	to assert_str_equals in some cases
+
+	* t/tlib/AssertTest.pm (test_numericness, test_assert_equals):
+	tests for new is_numeric
+
+
+	* lib/Test/Unit/TkTestRunner.pm: make "Show..." dialog text expand
+	with window and include annotations.  fixes SF bug#1018619
+
+	* t/try_examples.t: clear out useless 'use lib's; remove dup $^O
+	check; fix RT bug#3963 (thanks ILYAM); improve skipping of
+	untested items
+
+	* examples/tester.png: update screenshot of Tk test runner; mark
+	as binary
+
+	* examples/tester.pl: remove old Tk code - Test::SuiteWrapper went
+	away 2000-02-21
+
+2005-07-30  Matthew Astley  <mca1001@users.sourceforge.net>
+
+	* t/try_examples.t:
+	Fix SF bug#908422 (track changing testing output format);
+	Thanks: dholland, eksiegerman
+	[aka. SF bug#1245490, RT bug#2244]
+
+	* .cvsignore: ignore build stuff
+
+
+	-- other changes Adam made since REL_0_24, but aren't mentioned
+	already.  I list them partly so I know where my towel is:
+
+	* AUTHORS: Adam became maintainer
+
+	* doc/TODO: updated
+
+	* lib/Test/Unit/Decorator.pm: some minor change I've not investigated
+
+	* lib/Test/Unit/Procedural.pm:
+	fix bug spotted by Matthias Ferber (and Ken) in run() (which is
+	usually overridden) [SF bug#760491, RT bug#3058]
+
+	* lib/Test/Unit/Runner.pm: improve filtering, POD
+
+	* lib/Test/Unit/TestCase.pm: POD for filtering
+
+	* t/tlib/RunnerTest.pm: new test for T:U:TestRunner, just tests
+	filtering; uses the new t/tlib/FilteredSuite.pm
+
 2002-06-20  Adam Spiers  <perlunit@adamspiers.org>
 
 	* lib/Test/Unit/TestCase.pm: document new filtering via coderefs
@@ -382,6 +466,8 @@
 	- massive refactoring of Test::Unit::Loader
 	- factored out Test::Unit::Suite::_warning into Test::Unit::Warning, so
 	  it could be used elsewhere
+	    [I think he meant Test::Unit::TestSuite::_warning -- mca,
+	    trying to prevent confusion]
 	- fixed NoTestCaseClass test
 
 	* examples/fail_example.pm, t/try_examples.t:
