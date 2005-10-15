@@ -345,6 +345,10 @@ sub test_fail_assert_not_null {
     $self->check_failures(
         '<undef> unexpected'
           => [ __LINE__, sub { shift->assert_not_null(undef) } ],
+        '<undef> unexpected'
+          => [ __LINE__, sub { shift->assert_not_null() } ],
+	  # nb. $self->assert_not_null(@emptylist, "message") is not
+	  # going to do what you expected!
         'Weirdness'
           => [ __LINE__, sub { shift->assert_not_null(undef, 'Weirdness') } ]
     );
