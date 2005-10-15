@@ -257,6 +257,16 @@ assert_deep_equals patches:
  can we do that direct use linkage?
  do I need to backport the patches we have?
 
+move the scripts somewhere so they get installed in a bin/
+
+put version numbers in all modules (my or our or oldestyle?)
+as below,
+
+ - if derived from CVS, with a note somewhere about bumping CVS
+   versions if files take non-linear routes somewhere
+
+ - cd src/Test-Unit; grep -rL VERSION lib/ | grep -v CVS/
+
 *** integrate Debianisations and credit the relevant folks
 /usr/share/doc/libtest-unit-perl/changelog.Debian.gz
 
@@ -267,6 +277,9 @@ note, dropped from Debian unstable:
 *** update top-level README
 
 *** Periodic checks
+(should go in doc/release-checklist, or better yet in an installation
+test)
+
 Search for Test::* and check they still exist
 
 Search for 'package' ... UnitHarness contains >1
@@ -278,9 +291,6 @@ http://www.cpan.org/modules/04pause.html says:
   to it. You can test if this is the case by running
 
   perl -MExtUtils::MakeMaker -le 'print MM->parse_version(shift)' 'file'
-
-
-Bug tracker at http://rt.cpan.org/NoAuth/Bugs.html?Dist=Test-Unit
 
 *** Find a neat way to run unit-tested programs without the suite
 

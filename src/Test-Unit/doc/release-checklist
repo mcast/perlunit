@@ -21,15 +21,16 @@ Make sure all the examples run OK.
 1. Commit new files in src/Test-Unit
 2. lib/Test/Unit.pm - put in the new $VERSION for the distribution
 3. MANIFEST if files are to be added to the tarball
+   ("make manifest" will add new files and tell you, but check they're
+   not local cruft from your working copy.  Get a clean checkout of
+   the working copy to ensure no files are missing, or that you have
+   removed deleted files from MANIFEST.)
 4. cvs rtag -r HEAD REL_0_14 releasemodule
    (with the $VERSION number from above)
 5. make clean ; perl Makefile.PL ; make tardist
 6. upload to incoming as per Sourceforge docs
-7. notify lemburg@acm.org for upload to CPAN
+7. notify current CPAN maintainer to get an upload
 
-Cheers,
-
-Christian Lemburg
 
 -------------------------------------------------
 Explanation on version number synchronization:

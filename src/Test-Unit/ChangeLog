@@ -1,4 +1,25 @@
-2005-08-19  Matthew Astley  <emacsmail-mca@t8o.org>
+2005-10-15  Matthew Astley  <mca1001@users.sourceforge.net>
+
+	* doc/release-checklist, doc/TODO, ChangeLog: updates for release
+
+	* lib/Test/Unit.pm: version 0.25
+
+	* MANIFEST: add licence and class-diagram files, remove old
+	exmample; keep in "make manifest" generated order
+
+	* t/tlib/AssertTest.pm (test_fail_assert_not_null): extra check,
+	for SF bug #610499
+
+	* lib/Test/Unit/Assert.pm (assert_deep_equals): fix comparisons of
+	cyclic structures (thanks flacoste, SF patch #678422), comparisons
+	of undefs (thanks flacoste, Debian BTS #249678), comparison of
+	SCALAR refs
+
+	* t/tlib/AssertTest.pm (test_assert_deep_equals): add modified
+	test from SF bug #1012115; modified test from flacoste's SF patch
+	#678422; more tests on SCALAR refs, and improve the regexp
+
+2005-08-19  Matthew Astley  <mca1001@users.sourceforge.net>
 
 	* doc/TODO: notes on HarnessUnit, UnitHarness; more on stuff I'd
 	like to do later
