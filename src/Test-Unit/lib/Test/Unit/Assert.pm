@@ -250,13 +250,19 @@ sub _deep_check {
     my $self = shift;
     my ($e1, $e2) = @_;
 
-    # Quiet uninitialized value warnings when comparing undefs.
-    local $^W = 0; 
+    if ( ! defined $e1 || ! defined $e2 ) {
+        return 1 if !defined $e1 && !defined $e2;
+        push @Data_Stack, { vals => [$e1, $e2] };
+        return 0;
+    }
+
+    return 0 if ( (defined $e1 && $e1 eq $DNE)
+                  || (defined $e2 && $e2 eq $DNE ));
 
     return 1 if $e1 eq $e2;
     if ( ref $e1 && ref $e2 ) {
         my $e2_ref = "$e2";
-        return 1 if $Seen_Refs{$e1} eq $e2_ref;
+        return 1 if defined $Seen_Refs{$e1} && $Seen_Refs{$e1} eq $e2_ref;
         $Seen_Refs{$e1} = $e2_ref;
     }
 
