@@ -400,8 +400,8 @@ sub test_assert_deep_equals {
     my $differ = sub {
         my ($a, $b) = @_;
         qr/^Structures\ begin\ differing\ at: $ \n
-           \s* \$a .* = .* $a      .* $ \n
-           \s* \$b .* = .* $b/mx;
+        \S*\s* \$a .* = .* (?-x:$a)      .* $ \n
+        \S*\s* \$b .* = .* (?-x:$b)/mx;
     };
 
     my %families; # key=test-purpose, value=assorted circular structures
@@ -441,17 +441,25 @@ sub test_assert_deep_equals {
 	$self->assert_deep_equals($families{orig}, $families{copy});
     }
 
-    my ($H, $G) = ("hello", "goodbye");
+    my ($H, $H2, $G) = qw(hello hello goodbye);
+
     my @pairs = (
         'Both arguments were not references' => [ undef, 0 ],
         'Both arguments were not references' => [ 0, undef ],
         'Both arguments were not references' => [ 0, 1     ],
         'Both arguments were not references' => [ 0, ''    ],
         'Both arguments were not references' => [ '', 0    ],
-         $differ->(qw/ARRAY HASH/)     => [ [],      {}      ],
-         $differ->(qw/ARRAY HASH/)     => [ [1,2],   {1,2}   ],
-         $differ->('not\ exist', "'3'") => [ [1,2],   [1,2,3] ],
-         $differ->("'3'", 'not\ exist') => [ [1,2,3], [1,2]   ],
+         $differ->(qw/'ARRAY 'HASH/)     => [ [],      {}      ],
+         $differ->(qw/'ARRAY 'HASH/)     => [ [1,2],   {1,2}   ],
+	 $differ->( "'ARRAY", " undef" ) => [ { 'test' => []},
+					      { 'test' => undef } ],
+	 $differ->( "'ARRAY", 'not exist' ) => [ { 'test' => []}, {} ],
+	 $differ->( 'undef', "'ARRAY" ) => [ { 'test' => undef },
+					     { 'test' => []} ],
+	 $differ->( "''", " undef" ) => [ [ '' ], [ undef ] ],
+	 $differ->( "'undef'", " undef" ) => [ [ 'undef' ], [ undef ] ],
+         $differ->('not exist', "'3'") => [ [1,2],   [1,2,3] ],
+         $differ->("'3'", "not exist") => [ [1,2,3], [1,2]   ],
          $differ->("'wahhhhh'", "'wahhhh'") => [
              $complex,
              {
@@ -467,8 +475,10 @@ sub test_assert_deep_equals {
                  },
              }
          ],
-	 $differ->( 'HASH', 'not\ exist') => [$families{orig}, $families{bad_copy}], # test may be fragile due to recursion ordering?
-	 $differ->('hello', 'goodbye') => [ [ \$H, "world" ], [ \$G, "world" ] ],
+	 $differ->( 'HASH', 'not exist') => [$families{orig}, $families{bad_copy}], # test may be fragile due to recursion ordering?
+	 $differ->("'3'", "'5'") => [ [ \$H, 3 ], [ \$H2, 5 ] ],
+	 $differ->("'hello'", "'goodbye'") => [ { world => \$H }, { world => \$G } ],
+	 $differ->("'hello'", "'goodbye'") => [ [ \$H, "world" ], [ \$G, "world" ] ],
     );
 
     my @tests = ();
