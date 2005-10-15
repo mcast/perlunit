@@ -404,6 +404,44 @@ sub test_assert_deep_equals {
            \s* \$b .* = .* $b/mx;
     };
 
+    my %families; # key=test-purpose, value=assorted circular structures
+    foreach my $key (qw(orig copy bad_copy)) {
+	my %family = ( john => { name => 'John Doe',
+				 spouse => undef,
+				 children => [],
+			       },
+		       jane => { name   => 'Jane Doe',
+				 spouse => undef,
+				 children => [],
+			       },
+		       baby => { name => 'Baby Doll',
+#				 spouse => undef,
+				 children => [],
+			       },
+		     );
+	$family{john}{spouse} = $family{jane};
+	$family{jane}{spouse} = $family{john};
+	push @{$family{john}{children}}, $family{baby};
+	push @{$family{jane}{children}}, $family{baby};
+	$families{$key} = \%family;
+    }
+    $families{bad_copy}->{jane}{spouse} = $families{bad_copy}->{baby}; # was ->{john}
+
+    # Breakage under test is infinite recursion, to memory exhaustion!
+    # Jump through hoops to avoid killing people's boxes
+    {
+	my $old_isa = \&UNIVERSAL::isa;
+	# Pick on isa() because it'll be called from any deep-ing code
+	local $^W = 0;
+	local *UNIVERSAL::isa = sub {
+	    die "Giving up on deep recursion for assert_deep_equals"
+	      if defined caller(500);
+	    return $old_isa->(@_);
+	};
+	$self->assert_deep_equals($families{orig}, $families{copy});
+    }
+
+    my ($H, $G) = ("hello", "goodbye");
     my @pairs = (
         'Both arguments were not references' => [ undef, 0 ],
         'Both arguments were not references' => [ 0, undef ],
@@ -429,6 +467,7 @@ sub test_assert_deep_equals {
                  },
              }
          ],
+	 $differ->( 'HASH', 'not\ exist') => [$families{orig}, $families{bad_copy}], # test may be fragile due to recursion ordering?
     );
 
     my @tests = ();
