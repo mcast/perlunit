@@ -1,3 +1,15 @@
+
+  This is out of date in places.  I haven't investigated which places.
+
+  Note that there are multiple bug trackers, listed here in what mca
+  considers the order of preference,
+
+    http://sourceforge.net/tracker/?group_id=2653&atid=102653
+    http://rt.cpan.org/NoAuth/Bugs.html?Dist=Test-Unit
+    http://bugs.debian.org/libtest-unit-perl
+
+  Also note use of ChangeLog instead of Changes, and parts of doc/TODO
+
 -------------------------------------------------
 The procedure should be:
 -------------------------------------------------
