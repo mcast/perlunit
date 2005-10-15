@@ -280,7 +280,7 @@ sub _deep_check {
     }
     elsif (UNIVERSAL::isa($e1, 'SCALAR') and UNIVERSAL::isa($e2, 'SCALAR')) {
         push @Data_Stack, { type => 'REF', vals => [$e1, $e2] };
-        return _deep_check($$e1, $$e2);
+        return $self->_deep_check($$e1, $$e2);
     }
     else {
         push @Data_Stack, { vals => [$e1, $e2] };
