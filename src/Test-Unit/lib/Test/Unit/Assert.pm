@@ -219,6 +219,7 @@ sub assert_not_equals {
 }
 
 # Shamelessly pinched from Test::More and adapted to Test::Unit.
+our %Seen_Refs = ();
 our @Data_Stack;
 my $DNE = bless [], 'Does::Not::Exist';
 sub assert_deep_equals {
@@ -236,13 +237,14 @@ sub assert_deep_equals {
     }
 
     local @Data_Stack = ();
+    local %Seen_Refs = ();
     if (! $self->_deep_check($this, $that)) {
         Test::Unit::Failure->throw(
             -text => @_ ? join('', @_)
                         : $self->_format_stack(@Data_Stack)
         );
     }
-}    
+}
 
 sub _deep_check {
     my $self = shift;
@@ -252,6 +254,11 @@ sub _deep_check {
     local $^W = 0; 
 
     return 1 if $e1 eq $e2;
+    if ( ref $e1 && ref $e2 ) {
+        my $e2_ref = "$e2";
+        return 1 if $Seen_Refs{$e1} eq $e2_ref;
+        $Seen_Refs{$e1} = $e2_ref;
+    }
 
     if (UNIVERSAL::isa($e1, 'ARRAY') and UNIVERSAL::isa($e2, 'ARRAY')) {
         return $self->_eq_array($e1, $e2);
