@@ -1,6 +1,11 @@
 AUTHORS
 ChangeLog
 Changes
+COPYING.Artistic
+COPYING.GPL-2
+doc/class-diagram.dia
+doc/class-diagram.png
+doc/class-diagram.txt
 MANIFEST
 Makefile.PL
 README
@@ -16,7 +21,6 @@ examples/fail_example.pm
 examples/patch100132
 examples/patch100132-1
 examples/patch100132-2
-examples/tester.pl
 examples/tester.png
 lib/Test/Unit.pm
 lib/Test/Unit/Assert.pm
