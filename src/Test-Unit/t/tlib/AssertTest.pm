@@ -468,6 +468,7 @@ sub test_assert_deep_equals {
              }
          ],
 	 $differ->( 'HASH', 'not\ exist') => [$families{orig}, $families{bad_copy}], # test may be fragile due to recursion ordering?
+	 $differ->('hello', 'goodbye') => [ [ \$H, "world" ], [ \$G, "world" ] ],
     );
 
     my @tests = ();
