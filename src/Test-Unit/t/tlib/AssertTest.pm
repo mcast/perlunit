@@ -366,14 +366,23 @@ sub test_succeed_assert_not_null {
 sub test_succeed_assert_isa {
     my $self = shift;
     $self->assert_isa('TestObject', TestObject->new);
+    $self->assert_isa('Test::Unit::TestCase', $self);
+    $self->assert_isa(AssertTest => $self);
+    $self->assert_isa('Test::Unit::TestCase', 'AssertTest'); # assert_isa('Superclass', 'Class') currently fails
 }
 
 sub test_fail_assert_isa {
     my $self = shift;
+    $self->check_errors(
+        "expected classname was undef; should be using assert_null?"
+          => [ __LINE__, sub { shift->assert_isa(undef, 'FooBar') } ],
+        "expected classname was a reference; args swapped?"
+          => [ __LINE__, sub { shift->assert_isa(TestObject->new, 'TestObject') } ],
+    );
     $self->check_failures(
         "expected class 'FooBar', got undef"
           => [ __LINE__, sub { shift->assert_isa('FooBar', undef) } ],
-        "expected class 'FooBar', got unblessed reference"
+        "expected class 'FooBar', got non-reference"
           => [ __LINE__, sub { shift->assert_isa('FooBar', 123) } ],
         "expected class 'FooBar', got unblessed reference"
           => [ __LINE__, sub { shift->assert_isa('FooBar', [ qw( 1 2 3) ]) } ],
@@ -385,16 +394,24 @@ sub test_fail_assert_isa {
 sub test_succeed_assert_can {
     my $self = shift;
     $self->assert_can('new', TestObject->new);
+    $self->assert_can(test_succeed_assert_can => $self);
+    $self->assert_can(test_succeed_assert_can => 'AssertTest'); # assert_can('method', 'Class') currently fails
 }
 
 sub test_fail_assert_can {
     my $self = shift;
+    $self->check_errors
+      ("expected method name was undef; should be using assert_null?"
+       => [ __LINE__, sub { shift->assert_can(undef, 'FooBar') } ],
+       "expected method name was a reference; args swapped?"
+       => [ __LINE__, sub { shift->assert_can(TestObject->new, 'new') } ],
+      );
     $self->check_failures(
-        "expected object, got undef"
+        "expected object that can 'FooBar', got undef"
           => [ __LINE__, sub { shift->assert_can('FooBar', undef) } ],
-        "expected object, got unblessed reference"
+        "expected object that can 'FooBar', got non-object"
           => [ __LINE__, sub { shift->assert_can('FooBar', 123) } ],
-        "expected object, got unblessed reference"
+        "expected object that can 'FooBar', got non-object"
           => [ __LINE__, sub { shift->assert_can('FooBar', [ qw( 1 2 3) ]) } ],
         "expected object that can 'blah', but it cannot"
           => [ __LINE__, sub { shift->assert_can('blah', TestObject->new) } ],

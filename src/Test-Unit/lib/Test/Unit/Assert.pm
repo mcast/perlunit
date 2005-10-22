@@ -487,15 +487,21 @@ sub _format_stack {
             my $class = shift;
             my $obj = shift;
             defined $class or
-              Test::Unit::Failure->throw(
+              Test::Unit::Error->throw(
                   -text => @_ ? join('',@_) :
-                    "expected value was undef; should be using assert_null?"
+                    "expected classname was undef; should be using assert_null?"
               );
+	    ref($class) eq "" or
+	      Test::Unit::Error->throw
+		  (-text => @_ ? join('',@_) : "expected classname was a reference; args swapped?");
             defined $obj or
               Test::Unit::Failure->throw(
                   -text => @_ ? join('',@_) : "expected class '$class', got undef"
               );
-            (ref($obj) && ref($obj) !~ /^(SCALAR|ARRAY|HASH|CODE|REF|GLOB|LVALUE|Regexp)$/) or
+	    ref($obj) ne "" or
+	      Test::Unit::Failure->throw
+		  (-text => @_ ? join('',@_) : "expected class '$class', got non-reference");
+	    ref($obj) !~ /^(SCALAR|ARRAY|HASH|CODE|REF|GLOB|LVALUE|Regexp)$/ or
               Test::Unit::Failure->throw(
                   -text => @_ ? join('',@_) : "expected class '$class', got unblessed reference"
               );
@@ -508,17 +514,20 @@ sub _format_stack {
             my $method = shift;
             my $obj = shift;
             defined $method or
-              Test::Unit::Failure->throw(
+              Test::Unit::Error->throw(
                   -text => @_ ? join('',@_) :
-                    "expected value was undef; should be using assert_null?"
+                    "expected method name was undef; should be using assert_null?"
               );
+	    ref($method) eq "" or
+	      Test::Unit::Error->throw
+		  (-text => @_ ? join ('',@_) : "expected method name was a reference; args swapped?");
             defined $obj or
               Test::Unit::Failure->throw(
-                  -text => @_ ? join('',@_) : "expected object, got undef"
+                  -text => @_ ? join('',@_) : "expected object that can '$method', got undef"
               );
             (ref($obj) && ref($obj) !~ /^(SCALAR|ARRAY|HASH|CODE|REF|GLOB|LVALUE|Regexp)$/) or
               Test::Unit::Failure->throw(
-                  -text => @_ ? join('',@_) : "expected object, got unblessed reference"
+                  -text => @_ ? join('',@_) : "expected object that can '$method', got non-object"
               );
             $obj->can($method) or
               Test::Unit::Failure->throw(
@@ -598,7 +607,7 @@ Test::Unit::Assert - unit testing framework assertion class
     $self->assert(sub {
                       $_[0] == $_[1]
                         or $self->fail("Expected $_[0], got $_[1]");
-                  }, 1, 2); 
+                  }, 1, 2);
 
     # or, for old style regular expression comparisons
     # (strongly deprecated; see warning below)
@@ -621,8 +630,8 @@ Test::Unit::Assert - unit testing framework assertion class
     $self->assert_not_null('');
 
     # assert object properties
-    $self->assert_isa('Critter', $object);
-    $self->assert_can('frobnicate', $object);
+    $self->assert_isa('Horse', $object);
+    $self->assert_can('gallop', $object);
 
 =head1 DESCRIPTION
 
@@ -630,7 +639,7 @@ This class contains the various standard assertions used within the
 framework. With the exception of the C<assert(CODEREF, @ARGS)>, all
 the assertion methods take an optional message after the mandatory
 fields. The message can either be a single string, or a list, which
-will get concatenated. 
+will get concatenated.
 
 Although you can specify a message, it is hoped that the default error
 messages generated when an assertion fails will be good enough for
@@ -691,6 +700,9 @@ Assert that ARG is defined or not defined.
 =item assert_can(METHOD, OBJECT [, MESSAGE])
 
 Assert that OBJECT belongs to a CLASS or can execute a METHOD.
+
+Note that C<assert_can> is subject to the same restrictions as the
+built-in C<can>, particularly for AUTOLOADed methods.
 
 =item assert(BOOLEAN [, MESSAGE])
 
