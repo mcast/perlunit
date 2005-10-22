@@ -1,11 +1,11 @@
 # PerlUnit was originally written as a port of Kent Beck and Erich
 # Gamma's xUnit testing framework by Christian Lemburg and Brian
-# Ewins, and is now maintained by Adam Spiers and the rest of the
-# PerlUnit team. 
+# Ewins, was maintained by Adam Spiers and the rest of the
+# PerlUnit team, currently maintained by Matthew Astley.
 #
 # The following is an alphabetical list of all the people who've
 # contributed code and effort to making PerlUnit what it is today.
-# Where possible we have included their Sourceforge usernames and
+# Where possible we have included their Sourceforge/CPAN usernames and
 # preferred email addresses.
 #
 # The use of this database for anything other than PerlUnit
@@ -17,7 +17,11 @@ Brian Ewins		ba22a
 Cayte Linder		cayte
 Christian Lemburg	clemburg	<clemburg@acm.org>
 David Esposito		davide
+Eric Siegerman		eksiegerman
+Francis J. Lacoste	flacoste
+Ilya Martynov		ILYAM
 J.E. Fritz		jefritz
+Marek Rouchal		MAREKR
 Kevin Connor		wallisalviar	<kconnor@interwoven.com>
 Matthew Astley		mca1001 (was mca-gdl)
 Michael Schwern/Test::More project	for the deep structure comparison routines
