@@ -67,11 +67,10 @@ foreach my $e (keys %guru_checked) {
 }
 
 
-warn("\n > The STDERR redirection may not work or may behave differently under\n".
-     " > your OS '$^O'. That will probably cause this test to fail.\n")
-    if grep { $^O =~ $_ } ( qr/win/i );
-# This will apply to various OSes. Is there a "capable of doing unix
-# redirections" flag somewhere?
+# We used to warn about OSes that might not be able to do 2>&1
+# redirection, but
+#   a) if we get problems the tests will fail, so we fix it then
+#   b) tests passed fine on "MSWin32 4.0" for REL_0_25
 
 
 # Attempt to get hold of the correct perl to run the examples.  I
