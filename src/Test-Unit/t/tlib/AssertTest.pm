@@ -363,6 +363,44 @@ sub test_succeed_assert_not_null {
     $self->assert_not_null(10);
 }
 
+sub test_succeed_assert_isa {
+    my $self = shift;
+    $self->assert_isa('TestObject', TestObject->new);
+}
+
+sub test_fail_assert_isa {
+    my $self = shift;
+    $self->check_failures(
+        "expected class 'FooBar', got undef"
+          => [ __LINE__, sub { shift->assert_isa('FooBar', undef) } ],
+        "expected class 'FooBar', got unblessed reference"
+          => [ __LINE__, sub { shift->assert_isa('FooBar', 123) } ],
+        "expected class 'FooBar', got unblessed reference"
+          => [ __LINE__, sub { shift->assert_isa('FooBar', [ qw( 1 2 3) ]) } ],
+        "expected object of class 'FooBar', got 'TestObject'"
+          => [ __LINE__, sub { shift->assert_isa('FooBar', TestObject->new) } ],
+    );
+}
+
+sub test_succeed_assert_can {
+    my $self = shift;
+    $self->assert_can('new', TestObject->new);
+}
+
+sub test_fail_assert_can {
+    my $self = shift;
+    $self->check_failures(
+        "expected object, got undef"
+          => [ __LINE__, sub { shift->assert_can('FooBar', undef) } ],
+        "expected object, got unblessed reference"
+          => [ __LINE__, sub { shift->assert_can('FooBar', 123) } ],
+        "expected object, got unblessed reference"
+          => [ __LINE__, sub { shift->assert_can('FooBar', [ qw( 1 2 3) ]) } ],
+        "expected object that can 'blah', but it cannot"
+          => [ __LINE__, sub { shift->assert_can('blah', TestObject->new) } ],
+    );
+}
+
 sub test_assert_deep_equals {
     my $self = shift;
 

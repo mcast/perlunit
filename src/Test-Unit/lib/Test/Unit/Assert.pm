@@ -483,6 +483,48 @@ sub _format_stack {
               Test::Unit::Failure->throw
                   (-text => @_ ? join('', @_) : "<undef> unexpected");
         },
+        isa   => sub {
+            my $class = shift;
+            my $obj = shift;
+            defined $class or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) :
+                    "expected value was undef; should be using assert_null?"
+              );
+            defined $obj or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) : "expected class '$class', got undef"
+              );
+            (ref($obj) && ref($obj) !~ /^(SCALAR|ARRAY|HASH|CODE|REF|GLOB|LVALUE|Regexp)$/) or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) : "expected class '$class', got unblessed reference"
+              );
+            $obj->isa($class) or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) : "expected object of class '$class', got '".ref($obj)."'"
+              );
+        },
+        can   => sub {
+            my $method = shift;
+            my $obj = shift;
+            defined $method or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) :
+                    "expected value was undef; should be using assert_null?"
+              );
+            defined $obj or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) : "expected object, got undef"
+              );
+            (ref($obj) && ref($obj) !~ /^(SCALAR|ARRAY|HASH|CODE|REF|GLOB|LVALUE|Regexp)$/) or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) : "expected object, got unblessed reference"
+              );
+            $obj->can($method) or
+              Test::Unit::Failure->throw(
+                  -text => @_ ? join('',@_) : "expected object that can '$method', but it cannot"
+              );
+        },
     );
     foreach my $type (keys %assert_subs) {
         my $assertion = Test::Unit::Assertion::CodeRef->new($assert_subs{$type});
@@ -578,6 +620,10 @@ Test::Unit::Assert - unit testing framework assertion class
     $self->assert_null(undef);
     $self->assert_not_null('');
 
+    # assert object properties
+    $self->assert_isa('Critter', $object);
+    $self->assert_can('frobnicate', $object);
+
 =head1 DESCRIPTION
 
 This class contains the various standard assertions used within the
@@ -640,7 +686,13 @@ quite sure what will happen with filehandles.
 
 Assert that ARG is defined or not defined.
 
-=item assert(BOOLEAN [, MESSAGE]) 
+=item assert_isa(CLASS, OBJECT [, MESSAGE])
+
+=item assert_can(METHOD, OBJECT [, MESSAGE])
+
+Assert that OBJECT belongs to a CLASS or can execute a METHOD.
+
+=item assert(BOOLEAN [, MESSAGE])
 
 Checks if the BOOLEAN expression returns a true value that is neither
 a CODE ref nor a REGEXP.  Note that MESSAGE is almost non optional in
