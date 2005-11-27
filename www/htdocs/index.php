@@ -2,7 +2,7 @@
 // (hacked from) Default Web Page for groups that haven't setup their page yet
 // Please replace this file with your own website
 //
-// $Id: index.php,v 1.6 2005-07-30 20:41:38 mca1001 Exp $
+// $Id: index.php,v 1.7 2005-11-27 15:41:13 mca1001 Exp $
 //
 $headers = getallheaders();
 ?>
@@ -35,10 +35,13 @@ $headers = getallheaders();
 
 <p>If you don't know what a unit testing framework is or why you would
    want one, the <a href="#related">links</a> below will fill you in.
+</p>
 
 <p>If you want a unit testing framework for perl, the details are in
    the <a href="http://sourceforge.net/projects/perlunit/">project
-   summary page</a>. Here are some shortcuts to the important bits:
+   summary page</a>
+   <a href="https://sourceforge.net/projects/perlunit/">(SSL)</a>.
+   Here are some shortcuts to the important bits:
 </p>
 
 <ul>
@@ -98,7 +101,23 @@ $headers = getallheaders();
 
 </p>
 
-<p><a name="related">Links to related sites:</a>
+<h2>Links related to PerlUnit aka. Test-Unit</h2>
+
+Automated software testing is a large and growing area.  These links
+may help you start your investigations.
+
+<h3><a name="cpanlinks">Distribution, CPAN, other bug trackers</a></h3>
+
+<ul>
+<li>The <a href="http://testers.cpan.org/">CPAN Testers</a> make regular
+    <a href="http://testers.cpan.org/show/Test-Unit.html">reports for Test-Unit</a>.</li>
+<li><a href="http://rt.cpan.org/">rt.cpan.org</a> search for
+    <a href="http://rt.cpan.org/NoAuth/Bugs.html?Dist=Test-Unit">open Test-Unit bugs</a>.</li>
+<li>The <a href="http://cpants.dev.zsi.at/dist/Test-Unit">CPANTS report</a>
+    is a good game, but take the results with a pinch of salt! (Oct 2005)</li>
+</ul>
+
+<h3><a name="related">About unit testing</h3>
 <ul>
 <li><a href="http://www.xProgramming.com/">http://www.xProgramming.com/</a>,
     Extreme Programming site
@@ -108,10 +127,33 @@ $headers = getallheaders();
     A forest of data at the Wiki Wiki Web
 </ul>
 
+<h3><a name="addons">Other projects which support PerlUnit</a></h3>
+<ul>
+<li><a href="http://search.cpan.org/dist/Test-Unit-Runner-Xml/">Test::Unit::Runner::XML</a>,
+    reports are in the same format as those produced by Ant's JUnit
+    task.</li>
+<li><a href="http://freshmeat.net/projects/GTestRunner">GTestRunner</a> aka.
+	<a href="http://search.cpan.org/dist/Test-Unit-GTestRunner/">Test::Unit::GTestRunner</a>,
+    a Gtk+ TestRunner GUI for Test::Unit.</li>
+</ul>
+
+    <h3><a name="othertest">Other projects for testing in Perl</a></h3>
+    These are the "standard" testing modules,
+    <ul>
+      <li><a href="http://search.cpan.org/dist/Test-Simple/">Test::Simple</a>, includes Test::More and Test::Builder</li>
+      <li><a href="http://search.cpan.org/dist/Test-Harness/">Test::Harness</a></li>
+    </ul>
+    There are more,
+    <ul>
+      <li><a href="http://search.cpan.org/dist/Test-Class/">Test::Class</a> (includes a good "SEE ALSO" list)</li>
+      <li><a href="http://search.cpan.org/dist/Test-C2FIT/">Test::C2FIT</a></li>
+      <li><a href="http://search.cpan.org/dist/Test-SimpleUnit/">Test::SimpleUnit</a></li>
+    </ul>
+    ...many more.
+
+<hr>
 <p align="right"><small>Last update:
-$Date: 2005-07-30 20:41:38 $
+$Date: 2005-11-27 15:41:13 $
 </small></p>
-
-
 </BODY>
 </HTML>
