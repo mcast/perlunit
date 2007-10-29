@@ -368,7 +368,8 @@ sub test_succeed_assert_isa {
     $self->assert_isa('TestObject', TestObject->new);
     $self->assert_isa('Test::Unit::TestCase', $self);
     $self->assert_isa(AssertTest => $self);
-    $self->assert_isa('Test::Unit::TestCase', 'AssertTest'); # assert_isa('Superclass', 'Class') currently fails
+## it's not in the spec so don't test it
+#    $self->assert_isa('Test::Unit::TestCase', 'AssertTest'); # assert_isa('Superclass', 'Class') currently fails
 }
 
 sub test_fail_assert_isa {
@@ -395,7 +396,8 @@ sub test_succeed_assert_can {
     my $self = shift;
     $self->assert_can('new', TestObject->new);
     $self->assert_can(test_succeed_assert_can => $self);
-    $self->assert_can(test_succeed_assert_can => 'AssertTest'); # assert_can('method', 'Class') currently fails
+## it's not in the spec so don't test it
+#    $self->assert_can(test_succeed_assert_can => 'AssertTest'); # assert_can('method', 'Class') currently fails
 }
 
 sub test_fail_assert_can {
@@ -551,6 +553,24 @@ sub test_assert_deep_equals {
                                                      "$expected with comment") } ];
     }
     $self->check_failures(@tests);
+}
+
+# Pasted direct from SF bug #1012115
+# should have been incorporated above...
+sub test_deepequals_scalarrefs {
+    my $self = shift;
+    my ($H, $G) = ("hello", "goodbye");
+    my $a = [ \$H, "world" ];
+    my $b = [ \$G, "world" ];
+    # comparison should fail on list item 0, and tell us what they were
+    eval {
+        $self->assert_deep_equals($a, $b);
+    };
+    my $err = $@;
+    $self->fail("comparison should fail") unless $err;
+    $err =~ s/^/> /mg; # indent for clarity
+    $self->assert_matches(qr/hello/, $err);
+    $self->assert_matches(qr/goodbye/, $err);
 }
 
 # Key = assert_method
