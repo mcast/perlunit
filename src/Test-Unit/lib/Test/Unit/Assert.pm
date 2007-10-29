@@ -111,6 +111,14 @@ sub multi_assert {
 sub is_numeric {
     my $str = shift;
     local $^W;
+
+    if (defined $str && $str =~ /^0x[A-Fa-f0-9]/) {
+	# This is harsh but anything else risks brushing a problem
+	# under the carpet.  Best to make the caller to review the
+	# situation and maintain the test code.
+	die "Testing '$str' for is_numeric is ambiguous.  It may give different results various platform combinations - this is a liability for testing so we barfed";
+    }
+
     return defined $str && ! ($str == 0 && $str !~ /^\s*[+-]?0(e0)?\s*$/i);
 }
 

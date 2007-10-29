@@ -34,7 +34,8 @@ sub test_numericness {
     my %tests =
       ( 1	=> 't',
 	0	=> 't',
-  	'0xF00'	=> 'f', # controversial?  but if you +=10 then it's == 10
+## deal with this below
+#  	'0xF00'	=> 'f', # controversial?  but if you +=10 then it's == 10
 	'15e7'	=> 't',
 	'15E7'	=> 't',
 	"not 0"	=> 'f',
@@ -48,6 +49,21 @@ sub test_numericness {
 	$self->fail("For string '$str', expect $expect but got $actual")
 	  unless $expect eq $actual;
     }
+
+    my @broken =
+      (sub { my $ret = Test::Unit::Assert::is_numeric("0xF00"); die "Returned '$ret'" },
+       sub { $self->assert_equals("0xF00",  "0x514") },
+       sub { $self->assert_equals("0xBEEF", "junk") },
+       sub { $self->assert_not_equals("0xDEAD", "57005"); die "It did a numeric comparison" },
+      );
+    # loop below is basically an ->assert_dies(qr, @broken) call
+    for (my $i=0; $i<@broken; $i++) {
+	my $ret = eval { $broken[$i]->() };
+	my $err = $@ || "Returned '$ret'";
+	$self->assert_matches(qr{ is ambiguous}, $err);
+	$self->assert_null($ret);
+    }
+    $self->assert_not_equals("junk", "0xBEEF");
 }
 
 
@@ -156,7 +172,7 @@ sub test_assert_matches {
             => [ __LINE__, sub { shift->assert_matches(1, 2) } ]
     );
 }
-    
+
 sub test_assert_does_not_match {
     my $self = shift;
     $self->assert_does_not_match(qr/ob/, 'fooBar');
