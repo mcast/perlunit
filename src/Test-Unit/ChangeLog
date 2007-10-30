@@ -1,3 +1,7 @@
+2007-10-30  Matthew Astley  <mca1001@users.sourceforge.net>
+
+	* lib/Test/Unit.pm: fix release version interpolation from v1.29
+
 2007-10-29  Matthew Astley  <mca1001@users.sourceforge.net>
 
 	* lib/Test/Unit/Assert.pm (is_numeric),

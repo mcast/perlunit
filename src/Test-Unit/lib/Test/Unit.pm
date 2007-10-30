@@ -110,7 +110,7 @@ Test::Unit Version $Test::Unit::VERSION
 EOF
 
 
-use constant COPYRIGHT_NOTICE => <<'END_COPYRIGHT_NOTICE';
+use constant COPYRIGHT_NOTICE => <<END_COPYRIGHT_NOTICE;
 This is PerlUnit version $Test::Unit::VERSION.
 Copyright (C) 2000-2002, 2005 Christian Lemburg, Brian Ewins, et. al.
 
