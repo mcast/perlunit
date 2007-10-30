@@ -1,3 +1,17 @@
+2007-10-29  Matthew Astley  <mca1001@users.sourceforge.net>
+
+	* lib/Test/Unit/Assert.pm (is_numeric),
+	t/tlib/AssertTest.pm (test_numericness): fix is_numeric the
+	conservative way: if it's not clearly text or number, barf
+	(return of SF bug #1014540)
+
+	* lib/Test/Unit/TkTestRunner.pm (show_error_trace): bugfix for
+	newer Tk, fixes SF bug #1817669
+
+	* t/tlib/AssertTest.pm: stop expecting assert_{isa,can} to work
+	with class names instead of objects; include original testcase
+	from SF bug #1012115 for peace of mind
+
 2005-10-15  Matthew Astley  <mca1001@users.sourceforge.net>
 
 	* doc/release-checklist, doc/TODO, ChangeLog: updates for release
