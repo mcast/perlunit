@@ -739,7 +739,7 @@ throws Test::Unit::Failure)
 =item assert_raises(EXCEPTION_CLASS, CODEREF [, MESSAGE])
 
 Calls CODEREF->().  Assertion fails unless an exception of class
-EXCEPTION_CLASS is raised.
+EXCEPTION_CLASS is raised.  Error if EXCEPTION_CLASS cannot C<catch>.
 
 =item multi_assert(ASSERTION, @ARGSETS)
 

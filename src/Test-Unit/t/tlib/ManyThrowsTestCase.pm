@@ -43,8 +43,24 @@ sub test_die_undef {
 sub test_assert_raises {
     _count_bump();
     my $self = shift;
-    $self->assert_raises("Error::StrangeType", \&_throw_nonstandard);
-    $self->assert_raises("Error::ScalarException", \&_throw_scalar);
+
+    my $flag = "clean";
+    my @cannot =
+      # These should all die because the exception types are invalid
+      (sub { $self->assert_raises("Not::Any::Thing", sub { $flag = "code ran" } ) },
+       sub { $self->assert_raises("Error::StrangeType", \&_throw_nonstandard) },
+       sub { $self->assert_raises("Error::ScalarException", \&_throw_scalar) });
+
+    foreach my $code (@cannot) {
+	eval {
+	    $code->();
+	};
+
+	my $prob = $@;
+	$self->assert_matches(qr{needs an exception class}, $prob);
+    }
+
+    $self->assert_str_equals("clean", $flag);
 }
 
 sub test_scalar_exception {
