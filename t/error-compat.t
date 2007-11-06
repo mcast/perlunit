@@ -20,11 +20,12 @@ eval {
 
 
 my $prob = $@ || "";
-ok(ref($prob), "", "Test aborted because typed error leaked out. T:U:Result = $INC{'Test/Unit/Result.pm'}");
-ok($prob, "", "Test aborted: $@");
+ok(ref($prob), "Error::Simple",
+   "Test aborted because typed error leaked out. T:U:Result = $INC{'Test/Unit/Result.pm'}");
+ok($prob, "",
+   "Test aborted: $@");
 
-ok(ManyThrowsTestCase::count_ran(),
-   ManyThrowsTestCase::count_want_ran(),
+ok(ManyThrowsTestCase::count_ran(), ManyThrowsTestCase::count_want_ran(),
    "Some test methods did not start");
 
 
@@ -46,11 +47,12 @@ sub new { bless [], shift }
 sub print {
     my ($self, @args) = @_;
     my $txt = join " ", @args;
-    $txt =~ s{^}{  OutPlace: }gm;
+    $txt =~ s{^}{#  |}gm;
     push @$self, $txt;
 }
 
 sub get_all {
     my $self = shift;
-    return join "", @$self;
+    my $edge = "#  +===================\n";
+    return join "", $edge, @$self, $edge;
 }

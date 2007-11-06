@@ -121,15 +121,28 @@ sub run_protected {
     catch Test::Unit::Failure with {
         $self->add_failure($test, shift);
     }
+    catch Test::Unit::Exception with {
+        $self->add_error($test, shift);
+    }
     catch Error with {
-        # *Any* exception which isn't a failure or
-        # Test::Unit::Exception should get rebuilt and added to the
-        # result as a Test::Unit::Error, so that the stringify()
-        # method can be called on it for nice reporting.
-        my $error = shift;
-        $error = Test::Unit::Error->make_new_from_error($error)
-          unless $error->isa('Test::Unit::Exception');
+        # *Any* exception which isn't a failure or Test::Unit::Exception.
+	# This includes plain old "die 'message'".
+
+	# Rebuild and add to the result as a Test::Unit::Error, so
+        # stringify() can be called on it for nice reporting.
+        my $error = Test::Unit::Error->make_new_from_error(shift);
         $self->add_error($test, $error);
+    }
+    otherwise {
+	# Assorted other strange blessed exceptions e.g. from
+	# local-brew exception hierarchy
+        my $error = shift;
+## ??	local $Error::Depth += 1;
+#        $error = Test::Unit::Error->new
+#	  (-text => "[non-standard Exception object] $error",
+##	   -file => "", -line => 1,
+#	   -object => $error);
+#        $self->add_error($test, $error);
     };
 }
 
