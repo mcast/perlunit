@@ -1,5 +1,0 @@
-to run the sample tests, do: 
-	
-	perl -w TestRunner.pl tests::TestTest 
-
-standing in the src/api directory
