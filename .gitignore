@@ -1,5 +1,11 @@
+# Perl build & dist
 Makefile
 Test-Unit-*.tar
 Test-Unit-*.tar.gz
 blib
 pm_to_blib
+
+# emacs
+*~
+\#*\#
+.\#*
