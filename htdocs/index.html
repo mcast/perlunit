@@ -12,6 +12,9 @@
   OL,UL,P,BODY,TD,TR,TH,FORM,SPAN { font-family: arial,helvetica,sans-serif;color: #333333 }
   H1,H2,H3,H4,H5,H6 { font-family: arial,helvetica,sans-serif }
   PRE,TT { font-family: courier,sans-serif }
+
+  /* New style */
+  ul.top > li { margin-top: 1em }
 </style>
 </HEAD>
 
@@ -25,9 +28,9 @@
       <a href="http://sourceforge.net/projects/perlunit"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=2653&amp;type=15" width="150" height="40" alt="Get PerlUnit at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
     </TD>
     <td align="center"><h1>The &quot;PerlUnit&quot; unit testing framework</h1></td>
-    <TD><!-- right of logo -->
-      <a href="http://www.valinux.com"><IMG src="http://sourceforge.net/images/va-btn-small-light.png" align="right" alt="VA Linux Systems" border="0" width="105" height="31"></A>
-    </TD><!-- right of logo -->
+    <TD style="width: 150"><!-- right of logo -->
+
+    </TD>
   </TR>
   <TR><TD style="background-color:#543a48; height: 2px" colspan="3"> </td></TR>
 </TABLE>
@@ -46,26 +49,25 @@
    Here are some shortcuts to the important bits:
 </p>
 
-<ul>
+<ul class='top'>
 
-<li>Grab the current release from our SourceForge download area [
-    <a href="http://sourceforge.net/project/showfiles.php?group_id=2653">
-    HTTP</a> | <a href="ftp://ftp.sourceforge.net/pub/sourceforge/perlunit/">FTP</a> ] or
+<li>Grab the current release from
+    <a href="https://sourceforge.net/projects/perlunit/files/PerlUnit/">the SourceForge download</a> area
+    or
     <a href="http://search.cpan.org/search?dist=Test-Unit">from CPAN</a>.
+(The latest is <a href="http://search.cpan.org/~mcast/Test-Unit-0.25/">v0.25</a> but CPAN no longer accepts this as an authorised release.)
 
-<p>
 <li>We have two <a href="http://sourceforge.net/mail/?group_id=2653">mailing lists</a>,
     with archives:
     <ul>
-    <li><a href="http://sourceforge.net/mailarchive/forum.php?forum_id=2442">
+    <li><a href="https://lists.sourceforge.net/lists/listinfo/perlunit-devel">
         perlunit-devel</a> (low volume discussion)
-    <li><a href="http://sourceforge.net/mailarchive/forum.php?forum_id=2441">
+    <li><a href="https://lists.sourceforge.net/lists/listinfo/perlunit-users">
         perlunit-users</a> (this list is quiet, if not silent)
     </ul>
     There are also some web-based forums but we've mostly abandoned
     them because we don't like the user interface.
 
-<p>
 <li>Browse the
     <a href="http://cvs.sourceforge.net/viewcvs.py/perlunit/">
 
@@ -153,9 +155,5 @@ may help you start your investigations.
     </ul>
     ...many more.
 
-<hr>
-<p align="right"><small>Last update:
-$Date: 2005-11-27 15:41:13 $
-</small></p>
 </BODY>
 </HTML>
