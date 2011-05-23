@@ -14,10 +14,10 @@ master branch.
 
 * Small FAQ section would be a good idea.
 
-== Updating
+== Updating: by sshfs
 
  mkdir W
- sshfs $SFLOGiN@web.sourceforge.net:/home/project-web/perlunit W
+ sshfs $SFLOGIN@web.sourceforge.net:/home/project-web/perlunit W
 
  (cd W; git fetch; git status)
  # apply eyeball to output - website should be fast-forwardable
@@ -28,6 +28,12 @@ master branch.
 
  fusermount -u W
  rmdir W
+
+== Updating: doing it over there
+
+ ssh $SFLOGIN@shell.sourceforge.net create
+ ssh $SFLOGIN@shell.sourceforge.net 'cd /home/project-web/perlunit && git pull --ff-only'
+ ssh $SFLOGIN@shell.sourceforge.net shutdown
 
 == Copyright
 
