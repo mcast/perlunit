@@ -14,12 +14,18 @@ master branch.
 
 == Updating: by sshfs
 
+The 'origin' is an absolute pathname on the SourceForge filesystem, so
+you must push to the clone, or reconfigure with a git/ssh URL, or
+contrive for your desktop to resolve /home/scm_git/...
+
+This also probably thrashes the index.  Not so important for just
+three files.
+
  mkdir W
  sshfs $SFLOGIN@web.sourceforge.net:/home/project-web/perlunit W
 
- (cd W; git fetch; git status)
- # apply eyeball to output - website should be fast-forwardable
- (cd W; git pull)
+ git push W website:origin/website
+ (cd W; git merge --ff-only origin/website; git status)
 
  # no longer recommending 'chmod g+w' since the SF magical filesystem
  # seems to take care of permissions in some non-pure-POSIX way?
@@ -28,6 +34,8 @@ master branch.
  rmdir W
 
 == Updating: doing it over there
+
+This is simple and reliable but not very efficient.
 
  ssh $SFLOGIN@shell.sourceforge.net create
  ssh $SFLOGIN@shell.sourceforge.net 'cd /home/project-web/perlunit && git pull --ff-only'

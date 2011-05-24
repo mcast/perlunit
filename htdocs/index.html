@@ -24,6 +24,12 @@
   dl.faq dt:before { content: 'Q: ' }
   dl.faq dd:before { content: 'A: ' }
 
+  pre.pasteme {
+    border: thin #555 dotted;
+    margin: 0.75ex 0.5ex;
+    padding: 0.5ex;
+  }
+
 </style>
 </HEAD>
 
@@ -77,12 +83,20 @@
     There are also some web-based forums but we've mostly abandoned
     them because we don't like the user interface.
 
-<li>Browse the <a href="http://perlunit.git.sourceforge.net/git/gitweb.cgi?p=perlunit/perlunit;a=summary">Git repository</a>.
-  <br />
-  This contains a curated
+<li>The code now lives in a <a href="http://git-scm.com/">Git</a>
+  repository.  This was initialised from a curated
   <a href="http://cvs2svn.tigris.org/cvs2git.html">cvs2git</a>
-  (v2.3.0) import of the CVS repository, and
-  will carry future development of the code and this web page.
+  (v2.3.0) import of the CVS repository, and will carry future
+  development of the code and this web page.
+
+  <pre title="Checkout recipe" class="pasteme">git clone git://perlunit.git.sourceforge.net/gitroot/perlunit/perlunit</pre>
+
+  [ <a href="http://perlunit.git.sourceforge.net/git/gitweb.cgi?p=perlunit/perlunit;a=summary"> <strong> Browse </strong> </a>
+  | <a href="git://perlunit.git.sourceforge.net/gitroot/perlunit/perlunit">Git native</a>
+  | <a href="https://sourceforge.net/scm/?type=git&group_id=2653">project access instructions</a>
+  | <a href="https://p.sf.net/sourceforge/git">generic SourceForge instructions</a>
+  | <a href="https://sourceforge.net/apps/trac/sourceforge/wiki/SSH%20key%20fingerprints">SSH fingerprints</a>
+  ]
 
   <dl class="branches">
     <dt>master</dt>
