@@ -69,8 +69,17 @@
 <li>Grab the current release from
     <a href="https://sourceforge.net/projects/perlunit/files/PerlUnit/">the SourceForge download</a> area
     or
-    <a href="http://search.cpan.org/search?dist=Test-Unit">from CPAN</a>.
-(The latest is <a href="http://search.cpan.org/~mcast/Test-Unit-0.25/">v0.25</a> but CPAN no longer accepts this as an authorised release.)
+    <a href="http://search.cpan.org/search?dist=Test-Unit">from
+    CPAN</a>, where you can also read the POD.
+
+    (The latest is
+    <a href="http://search.cpan.org/~mcast/Test-Unit-0.25/">v0.25</a>
+    but CPAN no longer accepts this as an authorised release.)
+</li>
+
+<li>There is also
+  <a href="http://perlunit.git.sourceforge.net/git/gitweb.cgi?p=perlunit/perlunit;a=tree;f=doc;hb=master">the doc/ directory of the <tt>master</tt> branch</a>, which includes a class diagram.
+</li>
 
 <li>We have two <a href="http://sourceforge.net/mail/?group_id=2653">mailing lists</a>,
     with archives:
@@ -82,6 +91,7 @@
     </ul>
     There are also some web-based forums but we've mostly abandoned
     them because we don't like the user interface.
+</li>
 
 <li>The code now lives in a <a href="http://git-scm.com/">Git</a>
   repository.  This was initialised from a curated
@@ -117,9 +127,8 @@
 
 <li>Browse the
     <a href="http://cvs.sourceforge.net/viewcvs.py/perlunit/">
-
-    CVS repository</a> to see the current state of our files.  A quick
-    outline of what's there:
+    CVS repository</a> to see the <strong>old</strong> state of our
+    files.  A quick outline of what was there:
 
   <dl class="branches">
    <dt>src/Test-Unit</dt>
@@ -137,23 +146,16 @@
 
    <dt>www/</dt>
    <dd>Contains the website
-   <a href="http://perlunit.sourceforget.net/">http://perlunit.sourceforget.net/</a>,
+   <a href="http://perlunit.sourceforge.net/">http://perlunit.sourceforge.net/</a>,
    no released files or source.</dd>
   </dl>
 
+  The CVS repository will remain up for a while, for the benefit of
+  those who need to <tt>cvs diff</tt> their existing working copies,
+  but will receive no more work.
+</li>
+
 </ul>
-
-<p>Most of the documentation lives in <code>POD</code> format in the
-   code, which is very convenient if the package is installed.
-<br>
-   We plan to make it available here via <code>pod2html</code> at some
-   point (suggestions for a good tool would be welcome), but in the
-   mean time you can browse the <code>POD</code> for the current
-   release via
-   <a href="http://search.cpan.org/search?dist=Test-Unit">CPAN</a>, as
-   above.
-
-</p>
 
 <h2>FAQ</h2>
 Or more honestly, questions I imagine may be asked.
@@ -161,7 +163,7 @@ Or more honestly, questions I imagine may be asked.
 <dl class="faq">
   <dt>Is this project dead?</dt>
   <dd>The code can never die because it is available under the
-    Artistic / GPL dual licence.  Sourceforge has shown good long-term
+    Artistic / GPL dual licence.  SourceForge has shown good long-term
     reliability for keeping version control repositories intact and
     available.</dd>
 
