@@ -12,8 +12,6 @@ master branch.
   the SF.net feature (which became mysteriously empty some time in the
   last six years).
 
-* Small FAQ section would be a good idea.
-
 == Updating: by sshfs
 
  mkdir W
