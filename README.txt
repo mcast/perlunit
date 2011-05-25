@@ -37,7 +37,7 @@ three files.
 
 This is simple and reliable but not very efficient.
 
- ssh $SFLOGIN@shell.sourceforge.net create
+ ssh $SFLOGIN,perlunit@shell.sourceforge.net create
  ssh $SFLOGIN@shell.sourceforge.net 'cd /home/project-web/perlunit && git pull --ff-only'
  ssh $SFLOGIN@shell.sourceforge.net shutdown
 
