@@ -1,5 +1,4 @@
 /* Old extract of http://sourceforge.net/sourceforge.css */
-BODY { background-color: #FFFFFF; font-family: arial,helvetica,sans-serif; }
 A { text-decoration: none; color #6666FF; }
 A:visited { text-decoration: none; color: #6666AA; }
 A:link { text-decoration: none; color: #6666AA; }
@@ -10,9 +9,17 @@ H1,H2,H3,H4,H5,H6 { font-family: arial,helvetica,sans-serif }
 PRE,TT { font-family: courier,sans-serif }
 
 /* New style */
+BODY {
+    background-color: #FFFFFF;
+    font-family: arial,helvetica,sans-serif;
+    margin: 0;
+}
+
 ul.top > li { margin-top: 1.5em }
 
 dl { margin: 0.75em }
+
+dl.branches { max-width: 60em }
 dl.branches dd { margin-bottom: 0.75ex }
 dl.branches dt { font-family: courier,sans-serif }
 
@@ -24,5 +31,25 @@ pre.pasteme {
   border: thin #555 dotted;
   margin: 0.75ex 0.5ex;
   padding: 0.5ex;
+}
+
+.head {
+  font-family: arial,helvetica,sans-serif;
+  font-size: 75%;
+}
+div.head {
+  float: right;
+  margin: 0;
+  padding: 0;
+}
+
+div.head iframe {
+  border-width: thin thin 0 0;
+  border-color: black;
+  border-style: solid;
+  height: 2em;
+  width: 10em;
+  margin: 0;
+  padding: 0;
 }
 

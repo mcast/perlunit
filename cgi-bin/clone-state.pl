@@ -35,16 +35,26 @@ sub main {
       die "Failed to detaint HEAD contents";
     }
 
+    my $head_abbrev = $head;
+    substr($head_abbrev, 8) = '...';
     my $t_id = [ gettimeofday ];
     my $gen_time = tv_interval($t0, $t_id);
     print <<"OUT";
 Content-type: text/html\n
-<html><body>
- <a href="http://perlunit.git.sourceforge.net/git/gitweb.cgi?p=perlunit/perlunit;a=commit;h=$head"
-    title="Lookup in ${gen_time}s">
-   <tt>$head</tt>
+<html>
+<head>
+ <title>Currently viewing...</title>
+ <link rel="stylesheet" type="text/css" href="../shared.css" media="all" />
+</head>
+<body class="head">
+ <!-- normally displayed in iframe from / -->
+ <a target="_parent" href="http://perlunit.git.sourceforge.net/git/gitweb.cgi?p=perlunit/perlunit;a=commit;h=$head"
+    title="Current HEAD">
+   <tt>$head_abbrev</tt>
  </a>
-</body></html>
+ <!-- Lookup in ${gen_time}s -->
+</body>
+</html>
 OUT
 }
 
