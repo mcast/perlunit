@@ -1,0 +1,28 @@
+/* Old extract of http://sourceforge.net/sourceforge.css */
+BODY { background-color: #FFFFFF; font-family: arial,helvetica,sans-serif; }
+A { text-decoration: none; color #6666FF; }
+A:visited { text-decoration: none; color: #6666AA; }
+A:link { text-decoration: none; color: #6666AA; }
+A:active { text-decoration: none; color: #6666AA; }
+A:hover { text-decoration: none; color: #FF6666 }
+OL,UL,P,BODY,TD,TR,TH,FORM,SPAN { font-family: arial,helvetica,sans-serif;color: #333333 }
+H1,H2,H3,H4,H5,H6 { font-family: arial,helvetica,sans-serif }
+PRE,TT { font-family: courier,sans-serif }
+
+/* New style */
+ul.top > li { margin-top: 1.5em }
+
+dl { margin: 0.75em }
+dl.branches dd { margin-bottom: 0.75ex }
+dl.branches dt { font-family: courier,sans-serif }
+
+dl.faq dd { margin-bottom: 1ex; margin-left: 0 }
+dl.faq dt:before { content: 'Q: ' }
+dl.faq dd:before { content: 'A: ' }
+
+pre.pasteme {
+  border: thin #555 dotted;
+  margin: 0.75ex 0.5ex;
+  padding: 0.5ex;
+}
+
