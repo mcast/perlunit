@@ -83,18 +83,16 @@ one vote against? [PDC]
 * Documentation
 
 ** Where?
+Where should it be kept?  POD readable via the very useful
+search.cpan.org and/or your local perldoc(1) or man(1).
 
-Where should it be kept? At the moment it lives almost entirely in POD
-and mailing list/message board format, and so is inaccessible.
+Avoid features of the project host (SF) because they're not going to
+be portable or particularly Perlish.  A couple of portable web pages
+ought to be enough extra informatin.
 
-A pod2html pass of released software should probably be served on the
-website.
+TODO: The POD surely needs revising in places
 
-Matthew's (almost finished) cvspublish.pl script could do most of this
-but is probably overkill. Also it doesn't grok MANIFEST files.
-
-There is a documentation manager on SF. The front door is not too
-friendly and there is no back door to the data inside it.
+TODO: docs from SF mailing list/message board?
 
 ** API & PerlUnit overview
 
@@ -130,13 +128,12 @@ the best practice. See the discussion in Damian Conway's Object Oriented Perl.
    -- pdc
 
 * TODO lists
-
 Moved to doc/TODO.
 
-* Packaging
+But creeping back in with TODO tags.
 
-[mca: Christian has SourceForge and CPAN packaging pretty much wrapped
-up *cough*, this is documented in another file in this directory]
+* Packaging
+See doc/release-checklist
 
 ** Debian GNU/Linux
 
