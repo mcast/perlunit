@@ -56,7 +56,78 @@ sub _vc_version {
 
 sub _git_dev_tag {
   my ($called, $pattern) = @_;
-  die "dev-tagged release not implemented";
+
+  my $old_vsn = $called->_old_dev;
+  return $old_vsn if defined $old_vsn;
+
+  my $cmd = "git describe --dirty $pattern 2>&1";
+  my $dist_vsn = `$cmd`;
+  chomp $dist_vsn;
+  warn "  `$cmd` == '$dist_vsn'\n";
+
+  if ($?) {
+    die "Found no annotated tags on this branch - confused";
+  } elsif ($dist_vsn =~ /dirty/) {
+    die "Working copy is not clean (ask `git status`), I cannot tag it";
+
+  } elsif ($dist_vsn =~ m{^v(\d+\.\d+)-(\d+)-g([a-f0-9]+)$}) {
+    my ($last_rel, $numci, $rev) = ($1, $2, $3);
+    $numci = 99 if $numci > 99;
+    # $rev is ignored
+
+    $dist_vsn = $called->_new_dev($last_rel, $numci);
+
+    $cmd = "git tag dev$dist_vsn";
+    system($cmd) && die "`$cmd` failed: $! / $?";
+
+    warn "  New dev$dist_vsn\t\t(new tag, to push xor delete later)\n";
+
+  } else {
+    die "Version '$dist_vsn' based on annotated tag matches $pattern, but I didn't like it";
+  }
+
+  return $dist_vsn;
+}
+
+sub _new_dev {
+  my ($called, $last_rel, $numci) = @_;
+
+  my %devtag;
+  my @devtag = `git tag -l 'dev*'`;
+  chomp @devtag;
+  @devtag{@devtag} = ();
+
+  my ($n, $v) = (1);
+  while (!defined $v || exists $devtag{"dev$v"}) {
+    die "Dev build tag algorithm fail? v=$v n=$n" if $n>99;
+    $v = sprintf("%s_%02d%02d", $last_rel, $numci, $n);
+    $n++;
+  }
+
+  return $v;
+}
+
+sub _old_dev {
+  my ($called, $pattern) = @_;
+
+  my $cmd = "git describe --dirty --exact-match --match 'dev[0-9].*_*' --tags 2>&1";
+  my $dist_vsn = `$cmd`;
+  chomp $dist_vsn;
+  warn "  `$cmd` == '$dist_vsn'\n";
+  if ($?) {
+    warn "  (not a previously tagged dev build)\n";
+    return ();
+
+  } elsif ($dist_vsn =~ m{^dev(\d+\.\d+_\d+)$}) {
+    $dist_vsn = $1;
+    warn "  Found dev$dist_vsn\n";
+
+  } else {
+    warn "dirty?  check 'git status'" if $dist_vsn =~ /dirty/;
+    die "Version '$dist_vsn' looked like a previous dev build, but I didn't like it";
+  }
+
+  return $dist_vsn;
 }
 
 
