@@ -3,6 +3,8 @@ package GetVersion;
 use strict;
 # use warnings; # avoid, and hope the caller has -w
 
+use Cwd 'getcwd';
+
 
 =head1 DESCRIPTION
 
@@ -17,12 +19,19 @@ L<ExtUtils::MakeMaker> to consult L<Test::Unit>.
 
 sub version_pair {
   my ($called) = @_;
+  die "returns a list" unless wantarray;
 
-  if (-d ".git") {
-    return (VERSION => $called->_vc_version);
-  } else {
-    return (VERSION_FROM => 'lib/Test/Unit.pm'), # finds $VERSION
-  }
+  my $dir = getcwd();
+  warn "Find version for $dir";
+
+  my @out =
+    (-d ".git"
+     ? (VERSION => $called->_vc_version)
+     : (VERSION_FROM => 'lib/Test/Unit.pm') # finds $VERSION
+    );
+
+  warn "$called:   $dir is (@out)\n";
+  return @out;
 }
 
 sub _vc_version {
@@ -32,7 +41,7 @@ sub _vc_version {
   if ($?) {
     die "Cannot proceed on a development checkout without git(1)";
   }
-  warn "$called: Using $gitvsn";
+  warn "  Using $gitvsn";
 
   my $pattern = q{--match 'v[0-9].*'};
   my $cmd = "git describe --dirty --exact-match $pattern 2>&1";
