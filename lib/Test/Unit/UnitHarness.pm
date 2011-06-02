@@ -20,7 +20,10 @@ use vars qw($VERSION $verbose $switches $have_devel_corestack $curtest
             @EXPORT @EXPORT_OK);
 $have_devel_corestack = 0;
 
-$VERSION = "1.1502";
+# This file was derived from a v1.1502, but that is not the current
+# version number
+#
+# $VERSION = "1.1502";
 
 @EXPORT = qw(&runtests);
 @EXPORT_OK = qw($verbose $switches);
