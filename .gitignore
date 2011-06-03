@@ -1,9 +1,12 @@
 # Perl build & dist
 Makefile
+Makefile.old
+Test-Unit-*/
 Test-Unit-*.tar
 Test-Unit-*.tar.gz
 blib
 pm_to_blib
+MANIFEST.bak
 
 # emacs
 *~

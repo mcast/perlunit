@@ -1,10 +1,10 @@
 ~$
 \.(bak|tar|gz|ptkdb)$
-CVS/
-Makefile$
-Makefile.old
-blib/
-pm_to_blib$
-MANIFEST.SKIP
+^Makefile$
+^Makefile\.old$
+^blib/
+^pm_to_blib/
+^dist-tools/
+^MANIFEST\.SKIP$
 (^|/)[.#]
-
+Test-Unit-\d+\.\d+(_\d+)?/

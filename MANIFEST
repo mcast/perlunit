@@ -16,6 +16,8 @@ examples/patch100132-1
 examples/patch100132-2
 examples/README
 examples/tester.png
+inc/GetVersion.pm
+inc/MY_distdir.pm
 lib/Test/Unit.pm
 lib/Test/Unit/Assert.pm
 lib/Test/Unit/Assertion.pm
