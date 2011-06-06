@@ -14,16 +14,21 @@ BODY {
     font-family: arial,helvetica,sans-serif;
     margin: 0;
 }
+div.main {
+    margin: 2em auto;
+    max-width: 60em;
+    padding: 1ex;
+}
 
 ul.top > li { margin-top: 1.5em }
 
 dl { margin: 0.75em }
 
-dl.branches { max-width: 60em }
 dl.branches dd { margin-bottom: 0.75ex }
 dl.branches dt { font-family: courier,sans-serif }
 
-dl.faq dd { margin-bottom: 1ex; margin-left: 0 }
+dl.faq dd { margin-bottom: 1ex }
+dl.faq dt, dl.faq dd { margin-left: 1em }
 dl.faq dt:before { content: 'Q: ' }
 dl.faq dd:before { content: 'A: ' }
 
