@@ -11,8 +11,9 @@
 modify_files() {
     vsn=$1
     distvname=$2
+    perlrun=${ABSPERLRUN:-perl}
     find $distvname/lib -name '*.pm' -print0 | \
-	xargs -r0 -n1 perl dist-tools/SetVersion.pl $vsn $distvname/lib
+	xargs -r0 -n1 $perlrun dist-tools/SetVersion.pl $vsn $distvname/lib
 }
 
 if ! modify_files "$@"; then
