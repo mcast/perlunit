@@ -101,16 +101,13 @@ sub _git_dev_tag {
 sub _new_dev {
   my ($called, $last_rel, $numci) = @_;
 
-  my %devtag;
-  my @devtag = `git tag -l 'dev*'`;
+  my @devtag = `git tag -l 'dev$last_rel*'`;
   chomp @devtag;
-  @devtag{@devtag} = ();
 
-  my ($n, $v) = (1);
-  while (!defined $v || exists $devtag{"dev$v"}) {
-    die "Dev build tag algorithm fail? v=$v n=$n" if $n>99;
-    $v = sprintf("%s_%02d%02d", $last_rel, $numci, $n);
-    $n++;
+  my ($n, $v) = ($#devtag);
+  $v = sprintf("%s_%02d%02d", $last_rel, $n, $numci);
+  if ($n>99 || grep { $_ eq "dev$v" } @devtag) {
+    die "Dev build tag algorithm fail? v=$v n=$n numci=$numci";
   }
 
   return $v;
