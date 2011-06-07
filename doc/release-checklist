@@ -62,7 +62,7 @@ XXX: why does it make noise and complain that (most files in the manifest) are m
    Push the relevant tag(s)		git push
 
 9. Delete recent dev tags
-	byetags=$( git tag -l | grep -E ^dev$( git describe --abbrev=0 ) )
+	byetags=$( git tag -l | grep -E ^de$( git describe --abbrev=0 ) )
 	echo $byetags
 	git tag -d $byetags
 
