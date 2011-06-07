@@ -116,7 +116,7 @@ sub is_numeric {
 	# This is harsh but anything else risks brushing a problem
 	# under the carpet.  Best to make the caller to review the
 	# situation and maintain the test code.
-	die "Testing '$str' for is_numeric is ambiguous.  It may give different results various platform combinations - this is a liability for testing so we barfed";
+	die "Testing '$str' for is_numeric is ambiguous.  It may give different results on various platform combinations - this is a liability for testing so we barfed";
     }
 
     return defined $str && ! ($str == 0 && $str !~ /^\s*[+-]?0(e0)?\s*$/i);

@@ -1,3 +1,24 @@
+2011-06-07  Matthew Astley  <mca1001@users.sourceforge.net>
+
+	Dev release: a few old changes, for proof of new 'make tardist'
+
+	* Makefile.PL, inc/*, dist-tools/*: use version info from Git.
+	Fix the lack of version numbers in modules.
+
+2011-05-21  Matthew Astley  <mca1001@users.sourceforge.net>
+
+	Internal: migration from CVS to Git.  Website overhaul.
+
+2007-11-05  Matthew Astley  <mca1001@users.sourceforge.net>
+
+	[entry added later]
+
+	* t/error-compat.t, t/tlib/ManyThrowsTestCase.pm: test problems
+	with assumptions made about exceptions; not yet in the dist.
+
+	* lib/Test/Unit/Assertion/Exception.pm: tweak "needs an exception
+	class" message
+
 2007-10-30  Matthew Astley  <mca1001@users.sourceforge.net>
 
 	* lib/Test/Unit.pm: fix release version interpolation from v1.29
@@ -15,6 +36,18 @@
 	* t/tlib/AssertTest.pm: stop expecting assert_{isa,can} to work
 	with class names instead of objects; include original testcase
 	from SF bug #1012115 for peace of mind
+
+2007-10-22  Matthew Astley  <mca1001@users.sourceforge.net>
+
+	[entry added later]
+
+	* t/try_examples.t: trivial fix for RT bug #14469
+	https://rt.cpan.org/Public/Bug/Display.html?id=14469
+
+	* lib/Test/Unit/Assert.pm: add assert_isa and assert_can from
+	Marek Rouchal. https://rt.cpan.org/Public/Bug/Display.html?id=4613
+	
+	Updated contributors list.
 
 2005-10-15  Matthew Astley  <mca1001@users.sourceforge.net>
 

@@ -257,15 +257,15 @@ assert_deep_equals patches:
  can we do that direct use linkage?
  do I need to backport the patches we have?
 
+*** make tardist
 move the scripts somewhere so they get installed in a bin/
 
-put version numbers in all modules (my or our or oldestyle?)
-as below,
+Makefile.PL (GetVersion) forces working copy to be clean,
+but 'make distdir' (set_VERSION.sh) should do that too.
+Call GetVersion and check the answer matches.
 
- - if derived from CVS, with a note somewhere about bumping CVS
-   versions if files take non-linear routes somewhere
-
- - cd src/Test-Unit; grep -rL VERSION lib/ | grep -v CVS/
+Suspecting that not all selftest code runs.  Tool to check this would
+be useful.
 
 *** integrate Debianisations and credit the relevant folks
 /usr/share/doc/libtest-unit-perl/changelog.Debian.gz
