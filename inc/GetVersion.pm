@@ -104,8 +104,16 @@ sub _new_dev {
   my @devtag = `git tag -l 'dev$last_rel*'`;
   chomp @devtag;
 
-  my ($n, $v) = ($#devtag);
-  $v = sprintf("%s_%02d%02d", $last_rel, $n, $numci);
+  my $n = 1;
+  foreach my $t (@devtag) {
+    if ($t =~ /^dev\d+\.\d+_(\d{2})\d{2}$/) {
+      $n = 1+$1 if 1+$1 > $n;
+    } else {
+      warn "Ignoring strange tag $t";
+    }
+  }
+
+  my $v = sprintf("%s_%02d%02d", $last_rel, $n, $numci);
   if ($n>99 || grep { $_ eq "dev$v" } @devtag) {
     die "Dev build tag algorithm fail? v=$v n=$n numci=$numci";
   }

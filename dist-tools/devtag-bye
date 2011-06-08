@@ -1,0 +1,46 @@
+#! /bin/sh
+
+recent=$( git describe --abbrev=0 )
+byetags_recent=$( git tag -l | grep -E "^de$recent" )
+byetags_all=$( git tag -l | grep -E ^dev )
+
+# printf '  Dev tag removal.\n\n  Recent:\n%s\n  All:\n%s\n\n' \
+#     "$byetags_recent" "$byetags_all"
+
+byetags="$byetags_recent"
+while [ "$#" != 0 ]; do
+    case $1 in
+	-f) fetch=1 ;;
+	-A) byetags="$byetags_all" ;;
+	-d) del=1 ;;
+	*) help=1 ;;
+    esac
+    shift
+done
+
+if [ -n "$help" ]; then
+    echo "Syntax: $0 [-d] [-A] [-f]"
+    echo
+    echo "  -d : delete tags"
+    echo "  -A : all /^dev/ tags, not just /^de$recent/"
+    echo "  -f : fetch tags back from remote"
+    exit 1
+fi >&2
+
+
+if [ -n "$del" ]; then
+    git tag -d $byetags
+else
+    echo "Would run"
+    echo "  git tag -d "$byetags
+fi
+
+if [ -n "$fetch" ]; then
+    # Fetch whence?  I have
+    #   git config remote.devtags 'sourceforge-ro github-ro'
+    remotes=$( git config --get remote.devtags )
+    [ -z "$remotes" ] && remotes=$( git remote | head -n1 )
+
+    echo Fetch back tags from $remotes
+    git fetch -m -t $remotes
+fi

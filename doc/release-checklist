@@ -61,13 +61,7 @@ XXX: why does it make noise and complain that (most files in the manifest) are m
    Delete some dev tags?
    Push the relevant tag(s)		git push
 
-9. Delete recent dev tags
-	byetags=$( git tag -l | grep -E ^de$( git describe --abbrev=0 ) )
-	echo $byetags
-	git tag -d $byetags
-
-   and fetch back any pushed tags
-	git fetch -t
+9. Delete recent dev tags		dist-tools/devtag-bye -d -f
 
 10. Check CPAN knows you own all modules in the dist.
 	curl -s http://www.cpan.org/modules/06perms.txt.gz | zcat | grep -E '^$|: |^Test::Unit' | less
