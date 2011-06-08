@@ -1,6 +1,17 @@
+2011-06-08  Matthew Astley  <mca1001@users.sourceforge.net>
+
+	Small bugfixes & Global IPv6 day.  dev0.25_13nn
+
+	* t/try_examples.t: accept small negative CPU time.
+
+	* t/try_examples.t, TestRunner.pl: test+fix exit code.
+
+	* t/tlib/AssertTest.pm: don't assume qr/foo/ stringifies
+	as (?-xism:foo) .  In Perl 5.14 it doesn't.
+
 2011-06-07  Matthew Astley  <mca1001@users.sourceforge.net>
 
-	Dev release: a few old changes, for proof of new 'make tardist'
+	A few old changes, for proof of new 'make tardist'.  dev0.25_0922
 
 	* Makefile.PL, inc/*, dist-tools/*: use version info from Git.
 	Fix the lack of version numbers in modules.

@@ -13,7 +13,7 @@ foreach (qw(Makefile.PL Makefile examples lib t)) {
 }
 
 my %skip = map { ("examples/$_") => 1 }
-               qw(. .. CVS Experimental README tester.png);
+               qw(. .. Experimental README tester.png);
 my @examples = grep { ! $skip{$_} } glob("examples/*");
 
 my %guru_checked = (
@@ -54,6 +54,7 @@ There was 1 failure:
 Born to lose ...
 
 Test was not successful.
+EXITCODE:0x100
 EGC
 
      );
@@ -87,6 +88,7 @@ foreach my $e (@examples) {
         my $cmd = "$perl -I examples $runner$e 2>&1";
 #        warn "cmd $cmd\n";
 	my $out = `$cmd`;
+	$out .= sprintf("EXITCODE:0x%X\n", $?) if $?;
 	foreach ($out, $guru_checked{$e}) {
 	    # mess about with start & end newlines
 	    s/^\n+//;
@@ -99,7 +101,7 @@ foreach my $e (@examples) {
 	    # indent lines with '# ' so they're comments if the test fails
 	    s/\n/\n# /g;
 	    # hide things that look like CPU usage
-	    s{Time:\s+[\d\.]+\s+wallclock secs \([\d\s\.]+usr\s+\+[\d\s\.]+sys\s+=[\d\s\.]+CPU\)}
+	    s{Time:\s+[\d\.]+\s+wallclock secs \([-\d\s\.]+usr\s+\+[-\d\s\.]+sys\s+=[-\d\s\.]+CPU\)}
 	    {TIME-SUMMARY}g;
 	}
 	ok($out, $guru_checked{$e});
