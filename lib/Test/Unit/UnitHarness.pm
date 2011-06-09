@@ -61,7 +61,9 @@ sub run {
     # pass -I flags to children
     my $old5lib = $ENV{PERL5LIB};
     local($ENV{'PERL5LIB'}) = join($Config{path_sep}, @INC);
-  
+
+    my $path_to_perl = $Config{perlpath};
+
     if ($^O eq 'VMS') { $switches =~ s/-(\S*[A-Z]\S*)/"-$1"/g }
 
     $fh->open($test) or print "can't open $test. $!\n";
@@ -69,7 +71,7 @@ sub run {
     my $s = $switches;
     $s .= q[ "-T"] if $first =~ /^#!.*\bperl.*-\w*T/;
     $fh->close or print "can't close $test. $!\n";
-    my $cmd = "$^X $s $test|";
+    my $cmd = "$path_to_perl $s $test|";
     $cmd = "MCR $cmd" if $^O eq 'VMS';
     $fh->open($cmd) or print "can't run $test. $!\n";
     for my $line (<$fh>) {

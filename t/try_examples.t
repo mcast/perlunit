@@ -2,6 +2,10 @@
 
 use strict;
 
+use Config;
+my $path_to_perl = $Config{perlpath};
+
+
 # using the standard built-in 'Test' module (assume nothing)
 use Test;
 
@@ -74,18 +78,14 @@ foreach my $e (keys %guru_checked) {
 #   b) tests passed fine on "MSWin32 4.0" for REL_0_25
 
 
-# Attempt to get hold of the correct perl to run the examples.  I
-# think we want $ENV{FULLPERLRUN} when running "make test", but that
-# doesn't filter down to us.  $ENV{PERL5LIB} is set correctly though.
-my $perl = $^X || "perl";
-# warn "running examples with \$perl='$perl'\n  under \@INC=(@INC)\n  with PERL5LIB=$ENV{PERL5LIB}\n";
+# warn "running examples with \$path_to_perl='$path_to_perl'\n  under \@INC=(@INC)\n  with PERL5LIB=$ENV{PERL5LIB}\n";
 
 
 foreach my $e (@examples) {
     if (defined $guru_checked{$e}) {
 	# get program output
         my $runner = $e =~ /\.pm$/ ? './TestRunner.pl ' : '';
-        my $cmd = "$perl -I examples $runner$e 2>&1";
+        my $cmd = "$path_to_perl -I examples $runner$e 2>&1";
 #        warn "cmd $cmd\n";
 	my $out = `$cmd`;
 	$out .= sprintf("EXITCODE:0x%X\n", $?) if $?;
