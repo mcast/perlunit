@@ -3,10 +3,10 @@
 use strict;
 
 use Test::Unit::HarnessUnit;
-use Test::Unit::Debug qw(debug_pkgs);
+use Test::Unit::Debug qw(debug_pkg); # you don't need this in your tests
 
-#debug_pkgs(qw/Test::Unit::Assert/);
-#debug_pkgs(qw/Test::Unit::Assertion::CodeRef/);
+#debug_pkg(qw/Test::Unit::Assert/);
+#debug_pkg(qw/Test::Unit::Assertion::CodeRef/);
 
 use lib 't/tlib', 'tlib';
 

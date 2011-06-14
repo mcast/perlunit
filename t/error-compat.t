@@ -3,7 +3,7 @@
 use strict;
 
 use Test::Unit::HarnessUnit;
-use Test::Unit::Debug qw(debug_pkgs);
+use Test::Unit::Debug qw(debug_pkg); # you don't need this in your tests
 
 use Test;
 plan(tests => 5);
