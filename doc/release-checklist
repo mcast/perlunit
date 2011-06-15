@@ -23,9 +23,7 @@ The procedure should be:
 
 4. Tag it, if it is a full release	git tag -m 'mumble is out' v0.mumble
 
-5. Fresh Makefile			perl -w Makefile.PL
-
-   -w : but if there were warnings you'd like to see them yes?
+5. Fresh Makefile			perl Makefile.PL
 
    This can make new dev tags, iff not on a release tag.
 
