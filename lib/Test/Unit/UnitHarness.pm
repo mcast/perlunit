@@ -44,7 +44,7 @@ sub new {
         _Names => [],
     };
     bless $self, $class;
-    debug(ref($self) . "::new($name) called\n");
+    debug(ref($self), "::new(", $name, ") called\n");
     
     return $self;
 }

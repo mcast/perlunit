@@ -15,7 +15,7 @@ sub obj_load { shift; load(@_) }
 # Compiles a target.  Returns the package if successful.
 sub compile {
     my $target = shift;
-    debug("Test::Unit::Loader::compile($target) called\n");
+    debug("Test::Unit::Loader::compile(", $target, ") called\n");
 
     if ($target =~ /^\w+(::\w+)*$/) {
         compile_class($target);
@@ -33,7 +33,7 @@ sub compile {
 
 sub compile_class {
     my $classname = shift;
-    debug("  Test::Unit::Loader::compile_class($classname) called\n");
+    debug("  Test::Unit::Loader::compile_class(", $classname, ") called\n");
     # Check if the package exists already.
     {
         no strict 'refs';
@@ -45,20 +45,20 @@ sub compile_class {
     # No? Try 'require'ing it
     eval "require $classname";
     die $@ if $@;
-    debug("    $classname compiled OK as class name\n");
+    debug("    ", $classname, " compiled OK as class name\n");
 }
 
 sub compile_file {
     my $file = shift;
-    debug("  Test::Unit::Loader::compile_file($file) called\n");
+    debug("  Test::Unit::Loader::compile_file(", $file, ") called\n");
     eval qq{require "$file"};
     die $@ if $@;
-    debug("    $file compiled OK as filename\n");
+    debug("    ", $file, " compiled OK as filename\n");
 }
 
 sub load {
     my $target = shift;
-    debug("Test::Unit::Loader::load($target) called\n");
+    debug("Test::Unit::Loader::load(", $target, ") called\n");
 
     my $suite = load_test($target)
              || load_test_harness_test($target)
@@ -70,10 +70,10 @@ sub load {
 
 sub load_test {
     my $target = shift;
-    debug("Test::Unit::Loader::load_test($target) called\n");
+    debug("Test::Unit::Loader::load_test(", $target, ") called\n");
     my $package = compile($target);
     return unless $package;
-    debug("  compile returned $package\n");
+    debug("  compile returned ", $package, "\n");
     my $suite = load_test_suite($package) || load_test_case($package);
     die "`$target' was not a valid Test::Unit::Test\n" unless $suite;
     return $suite;
@@ -81,18 +81,18 @@ sub load_test {
 
 sub load_test_suite {
     my $package = shift;
-    debug("  Test::Unit::Loader::load_test_suite($package) called\n");
+    debug("  Test::Unit::Loader::load_test_suite(", $package, ") called\n");
     if ($package->can("suite")) {
-        debug("  $package has a suite() method\n");
+        debug("  ", $package, " has a suite() method\n");
         return $package->suite();
     } 
 }
 
 sub load_test_case {
     my $package = shift;
-    debug("  Test::Unit::Loader::load_test_case($package) called\n");
+    debug("  Test::Unit::Loader::load_test_case(", $package, ") called\n");
     if ($package->isa("Test::Unit::TestCase")) {
-        debug("  $package isa Test::Unit::TestCase\n");
+        debug("  ", $package, " isa Test::Unit::TestCase\n");
         return Test::Unit::TestSuite->new($package);
     } 
 }

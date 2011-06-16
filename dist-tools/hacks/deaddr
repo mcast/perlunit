@@ -1,0 +1,40 @@
+#! /usr/bin/perl -p
+use strict;
+use warnings;
+
+=head DESCRIPTION
+
+Quick filter or in-place edit script to turn
+
+ Test::Unit::TestSuite=HASH(0x8b265b8)
+
+into one of
+
+ Test::Unit::TestSuite=HASH(ADDR_23)
+
+ Test::Unit::TestSuite=HASH(ADDR)
+
+to allow diffing of debug output.
+
+=cut
+
+my ($symify, %sym);
+BEGIN {
+  while (@ARGV && $ARGV[0] =~ /^-/) {
+    my $opt = shift;
+    if ($opt eq '-s') { $symify = 1 }
+    elsif ($opt eq '-i') { $^I = '~~' }
+    else { die "Bad switch '$opt'" }
+  }
+}
+
+s{(\(0x[0-9a-f]{4,16}\))}{symify($1)}eg;
+
+sub symify {
+  my ($old) = @_;
+  if ($symify) {
+    return $sym{$old} ||= '(ADDR_'.(keys %sym).')';
+  } else {
+    return '(ADDR)';
+  }
+}

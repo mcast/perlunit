@@ -68,13 +68,13 @@ sub run_bare {
 
 sub run_test {
     my $self = shift; 
-    debug("    ", ref($self) . "::run_test() called on ", $self->name, "\n");
+    debug("    ", ref($self), "::run_test() called on ", $self->name, "\n");
     my $method = $self->name();
     if ($self->can($method)) {
-        debug("      running `$method'\n");
+        debug("      running `", $method, "'\n");
         $self->$method();
     } else {
-        $self->fail("      Method `$method' not found");
+        $self->fail("      Method `", $method, "' not found");
     }
 }
 
