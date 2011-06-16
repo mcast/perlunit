@@ -18,9 +18,12 @@ Test::Unit::Debug - framework debugging control (internal)
 You may ignore this package if you are not debugging the internals of
 Test::Unit.
 
-You may also use it as a place to store & query a per-package debug
-flag for your own packages, but there are probably interfaces for
-doing that.
+If you need to emit debug text for failing tests, try
+L<Test::Unit::TestCase/annotate> instead.
+
+You might also use it as a place to store & query a per-package debug
+flag for your own packages, but there are probably better interfaces
+for doing that.
 
 Broadly, it allows control of the destination of debugging; control
 over which packages make debug noise; and L</debug> to emit noise.
@@ -69,22 +72,51 @@ sub debug_to_stderr {
 }
 
 
-=head2 debug(@message)
+=head2 debug(@message) or debug(sub { ...; return @message; })
 
 Send the debug message to the current destination iff the calling
-package has debug messages enabled via L</debug_pkg>.  C<@message> is
-printed using the prevailing C<$,> .
+package has debug messages enabled via L</debug_pkg>.
 
-Note that the arguments must be evaluated and the subroutine call made
-every time, even when debugging is off.  Therefore don't perform slow
-operations without also making them conditional, nor use it in tight
-loops.
+The message may take two forms,
+
+=over 4
+
+=item *
+
+When called with a list, C<@message> is printed using the prevailing
+C<$,> and C<$\> .  This maintains backward compatibility.
+
+=item *
+
+When called with one CODE ref, that code is called in list context
+with no arguments iff debugging is enabled.  It should return the
+C<@message>.  If that is not an empty list, it is printed using the
+prevailing C<$,> and C<$\> .  This allows lazier construction of
+messages.
+
+=back
+
+Note that C<debug> arguments must be evaluated and the C<debug>
+subroutine call made every time, even when debugging is off.
+Therefore don't perform slow operations without also making them
+conditional on L</debugged>, nor use it in tight loops.
+
+(Interpolating into a debug string an object which stringifies can be
+a CPU guzzler, and looks innocuous.)
 
 =cut
 
 sub debug {
     my ($package, $filename, $line) = caller();
-    print $out @_ if $DEBUG{$package};
+    return () unless $DEBUG{$package};
+
+    my ($first) = @_;
+    if (1 == @_ && ref($first) eq 'CODE') {
+      my @msg = $first->();
+      print $out @msg if @msg;
+    } else {
+      print $out @_;
+    }
 }
 
 
