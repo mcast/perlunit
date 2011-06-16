@@ -37,7 +37,7 @@ use strict;
 
 use base 'Exporter';
 use vars qw(@EXPORT_OK);
-@EXPORT_OK = qw(debug debug_to_file
+@EXPORT_OK = qw(debug debug_to_file debug_to_stderr debug_importers
                 debug_pkg no_debug_pkg debug_pkgs no_debug_pkgs debugged);
 
 my %DEBUG = (); # key = package name, value = boolean
@@ -50,14 +50,20 @@ These are all subroutines (don't call them as methods).
 
 =head2 debug_to_file($file)
 
-Switch debugging to C<$file>.
+Switch debugging to C<$file>.  This may be a filename to be created
+(clobbering any existing file), or a filehandle.
 
 =cut
 
 sub debug_to_file {
     my ($file) = @_;
-    open(DEBUG, ">$file") or die "Couldn't open $file for writing: $!";
-    $out = \*DEBUG;
+    if (ref($file)) {
+	# Object or GLOBref: assume it can print
+	$out = $file;
+    } else {
+	open(DEBUG, ">$file") or die "Couldn't open $file for writing: $!";
+	$out = \*DEBUG;
+    }
 }
 
 
@@ -139,8 +145,10 @@ sub debug_pkgs {
 
 =head2 no_debug_pkg(@pkg)
 
-Disable debugging in one or more packages C<@pkg>.  This is the
-default for all packages.
+Disable debugging in one or more packages C<@pkg>.
+
+This is the default for all packages, unless the environment variable
+PERLUNIT_DEBUG_ALL is true when the package imports the debug symbols.
 
 =cut
 
@@ -152,6 +160,28 @@ sub no_debug_pkg {
 sub no_debug_pkgs {
     $DEBUG{$_} = 0 foreach @_;
     warn "DEPRECATED: no_debug_pkgs";
+}
+
+
+=head2 debug_importers()
+
+Returns a list of packages which have done C<use Test::Unit::Debug> .
+This may be passed to L</debug_pkg> or L</no_debug_pkg>.
+
+=cut
+
+sub import {
+  my ($called, @tags) = @_;
+  my $caller = caller();
+
+  # An all-packages default and a full set of "keys %DEBUG"
+  $DEBUG{$caller} = $ENV{PERLUNIT_DEBUG_ALL} ? 1 : 0;
+
+  return __PACKAGE__->export_to_level(1, $called, @tags);
+}
+
+sub debug_importers {
+  return sort keys %DEBUG;
 }
 
 
