@@ -1,7 +1,6 @@
 #! perl -w
 
 use strict;
-use IO::String; # more portable than /dev/null ?
 
 # using the standard built-in 'Test' module (assume nothing)
 use Test;
@@ -9,8 +8,10 @@ BEGIN { plan tests => 9 }
 
 # test subjects
 use Test::Unit::TestRunner;
-use Test::Unit::Debug qw( debug_pkg debug_to_file );
+use Test::Unit::Debug qw( debug_pkg );
 use lib 't/tlib', 'tlib';
+
+use Silencing qw( silent_debug silent_testrunner );
 
 sub main {
   my @bigmods = qw( B B::Deparse );
@@ -82,17 +83,6 @@ sub t_run_sometests {
     print $msg; # diag
   }
 
-  return ();
-}
-
-sub silent_testrunner {
-  my $nullfh = IO::String->new;
-  return Test::Unit::TestRunner->new($nullfh);
-}
-
-sub silent_debug {
-  my $nullfh = IO::String->new;
-  debug_to_file($nullfh);
   return ();
 }
 

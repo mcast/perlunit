@@ -24,6 +24,10 @@ WriteMakefile(
 		       ? q{$(ABSPERLRUN) dist-tools/SetVersion.pl --pmf $(VERSION) Test::Unit}
 		       : undef),
 
+    'BUILD_REQUIRES' => {
+		       'IO::String'      => 0,
+			},
+
     'PREREQ_PM'    => {
                        'Class::Inner'   => 0,
                        'Devel::Symdump' => 0,
