@@ -51,6 +51,7 @@ MANIFEST
 README
 t/all_tests.t
 t/assert.t
+t/debug.t
 t/tlib/ActiveTestTest.pm
 t/tlib/AllTests.pm
 t/tlib/AssertTest.pm
@@ -70,7 +71,9 @@ t/tlib/NoTestCaseClass.pm
 t/tlib/NoTestCases.pm
 t/tlib/OneTestCase.pm
 t/tlib/OverrideTestCase.pm
+t/tlib/RepeatableTests.pm
 t/tlib/RunnerTest.pm
+t/tlib/Silencing.pm
 t/tlib/Success.pm
 t/tlib/SuiteTest.pm
 t/tlib/TestAssertionCodeRef.pm

@@ -27,12 +27,13 @@ sub do_assertion {
         $possible_object->$$self(@_[1..$#_]);
     }
     else {
+	my @arg = @_;
         debug(sub {
               "  asserting [$self]"
-              . (@_ ? " on args " . join(', ', map { $_ || '<undef>' } @_) : '')
+              . (@arg ? " on args " . join(', ', map { $_ || '<undef>' } @arg) : '')
               . "\n";
 	    });
-        $$self->(@_);
+        $$self->(@arg);
     }
 }
 
