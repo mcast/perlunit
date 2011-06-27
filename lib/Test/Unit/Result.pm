@@ -28,7 +28,7 @@ sub tell_listeners {
 
 sub add_error { 
     my $self = shift;
-    debug($self . "::add_error() called\n");
+    debug($self, "::add_error() called\n");
     my ($test, $exception) = @_;
     $exception->{-object} = $test;
     push @{$self->errors()}, $exception;
@@ -37,7 +37,7 @@ sub add_error {
 
 sub add_failure {
     my $self = shift;
-    debug($self . "::add_failure() called\n");
+    debug($self, "::add_failure() called\n");
     my ($test, $exception) = @_;
     $exception->{-object} = $test;
     push @{$self->failures()}, $exception;
@@ -46,14 +46,14 @@ sub add_failure {
 
 sub add_pass {
     my $self = shift;
-    debug($self . "::add_pass() called\n");
+    debug($self, "::add_pass() called\n");
     my ($test) = @_;
     $self->tell_listeners(add_pass => @_);
 }
 
 sub add_listener {
     my $self = shift;
-    debug($self . "::add_listener() called\n");
+    debug($self, "::add_listener() called\n");
     my ($listener) = @_;
     push @{$self->listeners()}, $listener;
 }
@@ -92,7 +92,7 @@ sub failures {
 sub run {
     my $self = shift;
     my ($test) = @_;
-    debug(sprintf "%s::run(%s) called\n", $self, $test->name());
+    debug(sub { sprintf "%s::run(%s) called\n", $self, $test->name() });
     $self->start_test($test);
 
     # This closure may look convoluted, but it allows Test::Unit::Setup
@@ -113,7 +113,7 @@ sub run_protected {
     my $self = shift;
     my $test = shift;
     my $protectable = shift;
-    debug("$self\::run_protected($test, $protectable) called\n");
+    debug($self, "::run_protected(", $test, ", ", $protectable, ") called\n");
 
     try {
         &$protectable();
@@ -169,7 +169,7 @@ sub was_successful {
 sub to_string {
     my $self = shift;
     my $class = ref($self);
-    debug($class . "::to_string() called\n");
+    debug($class, "::to_string() called\n");
 }
 
 1;

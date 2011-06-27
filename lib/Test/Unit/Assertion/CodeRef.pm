@@ -18,19 +18,22 @@ sub new {
 sub do_assertion {
     my $self = shift;
     my $possible_object = $_[0];
-    debug("Called do_assertion(" . ($possible_object || 'undef') . ")\n");
+    debug("Called do_assertion(", ($possible_object || 'undef'), ")\n");
     if (ref($possible_object) and
         ref($possible_object) ne 'Regexp' and
         eval { $possible_object->isa('UNIVERSAL') })
     {
-        debug("  [$possible_object] isa [" . ref($possible_object) . "]\n");
+        debug("  [", $possible_object, "] isa [", ref($possible_object), "]\n");
         $possible_object->$$self(@_[1..$#_]);
     }
     else {
-        debug("  asserting [$self]"
-              . (@_ ? " on args " . join(', ', map { $_ || '<undef>' } @_) : '')
-              . "\n");
-        $$self->(@_);
+	my @arg = @_;
+        debug(sub {
+              "  asserting [$self]"
+              . (@arg ? " on args " . join(', ', map { $_ || '<undef>' } @arg) : '')
+              . "\n";
+	    });
+        $$self->(@arg);
     }
 }
 

@@ -3,8 +3,6 @@ use strict;
 
 use Carp;
 
-use Test::Unit::Debug qw(debug);
-
 use base qw(Test::Unit::Assert);
 
 sub count_test_cases {

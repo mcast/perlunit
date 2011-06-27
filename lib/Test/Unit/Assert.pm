@@ -24,7 +24,7 @@ sub normalize_assertion {
     my $assertion = shift;
 
     if (!ref($assertion) || ref($assertion) =~ 'ARRAY') {
-        debug((defined $assertion ? $assertion : '_undef_') .
+        debug((defined $assertion ? $assertion : '_undef_'),
               " normalized as boolean\n");
         require Test::Unit::Assertion::Boolean;
         return Test::Unit::Assertion::Boolean->new($assertion);
@@ -33,25 +33,25 @@ sub normalize_assertion {
     # If we're this far, we must have a reference.
 
     if (eval {$assertion->isa('Regexp')}) {
-        debug("$assertion normalized as Regexp\n");
+        debug($assertion, " normalized as Regexp\n");
         require Test::Unit::Assertion::Regexp;
         return Test::Unit::Assertion::Regexp->new($assertion);
     }
 
     if (ref($assertion) eq 'CODE') {
-        debug("$assertion normalized as coderef\n");
+        debug($assertion, " normalized as coderef\n");
         require Test::Unit::Assertion::CodeRef;
         return Test::Unit::Assertion::CodeRef->new($assertion);
     }
 
 #   if (ref($assertion) eq 'SCALAR') {
-#       debug("$assertion normalized as scalar ref\n");
+#       debug($assertion, " normalized as scalar ref\n");
 #       require Test::Unit::Assertion::Scalar;
 #       return Test::Unit::Assertion::Scalar->new($assertion);
 #   }
 
     if (ref($assertion) !~ /^(GLOB|LVALUE|REF|SCALAR)$/) {
-        debug("$assertion already an object\n");
+        debug($assertion, " already an object\n");
         require Test::Unit::Assertion::Boolean;
         return $assertion->can('do_assertion') ? $assertion :
             Test::Unit::Assertion::Boolean->new($assertion);
@@ -76,12 +76,12 @@ sub do_assertion {
     my $asserter  = shift;
     my $file      = shift;
     my $line      = shift;
-    debug("Asserting [$assertion] from $asserter in $file line $line\n");
+    debug("Asserting [", $assertion, "] from ", $asserter, " in ", $file, " line ", $line, "\n");
     my @args = @_;
     try { $assertion->do_assertion(@args) }
     catch Test::Unit::Exception with {
         my $e = shift;
-        debug("  Caught $e, rethrowing from $asserter, $file line $line\n");
+        debug("  Caught ", $e, ", rethrowing from ", $asserter, ", ", $file, " line ", $line, "\n");
         $e->throw_new(-package => $asserter,
                       -file    => $file,
                       -line    => $line,
@@ -99,7 +99,7 @@ sub multi_assert {
         }
         catch Test::Unit::Exception with {
             my $e = shift;
-            debug("  Caught $e, rethrowing from $asserter, $file line $line\n");
+            debug("  Caught ", $e, ", rethrowing from ", $asserter, ", ", $file, " line ", $line, "\n");
             $e->throw_new(-package => $asserter,
                           -file    => $file,
                           -line    => $line,
@@ -557,7 +557,7 @@ sub _format_stack {
 
 sub fail {
     my $self = shift;
-    debug(ref($self) . "::fail() called\n");
+    debug(ref($self), "::fail() called\n");
     my($asserter,$file,$line) = caller($Error::Depth);
     my $message = join '', @_;
     Test::Unit::Failure->throw(-text => $message,
@@ -568,7 +568,7 @@ sub fail {
 
 sub error {
     my $self = shift;
-    debug(ref($self) . "::error() called\n");
+    debug(ref($self), "::error() called\n");
     my($asserter,$file,$line) = caller($Error::Depth);
     my $message = join '', @_;
     Test::Unit::Error->throw(-text => $message,

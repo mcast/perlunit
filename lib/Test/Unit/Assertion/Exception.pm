@@ -5,7 +5,6 @@ use base qw/Test::Unit::Assertion/;
 
 use Carp;
 use Error qw/:try/;
-use Test::Unit::Debug qw(debug);
 
 my $deparser;
 

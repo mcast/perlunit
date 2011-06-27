@@ -2,7 +2,7 @@ package fail_example; # this is the test case to be decorated
 
 use strict;
 
-use Test::Unit::Debug qw(debug debugged);
+use Test::Unit::Debug qw(debug debugged); # you probably don't need this in your tests
 use Test::Unit::TestSuite;
 
 use base qw(Test::Unit::TestCase);
@@ -21,12 +21,12 @@ sub test_fail {
 
 sub set_up {
     my $self = shift()->SUPER::set_up(@_);
-    debug("hello world\n");
+    debug("fail_example hello world\n");
 }
 
 sub tear_down {
     my $self = shift();
-    debug("leaving world again\n");
+    debug("fail_example leaving world again\n");
     $self->SUPER::tear_down(@_);
 }
 
@@ -42,7 +42,7 @@ package fail_example_testsuite_setup;
 # this suite will decorate fail_example with additional fixture
 
 use strict;
-use Test::Unit::Debug qw(debug);
+use Test::Unit::Debug qw(debug); # you don't need this in your tests
 
 use base qw(Test::Unit::Setup);
 

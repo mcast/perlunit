@@ -103,7 +103,7 @@ sub empty_new {
     };
     bless $self, $classname;
     
-    debug(ref($self), "::empty_new($name) called\n");
+    debug(ref($self), "::empty_new(", $name, ") called\n");
     return $self;
 }
 
@@ -123,7 +123,7 @@ the tests from those classes into the newly constructed suite object.
 sub new {
     my $class = shift;
     my $classname = shift || ''; # Avoid a warning
-    debug("$class\::new($classname) called\n");
+    debug($class, "::new(", $classname, ") called\n");
 
     my $self = $class->empty_new();
 
@@ -241,7 +241,7 @@ Of course, there are many ways of getting the object too ...
 sub add_test {
     my $self = shift;
     my ($test) = @_;
-    debug('+ ', ref($self), "::add_test($test) called\n");
+    debug('+ ', ref($self), "::add_test(", $test, ") called\n");
     $test = Test::Unit::Loader::load_test($test) unless ref $test;
     croak "`$test' could not be interpreted as a Test::Unit::Test object"
         unless eval { $test->isa('Test::Unit::Test') };
@@ -259,7 +259,7 @@ sub run {
     my $self = shift;
     my ($result, $runner) = @_;
 
-    debug("$self\::run($result, ", $runner || 'undef', ") called\n");
+    debug($self, "::run(", $result, ", ", $runner || 'undef', ") called\n");
 
     $result ||= create_result();
     $result->tell_listeners(start_suite => $self);
@@ -269,10 +269,10 @@ sub run {
 
     for my $t (@{$self->tests()}) {
         if ($runner && $self->filter_test($runner, $t)) {
-            debug(sprintf "+ skipping '%s'\n", $t->name());
+            debug("+ skipping '", $t->name(), "'\n");
             next;
         }
-        debug(sprintf "+ didn't skip '%s'\n", $t->name());
+        debug("+ didn't skip '", $t->name(), "'\n");
  
         last if $result->should_stop();
         $t->run($result, $runner);
@@ -287,13 +287,13 @@ sub filter_test {
     my $self = shift;
     my ($runner, $test) = @_;
 
-    debug(sprintf "checking whether to filter '%s'\n", $test->name);
+    debug("checking whether to filter '", $test->name, "'\n");
 
     my @filter_tokens = $runner->filter();
 
     foreach my $token (@filter_tokens) {
         my $filtered = $test->filter_method($token);
-        debug("  - by token $token? ", $filtered ? 'yes' : 'no', "\n");
+        debug("  - by token ", $token, "? ", $filtered ? 'yes' : 'no', "\n");
         return 1 if $filtered;
     }
 
