@@ -16,7 +16,7 @@ The procedure should be:
 
 1. Ensure files are committed		git status
 
-2. Update ChangeLog			git log --stat --reverse  v0.25..HEAD
+2. Update ChangeLog			git log --stat --reverse --decorate v0.25..HEAD
 
 3. Ensure working copy is clean		git clean -xdn
    Change last n to f to delete them!
