@@ -46,6 +46,7 @@ lib/Test/Unit/TkTestRunner.pm
 lib/Test/Unit/Tutorial.pm
 lib/Test/Unit/UnitHarness.pm
 lib/Test/Unit/Warning.pm
+lib/Tk/ArrayBar.pm
 Makefile.PL
 MANIFEST
 README
