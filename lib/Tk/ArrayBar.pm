@@ -1,8 +1,44 @@
 package Tk::ArrayBar;
-# progressbar doesnt cut it.
-# This expects a variable which is an array ref, and
-# a matching list of colours. Sortof like stacked progress bars.
-# Heavily - ie almost totally - based on the code in ProgressBar.
+
+=head1 NAME
+
+Tk::ArrayBar - testcase pass/fail progress bar widget
+
+=head1 DESCRIPTION
+
+This is a custom L<Tk> widget to produce the customary green/ red/
+not-yet-run progress bar.
+
+L<Tk::ProgressBar> doesn't cut it.
+
+This expects a variable which is an array ref, and
+a matching list of colours. Sortof like stacked progress bars.
+
+Heavily - ie almost totally - based on the code in ProgressBar.
+
+=head2 Tk widget in a code testing dist?
+
+Previously this package was piggybacked onto the end of the
+L<Test::Unit::TkTestRunner> module file.  Now it has its own file,
+which gives it more visibility (and POD) but little else changed.
+
+It could be in a separate CPAN distribution so other people can use
+it, but then PerlUnit would have another runtime dependency.  There
+are already enough that some people complain.
+
+To discuss, please use the perlunit-devel list.
+
+=head1 AUTHOR
+
+Copyright (c) 2000-2002, 2005, 2011 the PerlUnit Development Team
+(see L<Test::Unit> or the F<AUTHORS> file included in this
+distribution).
+
+All rights reserved. This program is free software; you can
+redistribute it and/or modify it under the same terms as Perl itself.
+
+=cut
+
 use Tk;
 use Tk::Canvas;
 use Tk::ROText;
