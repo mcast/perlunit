@@ -291,7 +291,19 @@ sub load_frame_icon {
 }
 
 sub main {
-    my $main = new Test::Unit::TkTestRunner()->start(@_);
+    my @arg = @_;
+
+    my $obj = Test::Unit::TkTestRunner->new();
+    $obj->start(@arg);
+
+    # Cook up a return value for completeness.
+    # This is after MainLoop, i.e. close app.
+    my $result = $obj->{completed_result};
+    my $total = $result && $result->run_count();
+    return 2 if !$total; # "nothing happened"
+    my $bad = $result->failure_count() + $result->error_count();
+    return 1 if $bad;
+    return 0; # tests ran, all passed
 }
 
 sub rerun {
@@ -365,6 +377,7 @@ sub run_suite {
                 $self->show_info("Finished: ".timestr($self->{run_time}, 'nop'));
             }
         }
+        $self->{completed_result} = $self->{result};
         $self->{runner} = undef;
         $self->{result} = undef;
         $self->{run}->configure(-text => "Run");
@@ -482,8 +495,9 @@ Test::Unit::TkTestRunner - unit testing framework helper class
 
 =head1 SYNOPSIS
 
-    use Test::Unit::TkTestRunner;
-    Test::Unit::TkTestRunner::main($my_testcase_class);
+ use Test::Unit::TkTestRunner;
+ my $ret = Test::Unit::TkTestRunner::main($my_testcase_class);
+ exit $ret;
 
 =head1 DESCRIPTION
 

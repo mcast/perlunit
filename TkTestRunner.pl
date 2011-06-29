@@ -4,4 +4,4 @@ use strict;
 
 use Test::Unit::TkTestRunner;
 
-Test::Unit::TkTestRunner::main(@ARGV);
+exit Test::Unit::TkTestRunner::main(@ARGV);
