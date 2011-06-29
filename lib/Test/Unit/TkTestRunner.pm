@@ -148,7 +148,7 @@ sub create_ui {
     $self->{suite_label} = $mw->Label(
         -text => 'Enter the name of the TestCase:'
     );
-    $self->{suite_name}  = "x";
+    $self->{suite_name}  = '';
     $self->{suite_field} = $mw->BrowseEntry(
         -textvariable => \$self->{suite_name},
         -choices      => [],
@@ -294,6 +294,7 @@ sub main {
     my @arg = @_;
 
     my $obj = Test::Unit::TkTestRunner->new();
+    $obj->{autorun} = shift @arg if $arg[0] eq '-run';
     $obj->start(@arg);
 
     # Cook up a return value for completeness.
@@ -424,14 +425,19 @@ sub show_status {
 }
 
 sub start {
-    my $self = shift;
-    my (@args)=@_;
+    my ($self, $test) = @_;
     my $mw = $self->create_ui();
-    if (@args) {
-	$self->{suite_name} = shift @args;
-    }
+    $self->{suite_name} = $test if defined $test;
+    $self->do_autorun if $self->{autorun} && $self->{suite_name};
     MainLoop;
 }
+
+sub do_autorun {
+    my $self = shift;
+    $self->{frame}->waitVisibility;
+    $self->{run}->invoke;
+}
+
 
 sub start_test {
     my $self = shift;
