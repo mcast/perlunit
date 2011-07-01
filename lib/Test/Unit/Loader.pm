@@ -123,11 +123,8 @@ sub load_test_harness_test {
     my $target = shift;
 
     foreach my $file ("$target", "$target.t", "t/$target", "t/$target.t" ) {
-        if (-r $file) {
-            # are the next 3 lines really necessary?
-            open(FH, $file) or next;
-            my $first = <FH>;
-            close(FH) or next;
+        if (-r $file && -f _ && -s _) {
+	    # non-empty readable file with a promising name...
             return Test::Unit::UnitHarness->new($file);
         }
     }
