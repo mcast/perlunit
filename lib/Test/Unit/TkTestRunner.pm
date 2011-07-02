@@ -398,7 +398,8 @@ sub show_error_trace {
 	($selected) = @$selected; # take the first, ignore the rest
     }
     return unless defined($selected) && $self->{exceptions}[$selected];
-    my $text = $dialog->add("Scrolled", "ROText", -width => 80, -height => 20)
+    my $text = $dialog->add("Scrolled", "ROText", -width => 80, -height => 20,
+                            -scrollbars => "osoe")
       ->pack(-expand => 1, -fill => 'both');
     $text->insert("end", $self->{exceptions}[$selected]->to_string());
 
