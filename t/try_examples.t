@@ -21,6 +21,32 @@ my %skip = map { ("examples/$_") => 1 }
 my @examples = grep { ! $skip{$_} } glob("examples/*");
 
 my %guru_checked = (
+    'examples/AnnotatedFail.pm' => <<'EGC',
+...EF..
+Time:  0 wallclock secs ( 0.01 usr +  0.00 sys =  0.01 CPU)
+
+!!!FAILURES!!!
+Test Results:
+Run: 5, Failures: 1, Errors: 1
+
+There was 1 error:
+1) examples/AnnotatedFail.pm:25 - test_BZZT(AnnotatedFail)
+BZZT
+
+Annotations:
+I was just wondering what this red button did.
+It said 'Do not press'
+It looks very tempting
+There was 1 failure:
+1) examples/AnnotatedFail.pm:11 - test_witter(AnnotatedFail)
+crunch
+
+Annotations:
+Well it worked up to a certain point
+Then it broke with a tinkly crunch.
+Test was not successful.
+EXITCODE:0x100
+EGC
 
      "examples/patch100132" => <<'EGC',
 ...
@@ -63,14 +89,16 @@ EGC
 
      );
 
-plan(tests => scalar(@examples));
+plan(tests => 1 + @examples);
 
 foreach my $e (keys %guru_checked) {
     warn("Guru ".(defined $guru_checked{$e} ? 'answer' : 'excuse').
 	 " exists for '$e' but there is no test file\n")
 	unless grep { $_ eq $e } @examples;
 }
-
+ok((join ';', sort keys %guru_checked),
+   (join ';', sort @examples),
+   '%guru_checked 1:1 @examples');
 
 # We used to warn about OSes that might not be able to do 2>&1
 # redirection, but
@@ -91,20 +119,19 @@ foreach my $e (@examples) {
 	$out .= sprintf("EXITCODE:0x%X\n", $?) if $?;
 	foreach ($out, $guru_checked{$e}) {
 	    # mess about with start & end newlines
-	    s/^\n+//;
-	    $_ .= "\n" unless /\n$/;
+	    s/^\n+|\n*$/\n/gs;
 	    # bin the naughty carriage returns
 	    s/\r//g;
 	    # we can't assume the order of tests will be the same
-	    s/^[.F]+\n?Suite teardown$/TEST-RUN-SUMMARY/sm;
+	    s{^([.FE]+)((?:Suite teardown)?)$}{join '', (sort '{sorted}', split //, $1), $2}em;
 	    s/::Load[0-9_]+Anonymous[0-9_]+/::LOAD_ANONYMOUS_CLASSNAME/;
+	    # hide things that look like CPU usage
+	    s{^Time:\s+[\d\.]+\s+wallclock secs \([-\d\s\.]+usr\s+\+[-\d\s\.]+sys\s+=[-\d\s\.]+CPU\)}
+	    {TIME-SUMMARY}mg;
 	    # indent lines with '# ' so they're comments if the test fails
 	    s/\n/\n# /g;
-	    # hide things that look like CPU usage
-	    s{Time:\s+[\d\.]+\s+wallclock secs \([-\d\s\.]+usr\s+\+[-\d\s\.]+sys\s+=[-\d\s\.]+CPU\)}
-	    {TIME-SUMMARY}g;
 	}
-	ok($out, $guru_checked{$e});
+	ok($out, $guru_checked{$e}, $e);
     } else {
 	skip( (exists $guru_checked{$e}
 	       ? "Skip $e: not yet checked"

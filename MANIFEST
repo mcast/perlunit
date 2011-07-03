@@ -9,6 +9,7 @@ doc/class-diagram.txt
 doc/consensus.txt
 doc/release-checklist
 doc/TODO
+examples/AnnotatedFail.pm
 examples/Experimental/Sample.pm
 examples/fail_example.pm
 examples/patch100132
