@@ -50,6 +50,7 @@ lib/Tk/ArrayBar.pm
 Makefile.PL
 MANIFEST
 README
+script/punit-tk
 t/all_tests.t
 t/assert.t
 t/debug.t

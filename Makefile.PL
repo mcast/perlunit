@@ -39,6 +39,8 @@ WriteMakefile
 		      'base'           => 1,
 		     },
 
+   EXE_FILES => in_manifest('script/'),
+
 
    ### Informational elements, to build META.yml
    #
@@ -99,3 +101,17 @@ WriteMakefile
      # bugtracker => rt.cpan, I guess; project roots are still in SourceForge
     },
    });
+
+
+sub in_manifest {
+  my ($prefix) = @_;
+  my @out;
+  open MANI, '<MANIFEST' or die "Failed to read MANIFEST: $!";
+  while (<MANI>) {
+    next unless /^$prefix/;
+    chomp;
+    push @out, $_;
+  }
+  close MANI;
+  return \@out;
+}
