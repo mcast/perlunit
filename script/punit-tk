@@ -1,0 +1,54 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+=head1 NAME
+
+punit-tk - a GUI testrunner for PerlUnit
+
+=head1 SYNOPSIS
+
+ punit-tk [ -run ] <testclass>
+
+
+=head1 DESCRIPTION
+
+This script runs the GUI L<Test::Unit::TkTestRunner>.  It runs all the
+tests in one testcase class, testsuite or TAP script, by any name
+L<Test::Unit::Loader> recognises.
+
+It was previously known as C<TkTestRunner.pl> but not installed as a
+script.
+
+=head2 Options
+
+=over 4
+
+=item -run
+
+This flag is accepted by the L<Test::Unit::TkTestRunner/start> method
+and causes the GUI to start running the tests as soon as the windows
+has displayed.
+
+=back
+
+
+=head1 SEE ALSO
+
+L<Test::Unit::GTestRunner>, a Gtk+ TestRunner GUI.
+
+
+=head1 AUTHOR
+
+Copyright (c) 2000-2002, 2005 the PerlUnit Development Team
+(see L<Test::Unit> or the F<AUTHORS> file included in this
+distribution).
+
+All rights reserved. This program is free software; you can
+redistribute it and/or modify it under the same terms as Perl itself.
+
+=cut
+
+use Test::Unit::TkTestRunner;
+
+exit Test::Unit::TkTestRunner::main(@ARGV);

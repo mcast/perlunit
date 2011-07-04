@@ -13,6 +13,7 @@ use Benchmark;
 use Test::Unit; # for copyright & version number
 use Test::Unit::Result;
 use Test::Unit::Loader;
+use Tk::ArrayBar;
 
 sub new {
     my $self = bless {}, shift;
@@ -147,7 +148,7 @@ sub create_ui {
     $self->{suite_label} = $mw->Label(
         -text => 'Enter the name of the TestCase:'
     );
-    $self->{suite_name}  = "x";
+    $self->{suite_name}  = '';
     $self->{suite_field} = $mw->BrowseEntry(
         -textvariable => \$self->{suite_name},
         -choices      => [],
@@ -290,7 +291,20 @@ sub load_frame_icon {
 }
 
 sub main {
-    my $main = new Test::Unit::TkTestRunner()->start(@_);
+    my @arg = @_;
+
+    my $obj = Test::Unit::TkTestRunner->new();
+    $obj->{autorun} = shift @arg if $arg[0] eq '-run';
+    $obj->start(@arg);
+
+    # Cook up a return value for completeness.
+    # This is after MainLoop, i.e. close app.
+    my $result = $obj->{completed_result};
+    my $total = $result && $result->run_count();
+    return 2 if !$total; # "nothing happened"
+    my $bad = $result->failure_count() + $result->error_count();
+    return 1 if $bad;
+    return 0; # tests ran, all passed
 }
 
 sub rerun {
@@ -364,6 +378,7 @@ sub run_suite {
                 $self->show_info("Finished: ".timestr($self->{run_time}, 'nop'));
             }
         }
+        $self->{completed_result} = $self->{result};
         $self->{runner} = undef;
         $self->{result} = undef;
         $self->{run}->configure(-text => "Run");
@@ -383,7 +398,8 @@ sub show_error_trace {
 	($selected) = @$selected; # take the first, ignore the rest
     }
     return unless defined($selected) && $self->{exceptions}[$selected];
-    my $text = $dialog->add("Scrolled", "ROText", -width => 80, -height => 20)
+    my $text = $dialog->add("Scrolled", "ROText", -width => 80, -height => 20,
+                            -scrollbars => "osoe")
       ->pack(-expand => 1, -fill => 'both');
     $text->insert("end", $self->{exceptions}[$selected]->to_string());
 
@@ -410,14 +426,19 @@ sub show_status {
 }
 
 sub start {
-    my $self = shift;
-    my (@args)=@_;
+    my ($self, $test) = @_;
     my $mw = $self->create_ui();
-    if (@args) {
-	$self->{suite_name} = shift @args;
-    }
+    $self->{suite_name} = $test if defined $test;
+    $self->do_autorun if $self->{autorun} && $self->{suite_name};
     MainLoop;
 }
+
+sub do_autorun {
+    my $self = shift;
+    $self->{frame}->waitVisibility;
+    $self->{run}->invoke;
+}
+
 
 sub start_test {
     my $self = shift;
@@ -470,165 +491,6 @@ sub add_to_history {
     $h->configure(-choices => \@choices);
 }
 
-package Tk::ArrayBar;
-# progressbar doesnt cut it.
-# This expects a variable which is an array ref, and
-# a matching list of colours. Sortof like stacked progress bars.
-# Heavily - ie almost totally - based on the code in ProgressBar.
-use Tk;
-use Tk::Canvas;
-use Tk::ROText;
-use Tk::DialogBox;
-use Carp;
-use strict;
-
-use base qw(Tk::Derived Tk::Canvas);
-
-Construct Tk::Widget 'ArrayBar';
-
-sub ClassInit {
-  my ($class, $mw) = @_;
-  
-  $class->SUPER::ClassInit($mw);
-  
-  $mw->bind($class, '<Configure>', [ '_layoutRequest', 1 ]);
-}
-
-sub Populate {
-    my($c, $args) = @_;
-  
-    $c->ConfigSpecs(
-        -width              => [ PASSIVE => undef, undef, 0           ],
-        '-length'           => [ PASSIVE => undef, undef, 0           ],
-        -padx               => [ PASSIVE => 'padX', 'Pad', 0          ],
-        -pady               => [ PASSIVE => 'padY', 'Pad', 0          ],
-        -colors             => [ PASSIVE => undef, undef, undef       ],
-        -relief             => [ SELF => 'relief', 'Relief', 'sunken' ],
-        -value              => [ METHOD  => undef, undef, undef       ],
-        -variable           => [ PASSIVE  => undef, undef, [ 0 ]      ],
-        -anchor             => [ METHOD  => 'anchor', 'Anchor', 'w'   ],
-        -resolution         => [ PASSIVE => undef, undef, 1.0         ],
-        -highlightthickness => [
-            SELF => 'highlightThickness', 'HighlightThickness', 0
-        ],
-        -troughcolor        => [
-            PASSIVE => 'troughColor', 'Background', 'grey55'
-        ],
-    );
-  
-    _layoutRequest($c, 1);
-    $c->OnDestroy([ Destroyed => $c ]);
-}
-
-sub anchor {
-    my $c = shift;
-    my $var = \$c->{Configure}{'-anchor'};
-    my $old = $$var;
-  
-    if (@_) {
-	my $new = shift;
-	croak "bad anchor position \"$new\": must be n, s, w or e"
-	  unless $new =~ /^[news]$/;
-	$$var = $new;
-    }
-  
-    $old;
-}
-
-sub _layoutRequest {
-    my $c = shift;
-    my $why = shift;
-    $c->afterIdle([ '_arrange', $c ]) unless $c->{layout_pending};
-    $c->{layout_pending} |= $why;
-}
-
-sub _arrange {
-    my $c = shift;
-    my $why = $c->{layout_pending};
-  
-    $c->{layout_pending} = 0;
-  
-    my $w     = $c->Width;
-    my $h     = $c->Height;
-    my $bw    = $c->cget('-borderwidth') + $c->cget('-highlightthickness');
-    my $x     = abs(int($c->{Configure}{'-padx'})) + $bw;
-    my $y     = abs(int($c->{Configure}{'-pady'})) + $bw;
-    my $value = $c->cget('-variable');
-    my $horz  = $c->{Configure}{'-anchor'} =~ /[ew]/i ? 1 : 0;
-    my $dir   = $c->{Configure}{'-anchor'} =~ /[ne]/i ? -1 : 1;
-  
-    if ($w == 1 && $h == 1) {
-	my $bw = $c->cget('-borderwidth');
-	$h = $c->pixels($c->cget('-length')) || 40;
-	$w = $c->pixels($c->cget('-width'))  || 20;
-	
-	($w, $h) = ($h, $w) if $horz;
-	$c->GeometryRequest($w, $h);
-	$c->parent->update;
-	$c->update;
-	
-	$w = $c->Width;
-	$h = $c->Height;
-    }
-  
-    $w -= $x*2;
-    $h -= $y*2;
-  
-    my $length = $horz ? $w : $h;
-    my $width  = $horz ? $h : $w;
-    # at this point we have the length and width of the
-    # bar independent of orientation and padding.
-    # blocks and gaps are not used.
-  
-    # unlike progressbar I need to redraw these each time.
-    # actually resizing them might be better...
-    my $colors = $c->{Configure}{'-colors'} || [ 'green', 'red', 'grey55' ];	
-    $c->delete($c->find('all'));	
-    $c->createRectangle(
-        0, 0, $w+$x*2, $h+$y*2,
-        -fill    => $c->{Configure}{'-troughcolor'},
-        -width   => 0,
-        -outline => undef
-    );
-    my $total;
-    my $count_value = scalar(@$value)-1;
-    foreach my $val (@$value) {
-	$total += $val > 0 ? $val : 0;
-    }
-    # prevent div by zero and give a nice initial appearance.
-    $total = $total ? $total : 1;
-    my $curx = $x;
-    my $cury = $y;
-    foreach my $index (0..$count_value) {
-	my $size = ($length*$value->[$index])/$total;
-	my $ud = $horz?$width:$size;
-	my $lr = $horz?$size:$width;
-	$c->{cover}->[$index] = $c->createRectangle(
-            $curx, $cury, $curx+$lr-1, $cury+$ud-1,
-            -fill    => $colors->[$index],
-            -width   => 1,
-            -outline => 'black'
-        );
-	$curx+=$horz?$lr:0;
-	$cury+=$horz?0:$ud;
-    }
-}
-
-sub value {
-    my $c = shift;
-    my $val = $c->cget('-variable');
-  
-    if (@_) {
-	$c->configure(-variable => [@_]);
-	_layoutRequest($c, 2);
-    }
-}
-
-sub Destroyed {
-    my $c = shift;   
-    my $var = delete $c->{'-variable'};
-    untie $$var if defined($var) && ref($var);
-}
 
 1;
 __END__
@@ -640,8 +502,9 @@ Test::Unit::TkTestRunner - unit testing framework helper class
 
 =head1 SYNOPSIS
 
-    use Test::Unit::TkTestRunner;
-    Test::Unit::TkTestRunner::main($my_testcase_class);
+ use Test::Unit::TkTestRunner;
+ my $ret = Test::Unit::TkTestRunner::main($my_testcase_class);
+ exit $ret;
 
 =head1 DESCRIPTION
 
