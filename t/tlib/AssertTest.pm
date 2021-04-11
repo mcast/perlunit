@@ -50,7 +50,6 @@ sub test_numericness {
     }
 }
 
-
 sub test_assert {
     my $self = shift;
     $self->assert(1);
@@ -63,6 +62,9 @@ sub test_assert {
     $self->assert($coderef, 'a', 'a');
     $self->assert([]);
     $self->assert([ 'foo', 7 ]);
+
+    my $example_regexp = qr/foo/;
+
     $self->check_failures(
         'Boolean assertion failed' => [ __LINE__, sub { shift->assert(undef) } ],
         'Boolean assertion failed' => [ __LINE__, sub { shift->assert(0)   } ],
@@ -70,9 +72,9 @@ sub test_assert {
 
         'bang'  => [ __LINE__, sub { shift->assert(0, 'bang')              } ],
         'bang'  => [ __LINE__, sub { shift->assert('', 'bang')             } ],
-        "'qux' did not match /(?-xism:foo)/"
-                => [ __LINE__, sub { shift->assert(qr/foo/, 'qux')         } ],
-        'bang'  => [ __LINE__, sub { shift->assert(qr/foo/, 'qux', 'bang') } ],
+        "'qux' did not match /$example_regexp/"
+                => [ __LINE__, sub { shift->assert($example_regexp, 'qux') } ],
+        'bang'  => [ __LINE__, sub { shift->assert($example_regexp, 'qux', 'bang') } ],
         'a ne b'=> [ __LINE__, sub { shift->assert($coderef, 'a', 'b')     } ],
     );
 }
@@ -101,7 +103,7 @@ sub test_assert_str_equals {
           [ __LINE__, sub { shift->assert_str_equals(undef, 'foo') } ],
         "expected '', got undef" =>
           [ __LINE__, sub { shift->assert_str_equals('', undef)    } ],
-        "expected 'foo', got undef" => 
+        "expected 'foo', got undef" =>
           [ __LINE__, sub { shift->assert_str_equals('foo', undef) } ],
         "expected '', got '0'" =>
           [ __LINE__, sub { shift->assert_str_equals('', 0)        } ],
@@ -117,7 +119,7 @@ sub test_assert_str_equals {
           [ __LINE__, sub { shift->assert_str_equals('-0', 0)      } ],
         "expected 'foo', got 'bar'" =>
           [ __LINE__, sub { shift->assert_str_equals('foo', 'bar') } ],
-        
+
     );
 }
 
@@ -156,7 +158,7 @@ sub test_assert_matches {
             => [ __LINE__, sub { shift->assert_matches(1, 2) } ]
     );
 }
-    
+
 sub test_assert_does_not_match {
     my $self = shift;
     $self->assert_does_not_match(qr/ob/, 'fooBar');
@@ -165,7 +167,7 @@ sub test_assert_does_not_match {
             => [ __LINE__, sub { shift->assert_does_not_match(1, 2) } ]
     );
 }
-    
+
 sub test_assert_equals_null {
     my $self = shift;
     $self->assert_equals(undef, undef);
@@ -208,7 +210,7 @@ sub test_assert_raises {
               sub { shift->assert_raises('AssertTest::Exception', sub {}, 'zxc') }
              ],
     );
-}    
+}
 
 sub test_ok_boolean {
     my $self = shift;
@@ -232,7 +234,7 @@ sub test_ok_bad_args {
 
 sub test_ok_equals {
     my $self = shift;
-    foreach my $args ([0, 0], [2, 2], [1.34, 1.34], 
+    foreach my $args ([0, 0], [2, 2], [1.34, 1.34],
 		      ['foo', 'foo'], ['', ''], [undef, undef],
 		      [sub {2+2}, 4], ['fixed', qr/x/]) {
 	$self->ok(@$args);
@@ -243,17 +245,20 @@ sub test_ok_equals {
 sub test_ok_not_equals {
     my $self = shift;
     my $adder = sub { 2+2 };
+
+    my $example_regexp = qr/x/;
+
     my @checks = (
         # interface is ok(GOT, EXPECTED);
-        q{expected 1, got 0}                => [ 0,      1       ], 
-        q{expected 0, got 1}                => [ 1,      0       ], 
-        q{expected 3, got 2}                => [ 2,      3       ], 
-        q{expected -57.001, got -57}        => [ -57,    -57.001 ], 
-        q{expected 'bar', got 'foo'}        => [ 'foo',  'bar'   ], 
-        q{expected '', got 'foo'}           => [ 'foo',  ''      ], 
-        q{expected 'foo', got ''}           => [ '',     'foo'   ], 
-        q{expected 5, got 4}                => [ $adder, 5       ], 
-        q{'foo' did not match /(?-xism:x)/} => [ 'foo',  qr/x/   ], 
+        q{expected 1, got 0}                => [ 0,      1       ],
+        q{expected 0, got 1}                => [ 1,      0       ],
+        q{expected 3, got 2}                => [ 2,      3       ],
+        q{expected -57.001, got -57}        => [ -57,    -57.001 ],
+        q{expected 'bar', got 'foo'}        => [ 'foo',  'bar'   ],
+        q{expected '', got 'foo'}           => [ 'foo',  ''      ],
+        q{expected 'foo', got ''}           => [ '',     'foo'   ],
+        q{expected 5, got 4}                => [ $adder, 5       ],
+        qq{'foo' did not match /$example_regexp/} => [ 'foo',  $example_regexp ],
     );
     my @tests = ();
     while (@checks) {
@@ -299,8 +304,8 @@ sub test_success_assert_not_equals {
     $self->assert_not_equals('string', 1);
     $self->assert_not_equals(1, 'string');
     $self->assert_not_equals('string', 0);
-    # $self->assert_not_equals(0,'string'); # Numeric comparison done here.. 
-    # $self->assert_not_equals(0, '');      # Numeric comparison done here.. 
+    # $self->assert_not_equals(0,'string'); # Numeric comparison done here..
+    # $self->assert_not_equals(0, '');      # Numeric comparison done here..
     $self->assert_not_equals('', 0);
     $self->assert_not_equals(undef, 0);
     $self->assert_not_equals(0, undef);
@@ -403,9 +408,13 @@ sub test_assert_deep_equals {
 
     my $differ = sub {
         my ($a, $b) = @_;
+
+        my $a_example = qr/$a/;
+        my $b_example = qr/$b/;
+
         qr/^Structures\ begin\ differing\ at: $ \n
-        \S*\s* \$a .* = .* (?-x:$a)      .* $ \n
-        \S*\s* \$b .* = .* (?-x:$b)/mx;
+        \S*\s* \$a .* = .* $a_example      .* $ \n
+        \S*\s* \$b .* = .* $b_example/mx;
     };
 
     my %families; # key=test-purpose, value=assorted circular structures
@@ -453,18 +462,18 @@ sub test_assert_deep_equals {
         'Both arguments were not references' => [ 0, 1     ],
         'Both arguments were not references' => [ 0, ''    ],
         'Both arguments were not references' => [ '', 0    ],
-         $differ->(qw/'ARRAY 'HASH/)     => [ [],      {}      ],
-         $differ->(qw/'ARRAY 'HASH/)     => [ [1,2],   {1,2}   ],
-	 $differ->( "'ARRAY", " undef" ) => [ { 'test' => []},
+        $differ->(qw/'ARRAY 'HASH/)     => [ [],      {}      ],
+        $differ->(qw/'ARRAY 'HASH/)     => [ [1,2],   {1,2}   ],
+        $differ->( "'ARRAY", " undef" ) => [ { 'test' => []},
 					      { 'test' => undef } ],
-	 $differ->( "'ARRAY", 'not exist' ) => [ { 'test' => []}, {} ],
-	 $differ->( 'undef', "'ARRAY" ) => [ { 'test' => undef },
+	    $differ->( "'ARRAY", 'not exist' ) => [ { 'test' => []}, {} ],
+	    $differ->( 'undef', "'ARRAY" ) => [ { 'test' => undef },
 					     { 'test' => []} ],
-	 $differ->( "''", " undef" ) => [ [ '' ], [ undef ] ],
-	 $differ->( "'undef'", " undef" ) => [ [ 'undef' ], [ undef ] ],
-         $differ->('not exist', "'3'") => [ [1,2],   [1,2,3] ],
-         $differ->("'3'", "not exist") => [ [1,2,3], [1,2]   ],
-         $differ->("'wahhhhh'", "'wahhhh'") => [
+	    $differ->( "''", " undef" ) => [ [ '' ], [ undef ] ],
+	    $differ->( "'undef'", " undef" ) => [ [ 'undef' ], [ undef ] ],
+        $differ->('not exist', "'3'") => [ [1,2],   [1,2,3] ],
+        $differ->("'3'", "not exist") => [ [1,2,3], [1,2]   ],
+        $differ->("'wahhhhh'", "'wahhhh'") => [
              $complex,
              {
                  array => [ 1, $hashref, 3 ],
@@ -528,7 +537,7 @@ my %test_hash = (
             { args => ['foo', undef], name => "'foo' ne undef" },
             { args => [undef, 'foo'], name => "undef ne 'foo'" },
             # { args => [0, ''],        name => "0 ne ''"        }, # numeric compare
-            
+
         ],
     },
 );
@@ -546,7 +555,6 @@ sub suite {
     return $suite;
 }
 
-
 sub make_tests_from_matrix {
     my $self = shift;
     my $matrix = shift;
@@ -560,7 +568,7 @@ sub make_tests_from_matrix {
                      $self->$method_name(@{$spec->{args}});
                  }, $spec->{name});
         }
-        
+
         foreach my $outcome (grep {$_ ne 'success'} keys %{$matrix->{$method_name}}) {
             foreach my $spec (@{$matrix->{$method_name}{$outcome}}) {
                 push @tests, $self->make_test_from_coderef

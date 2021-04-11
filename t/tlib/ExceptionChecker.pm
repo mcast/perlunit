@@ -10,6 +10,7 @@ use Error qw(:try);
 
 sub check_failures {
     my $self = shift;
+    
     $self->check_exceptions('Test::Unit::Failure', @_);
 }
 
@@ -21,34 +22,38 @@ sub check_errors {
 sub check_exceptions {
     my $self = shift;
     my ($exception_class, @tests) = @_;
+    
     my ($asserter, $file, $line)
       = caller($Error::Depth + 1); # EVIL hack!  Assumes check_exceptions
                                    # always called via check_{failures,errors}.
                                    # My brain hurts too much right now to think
                                    # of a better way.
     while (@tests) {
-        my $expected        = shift @tests;
+        my $expected = shift @tests;
         my $test_components = shift @tests;
         my ($test_code_line, $test) = @$test_components;
-	my $exception;
-	try {
-	    $self->$test();
-	}
-	catch $exception_class with {
-	    $exception = shift;
-	}
-	catch Error::Simple with {
-	    $exception = shift;
-	}
-	otherwise {
-	    $exception = 0;
-	};
+        my $exception;
+
+        try {
+            $self->$test();
+        }
+        catch $exception_class with {
+            $exception = shift;
+        }
+        catch Error::Simple with {
+            $exception = shift;
+        }
+        otherwise {
+            $exception = 0;
+        };
 
         try {
             $self->check_exception($exception_class, $expected, $exception);
-            $self->check_file_and_line($exception,
-                                       $file,
-                                       $test_code_line);
+            $self->check_file_and_line(
+                $exception,
+                $file,
+                $test_code_line
+            );
         }
         catch Test::Unit::Failure with {
             my $failure = shift;
@@ -65,6 +70,7 @@ sub check_exceptions {
 sub check_exception {
     my $self = shift;
     my ($exception_class, $expected, $exception) = @_;
+
     Test::Unit::Failure->throw(
         -text => "Didn't get $exception_class `$expected'",
         -object => $self,
